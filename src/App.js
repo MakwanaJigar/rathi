@@ -1,24 +1,29 @@
-import logo from './logo.svg';
 import './App.css';
+import './mobile.css';
+import Login from './Component/partial/Login';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import '@fortawesome/fontawesome-free/css/all.min.css';
+import { Route, Routes, useLocation } from 'react-router-dom';
+import Home from './Component/pages/Home';
+import Navbar from './Component/pages/Navbar';
+import DeliveryChallan from './Component/pages/DeliveryChallan';
+import ChallanAdd from './Component/pages/ChallanAdd';
 
 function App() {
+  const location = useLocation();
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      {/* Show Navbar only if not on login page */}
+      {location.pathname !== '/login' && <Navbar />}
+      
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/delivery-challan" element={<DeliveryChallan />} />
+        <Route path="/challan-add" element={<ChallanAdd />} />
+      </Routes>
+    </>
   );
 }
 
