@@ -8,6 +8,9 @@ import Home from './Component/pages/Home';
 import Navbar from './Component/pages/Navbar';
 import DeliveryChallan from './Component/pages/DeliveryChallan';
 import ChallanAdd from './Component/pages/ChallanAdd';
+import Client from './Component/pages/Client';
+import SalesRepresentative from './Component/pages/SalesRepresentative';
+import Make from './Component/pages/Make';
 
 function App() {
   const location = useLocation();
@@ -22,6 +25,9 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/delivery-challan" element={<DeliveryChallan />} />
         <Route path="/challan-add" element={<ChallanAdd />} />
+        <Route path="/client" element={<Client />} />
+        <Route path="/sales-representative" element={<SalesRepresentative />} />
+        <Route path="/make" element={<Make />} />
       </Routes>
     </>
   );

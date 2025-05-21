@@ -7,14 +7,14 @@ const ChallanAdd = () => {
             <div className="container-fluid">
                 <div className="row">
                     {/* <!-- Sidebar --> */}
-                    <div class="col-12 col-md-3 col-lg-2 sidebar">
-                        <nav class="nav flex-column">
-                            <Link class="nav-link  sidebar-links" to="/">
-                                <i class="fa-solid fa-house"></i>
+                    <div className="col-12 col-md-3 col-lg-2 sidebar">
+                        <nav className="nav flex-column">
+                            <Link className="nav-link  sidebar-links" to="/">
+                                <i className="fa-solid fa-house"></i>
                                 Dashboard
                             </Link>
-                            <Link class="nav-link sidebar-links" to="/delivery-challan">
-                                <i class="fa-solid fa-house"></i>
+                            <Link className="nav-link sidebar-links" to="/delivery-challan">
+                                <i className="fa-solid fa-house"></i>
                                 Delivery Challan
                             </Link>
                             <Link
@@ -28,13 +28,16 @@ const ChallanAdd = () => {
                             </Link>
                             <ul className="dropdown-menu">
                                 <li>
-                                    <Link className="dropdown-item" to="/challan-add">Add Challan</Link>
+                                    <Link className="dropdown-item" to="/challan-add">Client</Link>
                                 </li>
                                 <li>
-                                    <Link className="dropdown-item" to="/delivery-challan">Delivery Challan</Link>
+                                    <Link className="dropdown-item" to="/delivery-challan">Sales Representative</Link>
                                 </li>
                                 <li>
-                                    <Link className="dropdown-item" to="/home">Home</Link>
+                                    <Link className="dropdown-item" to="/home">Make</Link>
+                                </li>
+                                   <li>
+                                    <Link className="dropdown-item" to="/home">User</Link>
                                 </li>
                             </ul>
                         </nav>
@@ -60,49 +63,49 @@ const ChallanAdd = () => {
                                         <div className="col-md-6 ">
                                             <div className="party-name">
                                                 <label> Party Name</label>
-                                                <input type="text" placeholder='Enter Your Party Name' name='' value='' />
+                                                <input type="text" placeholder='Enter Your Party Name'  />
                                             </div>
                                             <div className="party-name">
                                                 <label> Bill To Address</label>
-                                                <input type="text" placeholder='Enter Your Bill To Address' name='' value='' />
+                                                <input type="text" placeholder='Enter Your Bill To Address'  />
                                             </div>
                                             <div className="party-name">
                                                 <label> GST No</label>
-                                                <input type="text" placeholder='Enter Your GST No' name='' value='' />
+                                                <input type="text" placeholder='Enter Your GST No'  />
                                             </div>
                                             <div className="party-name">
                                                 <label>Ship To Party Name</label>
-                                                <input type="text" placeholder='Enter Your Ship To Party Name' name='' value='' />
+                                                <input type="text" placeholder='Enter Your Ship To Party Name'  />
                                             </div>
                                             <div className="party-name">
                                                 <label>Ship To Address</label>
-                                                <input type="text" placeholder='Enter Your Ship To Address' name='' value='' />
+                                                <input type="text" placeholder='Enter Your Ship To Address'  />
                                             </div>
                                             <div className="party-name">
                                                 <label> Payment Terms</label>
-                                                <input type="text" placeholder='Enter Your Payment Terms' name='' value='' />
+                                                <input type="text" placeholder='Enter Your Payment Terms'  />
                                             </div>
                                         </div>
                                         <div className="col-md-6">
                                             <div className="party-name">
                                                 <label> D.O. Date</label>
-                                                <input type="date" placeholder='Enter Your D.O. No' name='' value='' />
+                                                <input type="date" placeholder='Enter Your D.O. No'  />
                                             </div>
                                             <div className="party-name">
                                                 <label> D.O. No</label>
-                                                <input type="text" placeholder='Enter Your D.O. No' name='' value='' />
+                                                <input type="text" placeholder='Enter Your D.O. No'  />
                                             </div>
                                             <div className="party-name">
                                                 <label> Sales Rep.</label>
-                                                <input type="text" placeholder='Enter Your Sales Representative' name='' value='' />
+                                                <input type="text" placeholder='Enter Your Sales Representative'  />
                                             </div>
                                             <div className="party-name">
                                                 <label>Party P.O. No</label>
-                                                <input type="text" placeholder='Enter Your P.O. No' name='' value='' />
+                                                <input type="text" placeholder='Enter Your P.O. No'  />
                                             </div>
                                             <div className="party-name">
                                                 <label>Party P.O. No Date</label>
-                                                <input type="date" placeholder='Enter Your Ship To Address' name='' value='' />
+                                                <input type="date" placeholder='Enter Your Ship To Address'  />
                                             </div>
                                         </div>
                                     </div>
@@ -152,7 +155,7 @@ const ChallanAdd = () => {
                                     </div>
 
                                     <div className="col-1">
-                                        <input type="number" className="form-control" value="250" />
+                                        <input type="number" className="form-control" />
                                     </div>
 
                                     <div className="col-1">
@@ -189,15 +192,15 @@ const ChallanAdd = () => {
                                         <div className="col-md-12 ">
                                             <div className="party-name">
                                                 <label> Order Notes</label>
-                                                <textarea type="text" placeholder='Enter Your Order Note' name='' value='' />
+                                                <textarea type="text" placeholder='Enter Your Order Note'  />
                                             </div>
                                             <div className="party-name">
                                                 <label> Warehouse/Delivery Notes</label>
-                                                <textarea type="text" placeholder='Enter Warehouse/Delivery Notes' name='' value='' />
+                                                <textarea type="text" placeholder='Enter Warehouse/Delivery Notes'  />
                                             </div>
                                             <div className="party-name">
                                                 <label> Transport Notes</label>
-                                                <textarea type="text" placeholder='Enter Your Transport Notes' name='' value='' />
+                                                <textarea type="text" placeholder='Enter Your Transport Notes'  />
                                             </div>
                                         </div>
                                     </div>

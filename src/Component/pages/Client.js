@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, NavLink } from "react-router-dom";
 
-const DeliveryChallan = () => {
+const Client = () => {
   return (
     <>
       <div className="container-fluid">
@@ -52,13 +52,16 @@ const DeliveryChallan = () => {
           {/* <!-- Main Content --> */}
           <div className="col-12 col-md-9 col-lg-10 main-content">
             <div className="delivery-challan-top-title-container">
-              <h3 className="main-container-title">Delivery Challan</h3>
+              <h3 className="main-container-title">Client</h3>
               <div className="export-addnew-btn0-container">
+                 <a href="">
+                  <i className="fa-solid fa-download"></i> Import Now
+                </a>
                 <a href="">
                   <i className="fa-solid fa-download"></i> Export Now
                 </a>
                 <a href="">
-                  <i className="fa-solid fa-plus"></i> Add New
+                  <i className="fa-solid fa-plus"></i> Add Client
                 </a>
               </div>
             </div>
@@ -68,16 +71,12 @@ const DeliveryChallan = () => {
               <table className="table align-middle table-bordered">
                 <thead className="table-light ">
                   <tr>
-                    <th className="fw-300">D.O. Date</th>
-                    <th className="fw-300">D.O. No.</th>
-                    <th className="fw-300">Party Name</th>
-                    <th className="fw-300">Total Weight</th>
-                    <th className="fw-300">Ageing</th>
-                    <th className="fw-300">Material Readiness</th>
-                    <th className="fw-300">D. Status</th>
-                    <th className="fw-300 text-center">
-                      Action
-                    </th>
+                    <th className="fw-300">Company Name</th>
+                    <th className="fw-300">Phone</th>
+                    <th className="fw-300">Email Id</th>
+                    <th className="fw-300">GST No.</th>
+                    <th className="fw-300">Address</th>
+                    <th className="fw-300">Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -87,15 +86,7 @@ const DeliveryChallan = () => {
                     <td>lorem ipsum</td>
                     <td>lorem ipsum</td>
                     <td>lorem ipsum</td>
-                    <td>lorem ipsum</td>
-                    <td>lorem ipsum</td>
                     <td className="text-center action-btns">
-                      <button className="btn btn-sm me-1">
-                        <i className="fas fa-eye"></i>
-                      </button>
-                      <button className="btn btn-sm me-1">
-                        <i className="fa fa-download"></i>
-                      </button>
                       <button className="btn btn-sm me-1">
                         <i className="fas fa-pen"></i>
                       </button>
@@ -104,22 +95,13 @@ const DeliveryChallan = () => {
                       </button>
                     </td>
                   </tr>
-
-                  <tr>
-                    <td>lorem ipsum</td>
-                    <td>lorem ipsum</td>
+                   <tr>
                     <td>lorem ipsum</td>
                     <td>lorem ipsum</td>
                     <td>lorem ipsum</td>
                     <td>lorem ipsum</td>
                     <td>lorem ipsum</td>
                     <td className="text-center action-btns">
-                      <button className="btn btn-sm me-1">
-                        <i className="fas fa-eye"></i>
-                      </button>
-                      <button className="btn btn-sm me-1">
-                        <i className="fa fa-download"></i>
-                      </button>
                       <button className="btn btn-sm me-1">
                         <i className="fas fa-pen"></i>
                       </button>
@@ -128,34 +110,7 @@ const DeliveryChallan = () => {
                       </button>
                     </td>
                   </tr>
-
-                  <tr>
-                    <td>lorem ipsum</td>
-                    <td>lorem ipsum</td>
-                    <td>lorem ipsum</td>
-                    <td>lorem ipsum</td>
-                    <td>lorem ipsum</td>
-                    <td>lorem ipsum</td>
-                    <td>lorem ipsum</td>
-                    <td className="text-center action-btns">
-                      <button className="btn btn-sm me-1">
-                        <i className="fas fa-eye"></i>
-                      </button>
-                      <button className="btn btn-sm me-1">
-                        <i className="fa fa-download"></i>
-                      </button>
-                      <button className="btn btn-sm me-1">
-                        <i className="fas fa-pen"></i>
-                      </button>
-                      <button className="btn btn-sm">
-                        <i className="fas fa-trash"></i>
-                      </button>
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <td>lorem ipsum</td>
-                    <td>lorem ipsum</td>
+                   <tr>
                     <td>lorem ipsum</td>
                     <td>lorem ipsum</td>
                     <td>lorem ipsum</td>
@@ -163,19 +118,13 @@ const DeliveryChallan = () => {
                     <td>lorem ipsum</td>
                     <td className="text-center action-btns">
                       <button className="btn btn-sm me-1">
-                        <i className="fas fa-eye"></i>
-                      </button>
-                      <button className="btn btn-sm me-1">
-                        <i className="fa fa-download"></i>
-                      </button>
-                      <button className="btn btn-sm me-1">
                         <i className="fas fa-pen"></i>
                       </button>
                       <button className="btn btn-sm">
                         <i className="fas fa-trash"></i>
                       </button>
                     </td>
-                  </tr>
+                  </tr>  
                 </tbody>
               </table>
             </div>
@@ -186,4 +135,4 @@ const DeliveryChallan = () => {
   );
 };
 
-export default DeliveryChallan;
+export default Client;

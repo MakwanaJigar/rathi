@@ -4,17 +4,17 @@ import { Link } from 'react-router-dom'
 const Home = () => {
     return (
         <>
-            <div class="container-fluid">
-                <div class="row">
+            <div className="container-fluid">
+                <div className="row">
                     {/* <!-- Sidebar --> */}
-                    <div class="col-12 col-md-3 col-lg-2 sidebar">
-                        <nav class="nav flex-column">
-                            <Link class="nav-link active sidebar-links" to="/">
-                                <i class="fa-solid fa-house"></i>
+                    <div className="col-12 col-md-3 col-lg-2 sidebar">
+                        <nav className="nav flex-column">
+                            <Link className="nav-link active sidebar-links" to="/">
+                                <i className="fa-solid fa-house"></i>
                                 Dashboard
                             </Link>
-                            <Link class="nav-link sidebar-links" to="/delivery-challan">
-                                <i class="fa-solid fa-house"></i>
+                            <Link className="nav-link sidebar-links" to="/delivery-challan">
+                                <i className="fa-solid fa-house"></i>
                                 Delivery Challan
                             </Link>
                             <Link
@@ -41,7 +41,7 @@ const Home = () => {
                     </div>
 
                     {/* <!-- Main Content --> */}
-                    <div class="col-12 col-md-9 col-lg-10 main-content">
+                    <div className="col-12 col-md-9 col-lg-10 main-content">
                         <h3>Dashboard</h3>
                         <p>This is the main content area.</p>
                     </div>

@@ -215,3 +215,31 @@ h3.main-container-title {
   border-radius: 10px;
   width: 80%;
 }
+
+
+
+
+
+
+
+/* SalesRepresentative */
+  button.btn-submit {
+      background-color: #006400;
+      color: white;
+      border: none;
+    }
+
+    button.btn-submit:hover {
+      background-color: #004d00;
+      color: #ffffff;
+    }
+
+    button.btn-clear {
+      background-color: #eef6ee;
+      color: #006400;
+      border: 1px solid #006400;
+    }
+
+    button.btn-clear:hover {
+      background-color: #d4ecd4;
+    }
