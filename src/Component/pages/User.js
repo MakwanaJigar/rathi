@@ -1,9 +1,7 @@
-import React from "react";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import React from 'react'
+import { Link } from 'react-router-dom'
 
-const DeliveryChallan = () => {
-  const navigation = useNavigate()
- 
+const User = () => {
   return (
     <>
       <div className="container-fluid">
@@ -62,12 +60,12 @@ const DeliveryChallan = () => {
           {/* <!-- Main Content --> */}
           <div className="col-12 col-md-9 col-lg-10 main-content">
             <div className="delivery-challan-top-title-container">
-              <h3 className="main-container-title">Delivery Challan</h3>
+              <h3 className="main-container-title">User</h3>
               <div className="export-addnew-btn0-container">
                 <a href="">
                   <i className="fa-solid fa-download"></i> Export Now
                 </a>
-                <Link to="/challan-add">
+                <Link to="/add-user">
                   <i className="fa-solid fa-plus"></i> Add New
                 </Link>
               </div>
@@ -78,42 +76,27 @@ const DeliveryChallan = () => {
               <table className="table align-middle table-bordered">
                 <thead className="table-light ">
                   <tr>
-                    <th className="fw-300">D.O. Date</th>
-                    <th className="fw-300">D.O. No.</th>
-                    <th className="fw-300">Party Name</th>
-                    <th className="fw-300">Total Weight</th>
-                    <th className="fw-300">Ageing</th>
-                    <th className="fw-300">Material Readiness</th>
-                    <th className="fw-300">D. Status</th>
-                    <th className="fw-300 text-center">
-                      Action
-                    </th>
+                    <th className="fw-300">Name</th>
+                    <th className="fw-300">User Name</th>
+                    <th className="fw-300">Password</th>
+                    <th className="fw-300">Warehouse Access</th>
+                    <th className="fw-300">Status</th>
+                    <th className="fw-300">Action</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
                     <td>lorem ipsum</td>
                     <td>lorem ipsum</td>
+                    <td>******</td>
                     <td>lorem ipsum</td>
-                    <td>lorem ipsum</td>
-                    <td>lorem ipsum</td>
-                    <td>lorem ipsum</td>
-                    <td>lorem ipsum</td>
+                    <td className='active-user'><p> Active</p></td>
                     <td className="text-center action-btns">
                       <button className="btn btn-sm me-1" data-bs-toggle="modal" data-bs-target="#deleteModal">
                         <i className="fas fa-trash"></i>
                       </button>
                       <button className="btn btn-sm me-1">
-                        <i className="fas fa-eye"></i>
-                      </button>
-                      <button className="btn btn-sm me-1">
-                        <i className="fa fa-download"></i>
-                      </button>
-                      <button className="btn btn-sm me-1">
                         <i className="fas fa-pen"></i>
-                      </button>
-                      <button className="btn btn-sm">
-                        <i className="fas fa-trash"></i>
                       </button>
                     </td>
                   </tr>
@@ -148,7 +131,7 @@ const DeliveryChallan = () => {
         </div>
       </div>
     </>
-  );
-};
+  )
+}
 
-export default DeliveryChallan;
+export default User

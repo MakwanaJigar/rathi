@@ -2,35 +2,35 @@ import React, { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 
 const Make = () => {
-     const [formData, setFormData] = useState({
-    name: "",
-  });
+    const [formData, setFormData] = useState({
+        name: "",
+    });
 
-  const [submittedData, setSubmittedData] = useState([]);
+    const [submittedData, setSubmittedData] = useState([]);
 
-  const handleChange = (e) => {
-    const { id, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [id]: value
-    }));
-  };
+    const handleChange = (e) => {
+        const { id, value } = e.target;
+        setFormData((prev) => ({
+            ...prev,
+            [id]: value
+        }));
+    };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setSubmittedData((prevData) => [...prevData, formData]);
-    setFormData({ name: "" }); // Clear the form
-  };
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        setSubmittedData((prevData) => [...prevData, formData]);
+        setFormData({ name: "" }); // Clear the form
+    };
 
-  const handleReset = () => {
-    setFormData({ name: "" });
-  };
+    const handleReset = () => {
+        setFormData({ name: "" });
+    };
 
-  const handleDelete = (indexToDelete) => {
-    setSubmittedData((prevData) =>
-      prevData.filter((_, index) => index !== indexToDelete)
-    );
-  };
+    const handleDelete = (indexToDelete) => {
+        setSubmittedData((prevData) =>
+            prevData.filter((_, index) => index !== indexToDelete)
+        );
+    };
 
     return (
         <>
@@ -39,52 +39,56 @@ const Make = () => {
                     {/* <!-- Sidebar --> */}
                     <div className="col-12 col-md-3 col-lg-2 sidebar">
                         <nav className="nav flex-column">
-                            <Link className="nav-link  sidebar-links" to="/">
-                                <i className="fa-solid fa-house"></i>
-                                Dashboard
+                            <Link className="nav-link sidebar-links" to="/">
+                                <i className="fa-solid fa-house"></i> Dashboard
                             </Link>
+
                             <Link className="nav-link sidebar-links" to="/delivery-challan">
-                                <i className="fa-solid fa-house"></i>
-                                Delivery Challan
+                                <i className="fa-solid fa-house"></i> Delivery Challan
                             </Link>
-                            <Link
-                                className="nav-link dropdown-toggle sidebar-links active"
-                                to="#"
-                                role="button"
-                                data-bs-toggle="dropdown"
-                                aria-expanded="false"
-                            >
-                                <i className="fa-solid fa-house"></i> Master
-                            </Link>
-                            <ul className="dropdown-menu">
-                                <li>
-                                    <Link className="dropdown-item" to="/challan-add">
-                                        Client
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link className="dropdown-item" to="/delivery-challan">
-                                        Sales Representative
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link className="dropdown-item" to="/home">
-                                        Make
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link className="dropdown-item" to="/home">
-                                        User
-                                    </Link>
-                                </li>
-                            </ul>
+
+                            <div className="nav-item dropdown">
+                                <button
+                                    className="nav-link dropdown-toggle sidebar-links btn btn-link text-start w-100"
+                                    type="button"
+                                    id="masterDropdown"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false"
+                                >
+                                    <i className="fa-solid fa-house"></i> Master
+                                </button>
+
+                                <ul className="dropdown-menu" aria-labelledby="masterDropdown">
+                                    <li>
+                                        <Link className="dropdown-item" to="/challan-add">
+                                            Client
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link className="dropdown-item" to="/delivery-challan">
+                                            Sales Representative
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link className="dropdown-item" to="/home">
+                                            Make
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link className="dropdown-item" to="/home">
+                                            User
+                                        </Link>
+                                    </li>
+                                </ul>
+                            </div>
                         </nav>
                     </div>
+
 
                     {/* <!-- Main Content --> */}
                     <div className="col-12 col-md-9 col-lg-10 main-content">
                         {/* MAIN DATA */}
-                        <div className="container challan-add-main-right-container py-5">
+                        <div className="container challan-add-main-right-container">
                             <div className="form-section client-info-container client-info-container">
                                 <h3 className="">Item</h3>
                                 <form onSubmit={handleSubmit} onReset={handleReset}>
@@ -100,6 +104,7 @@ const Make = () => {
                                                 placeholder="Enter Your Name"
                                                 value={formData.name}
                                                 onChange={handleChange}
+                                                required
                                             />
                                         </div>
                                     </div>
@@ -150,15 +155,15 @@ const Make = () => {
                                                     </td>
                                                 </tr>
                                             ))}
-                                    </tbody>
-                                </table>
+                                        </tbody>
+                                    </table>
 
                                 </div>
                             )}
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div >
+            </div >
         </>
     );
 };

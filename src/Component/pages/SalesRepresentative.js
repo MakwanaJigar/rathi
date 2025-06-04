@@ -2,37 +2,37 @@ import React, { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 
 const SalesRepresentative = () => {
-     const [formData, setFormData] = useState({
-    name: "",
-    phone: "",
-    email: ""
-  });
+    const [formData, setFormData] = useState({
+        name: "",
+        phone: "",
+        email: ""
+    });
 
-  const [submittedData, setSubmittedData] = useState([]);
+    const [submittedData, setSubmittedData] = useState([]);
 
-  const handleChange = (e) => {
-    const { id, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [id]: value
-    }));
-  };
+    const handleChange = (e) => {
+        const { id, value } = e.target;
+        setFormData((prev) => ({
+            ...prev,
+            [id]: value
+        }));
+    };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setSubmittedData((prevData) => [...prevData, formData]);
-    setFormData({ name: "", phone: "", email: "" }); // Clear the form
-  };
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        setSubmittedData((prevData) => [...prevData, formData]);
+        setFormData({ name: "", phone: "", email: "" }); // Clear the form
+    };
 
-  const handleReset = () => {
-    setFormData({ name: "", phone: "", email: "" });
-  };
+    const handleReset = () => {
+        setFormData({ name: "", phone: "", email: "" });
+    };
 
-  const handleDelete = (indexToDelete) => {
-    setSubmittedData((prevData) =>
-      prevData.filter((_, index) => index !== indexToDelete)
-    );
-  };
+    const handleDelete = (indexToDelete) => {
+        setSubmittedData((prevData) =>
+            prevData.filter((_, index) => index !== indexToDelete)
+        );
+    };
 
     return (
         <>
@@ -49,37 +49,40 @@ const SalesRepresentative = () => {
                                 <i className="fa-solid fa-house"></i>
                                 Delivery Challan
                             </Link>
-                            <Link
-                                className="nav-link dropdown-toggle sidebar-links active"
-                                to="#"
-                                role="button"
-                                data-bs-toggle="dropdown"
-                                aria-expanded="false"
-                            >
-                                <i className="fa-solid fa-house"></i> Master
-                            </Link>
-                            <ul className="dropdown-menu">
-                                <li>
-                                    <Link className="dropdown-item" to="/challan-add">
-                                        Client
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link className="dropdown-item" to="/delivery-challan">
-                                        Sales Representative
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link className="dropdown-item" to="/home">
-                                        Make
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link className="dropdown-item" to="/home">
-                                        User
-                                    </Link>
-                                </li>
-                            </ul>
+                            <div className="nav-item dropdown">
+                                <button
+                                    className="nav-link dropdown-toggle sidebar-links btn btn-link text-start w-100"
+                                    type="button"
+                                    id="masterDropdown"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false"
+                                >
+                                    <i className="fa-solid fa-house"></i> Master
+                                </button>
+
+                                <ul className="dropdown-menu" aria-labelledby="masterDropdown">
+                                    <li>
+                                        <Link className="dropdown-item" to="/challan-add">
+                                            Client
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link className="dropdown-item" to="/delivery-challan">
+                                            Sales Representative
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link className="dropdown-item" to="/home">
+                                            Make
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link className="dropdown-item" to="/home">
+                                            User
+                                        </Link>
+                                    </li>
+                                </ul>
+                            </div>
                         </nav>
                     </div>
 
@@ -94,7 +97,7 @@ const SalesRepresentative = () => {
                         </div>
 
                         {/* MAIN DATA */}
-                        <div className="container challan-add-main-right-container py-5">
+                        <div className="container challan-add-main-right-container py-3">
                             <div className="form-section client-info-container client-info-container">
                                 <h3 className="">Sales Representative</h3>
                                 <form onSubmit={handleSubmit} onReset={handleReset}>
@@ -194,15 +197,15 @@ const SalesRepresentative = () => {
                                                     </td>
                                                 </tr>
                                             ))}
-                                    </tbody>
-                                </table>
+                                        </tbody>
+                                    </table>
 
                                 </div>
                             )}
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div >
+            </div >
         </>
     );
 };

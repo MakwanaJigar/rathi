@@ -20,32 +20,40 @@ const Client = () => {
                 <i className="fa-solid fa-house"></i>
                 Delivery Challan
               </Link>
-              <Link
-                className="nav-link dropdown-toggle sidebar-links "
-                to="#"
-                role="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                <i className="fa-solid fa-house"></i> Master
-              </Link>
-              <ul className="dropdown-menu">
-                <li>
-                  <Link className="dropdown-item" to="/challan-add">
-                    Add Challan
-                  </Link>
-                </li>
-                <li>
-                  <Link className="dropdown-item" to="/delivery-challan">
-                    Delivery Challan
-                  </Link>
-                </li>
-                <li>
-                  <Link className="dropdown-item" to="/home">
-                    Home
-                  </Link>
-                </li>
-              </ul>
+              <div className="nav-item dropdown">
+                <button
+                  className="nav-link dropdown-toggle sidebar-links btn btn-link text-start w-100"
+                  type="button"
+                  id="masterDropdown"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  <i className="fa-solid fa-house"></i> Master
+                </button>
+
+                <ul className="dropdown-menu" aria-labelledby="masterDropdown">
+                  <li>
+                    <Link className="dropdown-item" to="/challan-add">
+                      Client
+                    </Link>
+                  </li>
+                  <li>
+                    <Link className="dropdown-item" to="/delivery-challan">
+                      Sales Representative
+                    </Link>
+                  </li>
+                  <li>
+                    <Link className="dropdown-item" to="/home">
+                      Make
+                    </Link>
+                  </li>
+                  <li>
+                    <Link className="dropdown-item" to="/home">
+                      User
+                    </Link>
+                  </li>
+                </ul>
+              </div>
             </nav>
           </div>
 
@@ -54,7 +62,7 @@ const Client = () => {
             <div className="delivery-challan-top-title-container">
               <h3 className="main-container-title">Client</h3>
               <div className="export-addnew-btn0-container">
-                 <a href="">
+                <a href="">
                   <i className="fa-solid fa-download"></i> Import Now
                 </a>
                 <a href="">
@@ -95,7 +103,7 @@ const Client = () => {
                       </button>
                     </td>
                   </tr>
-                   <tr>
+                  <tr>
                     <td>lorem ipsum</td>
                     <td>lorem ipsum</td>
                     <td>lorem ipsum</td>
@@ -110,7 +118,7 @@ const Client = () => {
                       </button>
                     </td>
                   </tr>
-                   <tr>
+                  <tr>
                     <td>lorem ipsum</td>
                     <td>lorem ipsum</td>
                     <td>lorem ipsum</td>
@@ -124,7 +132,7 @@ const Client = () => {
                         <i className="fas fa-trash"></i>
                       </button>
                     </td>
-                  </tr>  
+                  </tr>
                 </tbody>
               </table>
             </div>

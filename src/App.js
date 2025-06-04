@@ -11,6 +11,10 @@ import ChallanAdd from './Component/pages/ChallanAdd';
 import Client from './Component/pages/Client';
 import SalesRepresentative from './Component/pages/SalesRepresentative';
 import Make from './Component/pages/Make';
+import ForgotPassword from './Component/partial/ForgotPassword';
+import ConfirmPassword from './Component/partial/ConfirmPassword';
+import User from './Component/pages/User';
+import AddUser from './Component/pages/AddUser';
 
 function App() {
   const location = useLocation();
@@ -18,8 +22,10 @@ function App() {
   return (
     <>
       {/* Show Navbar only if not on login page */}
-      {location.pathname !== '/login' && <Navbar />}
-      
+      {
+      location.pathname !== '/login' && location.pathname !== '/forgotpassword' && location.pathname !== '/confirmpassword' && <Navbar />
+      }
+
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/" element={<Home />} />
@@ -28,6 +34,10 @@ function App() {
         <Route path="/client" element={<Client />} />
         <Route path="/sales-representative" element={<SalesRepresentative />} />
         <Route path="/make" element={<Make />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/confirm-password" element={<ConfirmPassword />} />
+        <Route path="/user" element={<User />} />
+        <Route path="/add-user" element={<AddUser />} />
       </Routes>
     </>
   );

@@ -3,17 +3,15 @@ import logo from '../../Assets/login/login-logo.png'
 import { useNavigate } from 'react-router-dom';
 
 
-const Login = () => {
-  const [showPassword, setShowPassword] = useState(false);
+
+const ConfirmPassword = () => {
+      const [showPassword, setShowPassword] = useState(false);
+      const [showConfirmPassword, setConfirmPassword] = useState(false);
   const navigate = useNavigate();
 
   const GoToHome = () => {
     navigate('/')
   }
-   const GoToForgotPassword = () => {
-    navigate('/forgotpassword')
-  }
-
   return (
     <>
       <div className="container-fluid login-container">
@@ -25,17 +23,11 @@ const Login = () => {
           <div className="col-md-6 d-flex align-items-center justify-content-center">
             <div className="form-section text-center ">
               <img src={logo} alt="Logo" className="logo" />
-              <h3 className="mb-3 text-success fw-bold">Let's Get Started</h3>
-              <p className="text-muted">Welcome back! Please enter your details</p>
+              <h3 className="mb-3 text-success fw-bold">Confirm Password</h3>
 
               <form>
-                <div className="mb-3 text-start">
-                  <label htmlFor="username" className="form-label">User Name</label>
-                  <input type="text" className="form-control" id="username" placeholder="Enter Your User Name" />
-                </div>
-
-                <div className="mb-3 text-start position-relative">
-                  <label htmlFor="password" className="form-label">Password</label>
+                 <div className="mb-3 text-start position-relative">
+                  <label htmlFor="password" className="form-label">New Password</label>
                   <div className="input-group">
                     <input
                       type={showPassword ? 'text' : 'password'}
@@ -57,18 +49,37 @@ const Login = () => {
                   </div>
                 </div>
 
-                <div className="d-flex justify-content-end mb-3">
-                  <a href="#" className="text-danger text-decoration-none" onClick={GoToForgotPassword}>Forgot Password</a>
+                <div className="mb-3 text-start position-relative">
+                  <label htmlFor="password" className="form-label">Password</label>
+                  <div className="input-group">
+                    <input
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      className="form-control"
+                      id="password"
+                      placeholder="********"
+                    />
+                    <span
+                      className="input-group-text toggle-password"
+                      onClick={() => setConfirmPassword(!showConfirmPassword)}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      {showConfirmPassword ? (
+                        <i className="fa fa-eye-slash"></i>
+                      ) : (
+                        <i className="fa fa-eye"></i>
+                      )}
+                    </span>
+                  </div>
                 </div>
 
-                <button type="submit" className="btn btn-success w-100" onClick={GoToHome}>Sign In</button>
+                <button type="submit" className="btn btn-success w-100" onClick={GoToHome}>Reset Password</button>
               </form>
             </div>
           </div>
         </div>
       </div>
     </>
-  );
-};
+  )
+}
 
-export default Login;
+export default ConfirmPassword

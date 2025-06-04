@@ -1,89 +1,77 @@
 import React from 'react'
-import { Link, NavLink } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
-const ChallanAdd = () => {
+const AddUser = () => {
     return (
         <>
             <div className="container-fluid">
                 <div className="row">
                     {/* <!-- Sidebar --> */}
-                    <div className="col-12 col-md-3 col-lg-2 sidebar bg-light vh-100">
-                        <nav className="nav flex-column p-2">
-                            <Link className="nav-link sidebar-links mb-2 d-flex align-items-center" to="/">
-                                <i className="fa-solid fa-house me-2"></i> Dashboard
+                    <div className="col-12 col-md-3 col-lg-2 sidebar">
+                        <nav className="nav flex-column">
+                            <Link className="nav-link  sidebar-links" to="/">
+                                <i className="fa-solid fa-house"></i>
+                                Dashboard
                             </Link>
-
-                            <Link className="nav-link sidebar-links mb-2 d-flex align-items-center" to="/delivery-challan">
-                                <i className="fa-solid fa-house me-2"></i> Delivery Challan
+                            <Link
+                                className="nav-link active sidebar-links"
+                                to="/delivery-challan"
+                            >
+                                <i className="fa-solid fa-house"></i>
+                                Delivery Challan
                             </Link>
+                            <div className="nav-item dropdown">
+                                <button
+                                    className="nav-link dropdown-toggle sidebar-links btn btn-link text-start w-100"
+                                    type="button"
+                                    id="masterDropdown"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false"
+                                >
+                                    <i className="fa-solid fa-house"></i> Master
+                                </button>
 
-                            <div className="accordion" id="accordionMaster">
-                                <div className="accordion-item bg-transparent border-0">
-                                    <h2 className="accordion-header">
-                                        <button
-                                            className="accordion-button collapsed bg-transparent px-2"
-                                            type="button"
-                                            data-bs-toggle="collapse"
-                                            data-bs-target="#collapseMaster"
-                                            aria-expanded="false"
-                                            aria-controls="collapseMaster"
-                                        >
-                                            <i className="fa-solid fa-house me-2 nav-link sidebar-links"></i> Master
-                                        </button>
-                                    </h2>
-                                    <div
-                                        id="collapseMaster"
-                                        className="accordion-collapse collapse"
-                                        data-bs-parent="#accordionMaster"
-                                    >
-                                        <div className="accordion-body p-0">
-                                            <ul className="list-group list-group-flush">
-                                                <li className="list-group-item bg-transparent ps-4">
-                                                    <Link className="text-decoration-none text-dark d-block" to="/client">
-                                                         Client
-                                                    </Link>
-                                                </li>
-                                                <li className="list-group-item bg-transparent ps-4">
-                                                    <Link className="text-decoration-none text-dark d-block" to="/sales-representative">
-                                                         Sales Representative
-                                                    </Link>
-                                                </li>
-                                                  <li className="list-group-item bg-transparent ps-4">
-                                                    <Link className="text-decoration-none text-dark d-block" to="/sales-representative">
-                                                         Sales Representative
-                                                    </Link>
-                                                </li>
-                                                <li className="list-group-item bg-transparent ps-4">
-                                                    <Link className="text-decoration-none text-dark d-block" to="/make">
-                                                         Make
-                                                    </Link>
-                                                </li>
-                                                <li className="list-group-item bg-transparent ps-4">
-                                                    <Link className="text-decoration-none text-dark d-block" to="/home">
-                                                         User
-                                                    </Link>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
+                                <ul className="dropdown-menu" aria-labelledby="masterDropdown">
+                                    <li>
+                                        <Link className="dropdown-item" to="/challan-add">
+                                            Client
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link className="dropdown-item" to="/delivery-challan">
+                                            Sales Representative
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link className="dropdown-item" to="/home">
+                                            Make
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link className="dropdown-item" to="/home">
+                                            User
+                                        </Link>
+                                    </li>
+                                </ul>
                             </div>
                         </nav>
                     </div>
 
-
                     {/* <!-- Main Content --> */}
                     <div className="col-12 col-md-9 col-lg-10 main-content">
-                        <div className="delivery-challan-top-title-container container">
-                            <h3 className='main-container-title'>Delivery Challan</h3>
+                        <div className="delivery-challan-top-title-container">
+                            <h3 className="main-container-title">User</h3>
                             <div className="export-addnew-btn0-container">
-                                {/* <a href=""><i className="fa-solid fa-download"></i> Export Now</a> */}
-                                <Link to="/delivery-challan">Go Back</Link>
+                                {/* <a href="">
+                  <i className="fa-solid fa-download"></i> Export Now
+                </a> */}
+                                <Link to="/add-user">
+                                    <i className="fa-solid fa-right-arrow"></i> Go Back
+                                </Link>
                             </div>
                         </div>
 
-
-                        {/* MAIN DATA */}
+                        {/* MAIN TABLE DATA */}
                         <div className="container challan-add-main-right-container py-5">
                             <div className="form-section client-info-container client-info-container">
                                 <h3 className=''>Delivery Challan</h3>
@@ -306,14 +294,11 @@ const ChallanAdd = () => {
                             </div>
 
                         </div>
-
-
                     </div>
                 </div>
             </div>
-
         </>
     )
 }
 
-export default ChallanAdd
+export default AddUser
