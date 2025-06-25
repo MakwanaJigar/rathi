@@ -1,52 +1,52 @@
 import React, { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 
-const Make = () => {
-    const [formData, setFormData] = useState({
-        name: "",
-    });
-
-    const [submittedData, setSubmittedData] = useState([]);
-
-    const handleChange = (e) => {
-        const { id, value } = e.target;
-        setFormData((prev) => ({
-            ...prev,
-            [id]: value
-        }));
-    };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        setSubmittedData((prevData) => [...prevData, formData]);
-        setFormData({ name: "" }); // Clear the form
-    };
-
-    const handleReset = () => {
-        setFormData({ name: "" });
-    };
-
-    const handleDelete = (indexToDelete) => {
-        setSubmittedData((prevData) =>
-            prevData.filter((_, index) => index !== indexToDelete)
-        );
-    };
-
-    return (
-        <>
-            <div className="container-fluid">
+const Item = () => {
+     const [formData, setFormData] = useState({
+            name: "",
+        });
+    
+        const [submittedData, setSubmittedData] = useState([]);
+    
+        const handleChange = (e) => {
+            const { id, value } = e.target;
+            setFormData((prev) => ({
+                ...prev,
+                [id]: value
+            }));
+        };
+    
+        const handleSubmit = (e) => {
+            e.preventDefault();
+            setSubmittedData((prevData) => [...prevData, formData]);
+            setFormData({ name: "" }); // Clear the form
+        };
+    
+        const handleReset = () => {
+            setFormData({ name: "" });
+        };
+    
+        const handleDelete = (indexToDelete) => {
+            setSubmittedData((prevData) =>
+                prevData.filter((_, index) => index !== indexToDelete)
+            );
+        };
+    
+  return (
+    <>
+        <div className="container-fluid">
                    
                     {/* <!-- Main Content --> */}
                     <div className="container main-content">
-                        <p className='main-container-title'>Dashboard <i class="fa-solid fa-angles-right"></i> Master <i class="fa-solid fa-angles-right"></i> Make</p>
+                        <p className='main-container-title'>Dashboard <i class="fa-solid fa-angles-right"></i> Master <i class="fa-solid fa-angles-right"></i> Item</p>
                         {/* MAIN DATA */}
                         <div className="container challan-add-main-right-container">
                             <div className="form-section client-info-container client-info-container">
-                                <h3 className="">Make</h3>
+                                <h3 className="">Item</h3>
                                 <form onSubmit={handleSubmit} onReset={handleReset}>
                                     <div className="mb-3 row">
                                         <label htmlFor="name" className="col-sm-2 col-form-label">
-                                            Brands
+                                           Item Name
                                         </label>
                                         <div className="col-sm-10">
                                             <input
@@ -115,8 +115,8 @@ const Make = () => {
                         </div>
                     </div>
             </div>
-        </>
-    );
-};
+    </>
+  )
+}
 
-export default Make;
+export default Item

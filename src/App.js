@@ -1,46 +1,84 @@
-import './App.css';
-import './mobile.css';
-import Login from './Component/partial/Login';
+// src/App.js
+import React from 'react';
+import { Routes, Route, useLocation } from 'react-router-dom';
+
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
-import { Route, Routes, useLocation } from 'react-router-dom';
+import './App.css';
+import './Assets/css/mobile.css'
+import './Assets/css/style.css'
+
+// Components
+import Navbar from './Component/pages/Navbar';// Make sure this file exists
 import Home from './Component/pages/Home';
-import Navbar from './Component/pages/Navbar';
+import Login from './Component/partial/Login';
+import ForgotPassword from './Component/partial/ForgotPassword';
+import ConfirmPassword from './Component/partial/ConfirmPassword';
 import DeliveryChallan from './Component/pages/DeliveryChallan';
 import ChallanAdd from './Component/pages/ChallanAdd';
 import Client from './Component/pages/Client';
 import SalesRepresentative from './Component/pages/SalesRepresentative';
 import Make from './Component/pages/Make';
-import ForgotPassword from './Component/partial/ForgotPassword';
-import ConfirmPassword from './Component/partial/ConfirmPassword';
 import User from './Component/pages/User';
 import AddUser from './Component/pages/AddUser';
+import { SidebarProvider } from './Context/SidebarContext';
+import Sidebar from './Component/pages/Sidebar';
+import ClientAdd from './Component/pages/ClientAdd';
+import Item from './Component/pages/Item';
+import UserAdd from './Component/pages/UserAdd';
+import Logistics from './Component/pages/Logistics';
+import PendingLogistics from './Component/pages/PendingLogistics';
+import PendingLogisticsAdd from './Component/pages/PendingLogisticsAdd';
+import Courier from './Component/pages/Courier';
+import TCSection from './Component/pages/TCSection';
+import WKanbha from './Component/pages/WKanbha';
+import WKuha from './Component/pages/WKuha';
+import WKubadThal from './Component/pages/WKubadThal';
+import DirectParty from './Component/pages/DirectParty';
+import Summary from './Component/pages/Summary';
 
-function App() {
+const App = () => {
   const location = useLocation();
 
-  return (
-    <>
-      {/* Show Navbar only if not on login page */}
-      {
-      location.pathname !== '/login' && location.pathname !== '/forgotpassword' && location.pathname !== '/confirmpassword' && <Navbar />
-      }
+  // Hide Navbar and Sidebar on auth pages
+  const hideUIRoutes = ['/login', '/forgot-password', '/confirm-password'];
+  const hideUI = hideUIRoutes.includes(location.pathname);
 
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/" element={<Home />} />
-        <Route path="/delivery-challan" element={<DeliveryChallan />} />
-        <Route path="/challan-add" element={<ChallanAdd />} />
-        <Route path="/client" element={<Client />} />
-        <Route path="/sales-representative" element={<SalesRepresentative />} />
-        <Route path="/make" element={<Make />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/confirm-password" element={<ConfirmPassword />} />
-        <Route path="/user" element={<User />} />
-        <Route path="/add-user" element={<AddUser />} />
-      </Routes>
-    </>
+  return (
+    <SidebarProvider>
+      {!hideUI && <Navbar />}
+      <div className="d-flex">
+        {!hideUI && <Sidebar />}
+        <div className="flex-grow-1">
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/confirm-password" element={<ConfirmPassword />} />
+            <Route path="/" element={<Home />} />
+            <Route path="/delivery-challan" element={<DeliveryChallan />} />
+            <Route path="/challan-add" element={<ChallanAdd />} />
+            <Route path="/client" element={<Client />} />
+            <Route path="/sales-representative" element={<SalesRepresentative />} />
+            <Route path="/make" element={<Make />} />
+            <Route path="/user" element={<User />} />
+            <Route path="/user-add" element={<UserAdd />} />
+            <Route path="/client-add" element={<ClientAdd />} />
+            <Route path="/item" element={<Item />} />
+            <Route path="/logistics" element={<Logistics />} />
+            <Route path="/pending-logistics" element={<PendingLogistics />} />
+            <Route path="/pending-logistics-add" element={<PendingLogisticsAdd />} />
+            <Route path="/courier" element={<Courier />} />
+            <Route path="/tc-section" element={<TCSection />} />
+            <Route path="/w-kanbha" element={<WKanbha />} />
+            <Route path="/w-kuha" element={<WKuha />} />
+            <Route path="/w-kubadthal" element={<WKubadThal />} />
+            <Route path="/direct-party" element={<DirectParty />} />
+            <Route path="/summary" element={<Summary />} />
+          </Routes>
+        </div>
+      </div>
+    </SidebarProvider>
   );
-}
+};
 
 export default App;

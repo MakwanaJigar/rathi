@@ -11,7 +11,7 @@ const Login = () => {
     navigate('/')
   }
    const GoToForgotPassword = () => {
-    navigate('/forgotpassword')
+    navigate('/forgot-password')
   }
 
   return (

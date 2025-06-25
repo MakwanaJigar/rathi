@@ -1,11 +1,13 @@
 import React from 'react'
+import { useSidebar } from '../../Context/SidebarContext'
 
 const Navbar = () => {
+    const { toggleSidebar } = useSidebar();
     return (
         <>
             <nav className="navbar navbar-expand-lg navbar-custom px-3 py-3">
                 <div className="d-flex align-items-center">
-                    <button className="btn btn-light me-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseWidthExample" aria-expanded="false" aria-controls="collapseWidthExample">
+                    <button className="btn btn-light me-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseWidthExample" aria-expanded="false" aria-controls="collapseWidthExample" onClick={toggleSidebar}>
                         <i className="fa-solid fa-bars"></i>
                     </button>
                     <span className="text-white fs-5">Welcome Back, Admin Name</span>

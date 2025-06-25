@@ -6,7 +6,7 @@ const ForgotPassword = () => {
     const navigate = useNavigate();
   
     const GoToConfirmPassword = () => {
-      navigate('/confirmpassword')
+      navigate('/confirm-password')
     }
   return (
     <>
