@@ -40,16 +40,16 @@ const ClientAdd = () => {
         <>
 
             <div className="container-fluid">
-                <div className="contaier main-content">
+                <div className=" main-content">
                     <p className='main-container-title'>Dashboard <i class="fa-solid fa-angles-right"></i> Master <i class="fa-solid fa-angles-right"></i> Client</p>
-                    <div className="delivery-challan-top-title-container container">
+                    <div className="delivery-challan-top-title-container ">
                         <div className="export-addnew-btn0-container-back-btn">
                             <Link to="/client" className='float-right d-flex'>Go Back</Link>
                         </div>
                     </div>
 
                     {/* MAIN DATA */}
-                    <form className="container challan-add-main-right-container py-5" onSubmit={handleSubmit}>
+                    <form className=" challan-add-main-right-container py-5" onSubmit={handleSubmit}>
                         <div className="border p-4 rounded client-add-box">
                             <h4 className="fw-bold mb-4 pb-2 border-bottom">Client</h4>
 

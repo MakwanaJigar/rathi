@@ -8,7 +8,7 @@ const DeliveryChallan = () => {
     <>
       <div className="container-fluid">
           {/* <!-- Main Content --> */}
-          <div className="main-content container">
+          <div className="main-content ">
               <p className='main-container-title'>Dashboard <i class="fa-solid fa-angles-right"></i> Delivery Challan </p>
             <div className="delivery-challan-top-title-container">
               <h3 className="main-container-title">Delivery Challan</h3>
@@ -23,7 +23,7 @@ const DeliveryChallan = () => {
             </div>
 
             {/* MAIN TABLE DATA */}
-            <div className="container mt-3">
+            <div className=" mt-3">
               <table className="table align-middle table-bordered">
                 <thead className="table-light ">
                   <tr>

@@ -7,7 +7,7 @@ const UserAdd = () => {
     return (
         <>
             <div className="container-fluid">
-                <div className="container main-content">
+                <div className=" main-content">
                     <p className='main-container-title'>Dashboard <i class="fa-solid fa-angles-right"></i> Master <i class="fa-solid fa-angles-right"></i> User Add</p>
                     <div className="delivery-challan-top-title-container container">
                         <h3 className="main-container-title">User</h3>
@@ -17,7 +17,7 @@ const UserAdd = () => {
                     </div>
 
                     {/* MAIN DATA */}
-                    <div className="container challan-add-main-right-container py-5">
+                    <div className=" challan-add-main-right-container py-5">
                         <div className="form-section client-info-container">
                             <h3>User</h3>
                             <form className="py-3">

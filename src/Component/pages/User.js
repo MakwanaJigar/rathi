@@ -6,7 +6,7 @@ const User = () => {
     <>
       <div className="container-fluid">
           {/* <!-- Main Content --> */}
-          <div className="container main-content">
+          <div className=" main-content">
             <p className='main-container-title'>Dashboard <i class="fa-solid fa-angles-right"></i> Master <i class="fa-solid fa-angles-right"></i> User</p>
             <div className="delivery-challan-top-title-container">
               <h3 className="main-container-title">User</h3>
@@ -21,7 +21,7 @@ const User = () => {
             </div>
 
             {/* MAIN TABLE DATA */}
-            <div className="container mt-3">
+            <div className=" mt-3">
               <table className="table align-middle table-bordered">
                 <thead className="table-light ">
                   <tr>

@@ -6,7 +6,7 @@ const AddUser = () => {
         <>
             <div className="container-fluid">
                     {/* <!-- Main Content --> */}
-                    <div className="container main-content">
+                    <div className=" main-content">
                         <div className="delivery-challan-top-title-container">
                             <h3 className="main-container-title">User</h3>
                             <div className="export-addnew-btn0-container">
@@ -20,7 +20,7 @@ const AddUser = () => {
                         </div>
 
                         {/* MAIN TABLE DATA */}
-                        <div className="container challan-add-main-right-container py-5">
+                        <div className="challan-add-main-right-container py-5">
                             <div className="form-section client-info-container client-info-container">
                                 <h3 className=''>Delivery Challan</h3>
                                 <form action="" className='py-3'>

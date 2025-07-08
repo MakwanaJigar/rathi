@@ -37,10 +37,10 @@ const Make = () => {
             <div className="container-fluid">
                    
                     {/* <!-- Main Content --> */}
-                    <div className="container main-content">
+                    <div className=" main-content">
                         <p className='main-container-title'>Dashboard <i class="fa-solid fa-angles-right"></i> Master <i class="fa-solid fa-angles-right"></i> Make</p>
                         {/* MAIN DATA */}
-                        <div className="container challan-add-main-right-container">
+                        <div className=" challan-add-main-right-container">
                             <div className="form-section client-info-container client-info-container">
                                 <h3 className="">Make</h3>
                                 <form onSubmit={handleSubmit} onReset={handleReset}>
@@ -81,7 +81,7 @@ const Make = () => {
                             </div> */}
 
                             {submittedData.length > 0 && (
-                                <div className="container mt-3">
+                                <div className=" mt-3">
 
                                     <table className="table align-middle table-bordered">
                                         <thead className="table-light ">

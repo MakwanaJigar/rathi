@@ -5,7 +5,7 @@ const Courier = () => {
     return (
         <>
             <div className="container-fluid">
-                <div class="container main-content">
+                <div class=" main-content">
                     <p className='main-container-title'>Dashboard <i class="fa-solid fa-angles-right"></i> Report <i class="fa-solid fa-angles-right"></i> Courier</p>
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h3 class="fw-bold">Courier</h3>

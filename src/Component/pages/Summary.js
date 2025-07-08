@@ -4,7 +4,7 @@ const Summary = () => {
   return (
     <>
         <div className="container-fluid">
-                <div className="container main-content">
+                <div className=" main-content">
                     <p className='main-container-title'>Summary </p>
                 </div>
             </div>

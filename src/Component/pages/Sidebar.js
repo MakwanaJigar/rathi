@@ -28,6 +28,7 @@ const Sidebar = () => {
                     to="/delivery-challan"
                 >
                     <i className="fa-solid fa-house"></i>
+                    {/* <i class="fa-solid fa-file-invoice-dollar invoiceicon"></i> */}
                     <span>Delivery Challan</span>
                 </Link>
 
@@ -77,6 +78,7 @@ const Sidebar = () => {
                     aria-controls="Report"
                 >
                     <span className="d-flex align-items-center gap-2">
+                        {/* <i class="fa-solid fa-file" style={{color:" #00662f"}}></i> */}
                         <i className="fa-solid fa-house"></i>
                         Report
                     </span>

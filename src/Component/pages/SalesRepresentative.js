@@ -37,7 +37,7 @@ const SalesRepresentative = () => {
     return (
         <>
             <div className="container-fluid">
-                <div className="container main-content">
+                <div className=" main-content">
                     <p className='main-container-title'>Dashboard <i class="fa-solid fa-angles-right"></i> Master <i class="fa-solid fa-angles-right"></i> Sales Representative</p>
                     <div className="delivery-challan-top-title-container container">
                         <div className="export-addnew-btn0-container">
@@ -46,7 +46,7 @@ const SalesRepresentative = () => {
                     </div>
 
                     {/* MAIN DATA */}
-                    <div className="container challan-add-main-right-container py-3">
+                    <div className=" challan-add-main-right-container py-3">
                         <div className="form-section client-info-container client-info-container">
                             <h3 className="">Sales Representative</h3>
                             <form onSubmit={handleSubmit} onReset={handleReset}>
@@ -116,7 +116,7 @@ const SalesRepresentative = () => {
                             </div> */}
 
                         {submittedData.length > 0 && (
-                            <div className="container mt-3">
+                            <div className=" mt-3">
 
                                 <table className="table align-middle table-bordered">
                                     <thead className="table-light ">

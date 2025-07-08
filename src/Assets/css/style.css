@@ -50,11 +50,15 @@ nav.navbar.navbar-expand-lg.navbar-custom.px-3.py-3 {
 }
 
 .circle-icon i {
-  color: #0d6efd;
+  color: green !important;
   font-size: 16px;
 }
 
-.notification-dot {
+Link.sidebar-links i{
+   color: "#00662f";
+}
+
+.notification-dot { 
   position: absolute;
   top: 3px;
   right: -2px;
@@ -422,11 +426,11 @@ textarea.delete-modal-textarea {
 
 /* Custom radio active color */
 .form-check-input:checked {
-  background-color: rgba(145, 76, 71, 1);
-  border-color: rgba(145, 76, 71, 1);
+  background-color: green;
+  border-color: green;
 }
 
 /* Optional: Also make the ring (focus outline) same color */
 .form-check-input:focus {
-  box-shadow: 0 0 0 0.2rem rgba(145, 76, 71, 0.25);
+  box-shadow: 0 0 0 0.2rem green;
 }

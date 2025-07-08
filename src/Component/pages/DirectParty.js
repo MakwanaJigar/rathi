@@ -5,7 +5,7 @@ const DirectParty = () => {
     return (
         <>
             <div className="container-fluid">
-                <div className="container main-content">
+                <div className=" main-content">
                     <p className='main-container-title'>Dashboard <i class="fa-solid fa-angles-right"></i> Report <i class="fa-solid fa-angles-right"></i> Direct Party</p>
                     <div className="delivery-challan-top-title-container container">
                         <h3 className="main-container-title">Direct Party</h3>
@@ -15,7 +15,7 @@ const DirectParty = () => {
                     </div>
 
                     {/* MAIN DATA */}
-                    <div className="container challan-add-main-right-container py-5">
+                    <div className=" challan-add-main-right-container py-5">
                         <div className="form-section client-info-container">
                             <h3>Direct Party</h3>
                             <form className="py-3">

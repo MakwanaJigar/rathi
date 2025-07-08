@@ -5,7 +5,7 @@ const Client = () => {
   return (
     <>
       <div className="container-fluid">
-          <div className="container main-content">
+          <div className=" main-content">
             <p className='main-container-title'>Dashboard <i class="fa-solid fa-angles-right"></i> Master <i class="fa-solid fa-angles-right"></i> Client</p>
             <div className="delivery-challan-top-title-container">
               <h3 className="main-container-title">Client</h3>
@@ -23,7 +23,7 @@ const Client = () => {
             </div>
 
             {/* MAIN TABLE DATA */}
-            <div className="container mt-3">
+            <div className=" mt-3">
               <table className="table align-middle table-bordered">
                 <thead className="table-light ">
                   <tr>

@@ -12,9 +12,9 @@ const ChallanAdd = () => {
     return (
         <>
             <div className="container-fluid">
-                <div className="contaier main-content">
+                <div className=" main-content">
                     <p className='main-container-title'>Dashboard <i class="fa-solid fa-angles-right"></i> Delivery Challan <i class="fa-solid fa-angles-right"></i> Edit</p>
-                    <div className="delivery-challan-top-title-container container">
+                    <div className="delivery-challan-top-title-container ">
                         <h3 className='main-container-title'>Delivery Challan</h3>
                         <div className="export-addnew-btn0-container">
                             {/* <a href=""><i className="fa-solid fa-download"></i> Export Now</a> */}
@@ -24,7 +24,7 @@ const ChallanAdd = () => {
 
 
                     {/* MAIN DATA */}
-                    <div className="container challan-add-main-right-container py-5">
+                    <div className="challan-add-main-right-container py-5">
                         <div className="form-section client-info-container client-info-container">
                             <h3 className=''>Delivery Challan</h3>
                             <form action="" className='py-3'>
