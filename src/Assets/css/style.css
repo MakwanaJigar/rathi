@@ -401,3 +401,32 @@ textarea.delete-modal-textarea {
   border-radius: 20px;
   text-align: center;
 }
+
+
+
+
+.freight-main-container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.freight-option {
+  display: flex;
+  align-items: center;
+  width: 25%;
+  gap: 10px;
+  margin-right: 0 !important;
+}
+
+
+/* Custom radio active color */
+.form-check-input:checked {
+  background-color: rgba(145, 76, 71, 1);
+  border-color: rgba(145, 76, 71, 1);
+}
+
+/* Optional: Also make the ring (focus outline) same color */
+.form-check-input:focus {
+  box-shadow: 0 0 0 0.2rem rgba(145, 76, 71, 0.25);
+}

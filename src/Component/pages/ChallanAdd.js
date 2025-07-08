@@ -1,7 +1,14 @@
-import React from 'react'
-import { Link, NavLink } from 'react-router-dom'
+import React, { useState } from 'react'
+import { Link } from 'react-router-dom'
 
 const ChallanAdd = () => {
+    const [selectedFreight, setSelectedFreight] = useState('');
+    const [fixValue, setFixValue] = useState('');
+    const [perTonValue, setPerTonValue] = useState('');
+
+    const handleFreightChange = (e) => {
+        setSelectedFreight(e.target.value);
+    };
     return (
         <>
             <div className="container-fluid">
@@ -176,44 +183,98 @@ const ChallanAdd = () => {
                             <div className="row mb-3 align-items-center">
                                 <div className="col-sm-2 fw-semibold">Freight</div>
                                 <div className="col-sm freight-main-container">
-                                    <div className="form-check form-check-inline freight-inputs">
-                                        <input className="form-check-input" type="radio" name="freight" id="freightToPay" />
-                                        <label className="form-check-label" for="freightToPay">To Pay</label>
+                                    {/* To Pay */}
+                                    <div className="freight-option">
+                                        <input
+                                            className="form-check-input"
+                                            type="radio"
+                                            name="freight"
+                                            id="freightToPay"
+                                            value="toPay"
+                                            onChange={handleFreightChange}
+                                        />
+                                        <label className="form-check-label ms-1" htmlFor="freightToPay">To Pay</label>
                                     </div>
-                                    <div className="form-check form-check-inline freight-inputs">
-                                        <input className="form-check-input" type="radio" name="freight" id="freightInclusive" />
-                                        <label className="form-check-label" for="freightInclusive">Inclusive</label>
+
+                                    {/* Inclusive */}
+                                    <div className="freight-option">
+                                        <input
+                                            className="form-check-input"
+                                            type="radio"
+                                            name="freight"
+                                            id="freightInclusive"
+                                            value="inclusive"
+                                            onChange={handleFreightChange}
+                                        />
+                                        <label className="form-check-label ms-1" htmlFor="freightInclusive">Inclusive</label>
                                     </div>
-                                    <div className="form-check form-check-inline freight-inputs">
-                                        <input className="form-check-input" type="radio" name="freight" id="freightFix" />
-                                        <label className="form-check-label" for="freightFix">Fix</label>
-                                        <input type="text" className="form-control d-inline-block ms-2" style={{ width: '100px' }} placeholder="" />
+
+                                    {/* Fix */}
+                                    <div className="freight-option">
+                                        <input
+                                            className="form-check-input"
+                                            type="radio"
+                                            name="freight"
+                                            id="freightFix"
+                                            value="fix"
+                                            onChange={handleFreightChange}
+                                        />
+                                        <label className="form-check-label ms-1" htmlFor="freightFix">Fix</label>
+                                        {selectedFreight === 'fix' && (
+                                            <input
+                                                type="text"
+                                                value={fixValue}
+                                                onChange={(e) => setFixValue(e.target.value)}
+                                                className="form-control ms-2"
+                                                style={{ width: '100px' }}
+                                                placeholder="Fix Value"
+                                            />
+                                        )}
                                     </div>
-                                    <div className="form-check form-check-inline freight-inputs">
-                                        <input className="form-check-input" type="radio" name="freight" id="freightPerTon" />
-                                        <label className="form-check-label" for="freightPerTon">Per TON</label>
-                                        <input type="text" className="form-control d-inline-block ms-2" style={{ width: '100px' }} placeholder="" />
+
+                                    {/* Per TON */}
+                                    <div className="freight-option">
+                                        <input
+                                            className="form-check-input"
+                                            type="radio"
+                                            name="freight"
+                                            id="freightPerTon"
+                                            value="perTon"
+                                            onChange={handleFreightChange}
+                                        />
+                                        <label className="form-check-label ms-1" htmlFor="freightPerTon">Per TON</label>
+                                        {selectedFreight === 'perTon' && (
+                                            <input
+                                                type="text"
+                                                value={perTonValue}
+                                                onChange={(e) => setPerTonValue(e.target.value)}
+                                                className="form-control ms-2"
+                                                style={{ width: '100px' }}
+                                                placeholder="Per Ton Value"
+                                            />
+                                        )}
                                     </div>
                                 </div>
+
                             </div>
 
                             {/* <!-- Courier Options --> */}
                             <div className="row mb-3 align-items-center border-top pt-3">
                                 <div className="col-sm-2 fw-semibold">Courier Options</div>
-                                <div className="col-sm">
-                                    <div className="form-check form-check-inline">
+                                <div className="col-sm freight-main-container">
+                                    <div className="form-check form-check-inline freight-option">
                                         <input className="form-check-input" type="radio" name="courier" id="courierNR" />
                                         <label className="form-check-label" for="courierNR">N / R</label>
                                     </div>
-                                    <div className="form-check form-check-inline">
+                                    <div className="form-check form-check-inline freight-option">
                                         <input className="form-check-input" type="radio" name="courier" id="courierInvoice" />
                                         <label className="form-check-label" for="courierInvoice">Invoice Only</label>
                                     </div>
-                                    <div className="form-check form-check-inline">
+                                    <div className="form-check form-check-inline freight-option">
                                         <input className="form-check-input" type="radio" name="courier" id="courierTCINV" />
                                         <label className="form-check-label" for="courierTCINV">TC+INV</label>
                                     </div>
-                                    <div className="form-check form-check-inline">
+                                    <div className="form-check form-check-inline freight-option">
                                         <input className="form-check-input" type="radio" name="courier" id="courierAll" />
                                         <label className="form-check-label" for="courierAll">TC+INV+LR</label>
                                     </div>
@@ -223,16 +284,16 @@ const ChallanAdd = () => {
                             {/* <!-- MTC --> */}
                             <div className="row mb-3 align-items-center border-top pt-3">
                                 <div className="col-sm-2 fw-semibold">MTC</div>
-                                <div className="col-sm">
-                                    <div className="form-check form-check-inline">
+                                <div className="col-sm freight-main-container">
+                                    <div className="form-check form-check-inline freight-option">
                                         <input className="form-check-input" type="radio" name="mtc" id="mtcNR" />
                                         <label className="form-check-label" for="mtcNR">N / R</label>
                                     </div>
-                                    <div className="form-check form-check-inline">
+                                    <div className="form-check form-check-inline freight-option">
                                         <input className="form-check-input" type="radio" name="mtc" id="mtcMatchTC" />
                                         <label className="form-check-label" for="mtcMatchTC">Only Matching TC</label>
                                     </div>
-                                    <div className="form-check form-check-inline">
+                                    <div className="form-check form-check-inline freight-option">
                                         <input className="form-check-input" type="radio" name="mtc" id="mtcEndorsement" />
                                         <label className="form-check-label" for="mtcEndorsement">With Endorsement</label>
                                     </div>
