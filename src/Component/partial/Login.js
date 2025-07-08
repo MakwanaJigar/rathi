@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import logo from '../../Assets/login/login-logo.png';
 import { useNavigate } from 'react-router-dom';
 
@@ -6,7 +6,32 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [modalMessage, setModalMessage] = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [loginAttempts, setLoginAttempts] = useState(0);
+  const [isLocked, setIsLocked] = useState(false);
+  const [lockTimeLeft, setLockTimeLeft] = useState(0);
+
   const navigate = useNavigate();
+
+  useEffect(() => {
+    let timer;
+    if (isLocked && lockTimeLeft > 0) {
+      timer = setInterval(() => {
+        setLockTimeLeft((prev) => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            setIsLocked(false);
+            setLoginAttempts(0);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+
+    return () => clearInterval(timer);
+  }, [isLocked, lockTimeLeft]);
 
   const GoToForgotPassword = () => {
     navigate('/forgot-password');
@@ -15,19 +40,41 @@ const Login = () => {
   const handleLogin = (e) => {
     e.preventDefault();
 
+    if (isLocked) return;
+
+    if (!username.trim() || !password.trim()) {
+      setModalMessage('Please fill in both username and password.');
+      setShowModal(true);
+      return;
+    }
+
     const dummyUser = {
       username: 'admin',
       password: 'admin',
     };
 
     if (username === dummyUser.username && password === dummyUser.password) {
-      alert('Login successful!');
-      // Optionally store dummy token or flag
       localStorage.setItem('isLoggedIn', true);
       navigate('/');
     } else {
-      alert('Invalid username or password');
+      const attempts = loginAttempts + 1;
+      setLoginAttempts(attempts);
+
+      if (attempts >= 3) {
+        setIsLocked(true);
+        setLockTimeLeft(120); // 2 minutes = 120 seconds
+        setModalMessage('Too many failed attempts. Try again in 2 minutes.');
+      } else {
+        setModalMessage(`Invalid username or password. Attempt ${attempts} of 3.`);
+      }
+
+      setShowModal(true);
     }
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setModalMessage('');
   };
 
   return (
@@ -55,6 +102,7 @@ const Login = () => {
                   placeholder="Enter Your User Name"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
+                  disabled={isLocked}
                 />
               </div>
 
@@ -70,6 +118,7 @@ const Login = () => {
                     placeholder="********"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    disabled={isLocked}
                   />
                   <span
                     className="input-group-text toggle-password"
@@ -88,7 +137,7 @@ const Login = () => {
               <div className="d-flex justify-content-end mb-3">
                 <a
                   href="#"
-                  className="text-danger text-decoration-none"
+                  className="text-secondary text-decoration-none"
                   onClick={(e) => {
                     e.preventDefault();
                     GoToForgotPassword();
@@ -98,13 +147,51 @@ const Login = () => {
                 </a>
               </div>
 
-              <button type="submit" className="btn btn-success w-100">
-                Sign In
+              <button
+                type="submit"
+                className="btn btn-success w-100"
+                disabled={isLocked}
+              >
+                {isLocked ? `Try again in ${lockTimeLeft}s` : 'Sign In'}
               </button>
             </form>
           </div>
         </div>
       </div>
+
+      {/* ERROR MSG POPUP */}
+      {showModal && (
+        <div
+          className="modal fade show d-block"
+          tabIndex="-1"
+          style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+        >
+          <div className="modal-dialog modal-dialog-centered" role="document">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Login Alert</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={closeModal}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <p className="text-danger">{modalMessage}</p>
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-danger"
+                  onClick={closeModal}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
