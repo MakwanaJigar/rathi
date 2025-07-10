@@ -36,6 +36,7 @@ import WKuha from './Component/pages/WKuha';
 import WKubadThal from './Component/pages/WKubadThal';
 import DirectParty from './Component/pages/DirectParty';
 import Summary from './Component/pages/Summary';
+import MakeAdd from './Component/pages/MakeAdd';
 
 const App = () => {
   const location = useLocation();
@@ -74,6 +75,7 @@ const App = () => {
             <Route path="/w-kubadthal" element={<WKubadThal />} />
             <Route path="/direct-party" element={<DirectParty />} />
             <Route path="/summary" element={<Summary />} />
+            <Route path="/make-add" element={<MakeAdd />} />
           </Routes>
         </div>
       </div>

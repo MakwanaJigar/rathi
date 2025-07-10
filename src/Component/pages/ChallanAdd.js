@@ -1,14 +1,72 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useDispatch } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom'
+import { submitChallanForm } from '../../redux/action';
+
 
 const ChallanAdd = () => {
+
+    const navigation = useNavigate()
+
+    const dispatch =  useDispatch();
+
     const [selectedFreight, setSelectedFreight] = useState('');
     const [fixValue, setFixValue] = useState('');
     const [perTonValue, setPerTonValue] = useState('');
 
+
+    // .....INPUT FIELDS STATES.....
+    const [partyName , setPartyName] = useState(''); 
+    const [billToAddress, setBillToAddress] = useState('');
+    const [gstNo, setGstNo] = useState('');
+    const [shipToPartyName, setShipToPartyName] = useState('');
+    const [shipToAddress, setShipToAddress] = useState('');
+    const [paymentTerms, setPaymentTerms] = useState('');
+    const [dODate, setDoDate] = useState('');
+    const [dONumber, setDoNumber] = useState('');
+    const [salesRep, setSalesRep] = useState('');
+    const [partyPoNumber, setPartyPoNumber] = useState('');
+    const [partyPoDate, setPartyPoDate] = useState('');
+    const [orderNote, setOrderNote] = useState('');
+    const [deliveryNote, setDeliveryNote] = useState('');
+    const [transportNote, setTransportNote] = useState('');
+    const [freightInput, setfreightInput] = useState('');
+    const [courierOptionsInput, setCourierOptionsInput] = useState('');
+    const [mTCInput, setMTCInput] = useState('');
+
     const handleFreightChange = (e) => {
         setSelectedFreight(e.target.value);
     };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const payload = {
+      partyName,
+      billToAddress,
+      gstNo,
+      shipToPartyName,
+      shipToAddress,
+      paymentTerms,
+    //   freightType: selectedFreight,
+      dODate,
+      dONumber,
+      salesRep,
+      partyPoNumber,
+      partyPoDate,
+      orderNote,
+      deliveryNote,
+      transportNote,
+      freightInput,
+      courierOptionsInput,
+      mTCInput,
+    };
+
+    dispatch(submitChallanForm(payload));
+    alert('Form submitted via Redux!');
+    navigation('/delivery-challan');
+  };
+
     return (
         <>
             <div className="container-fluid">
@@ -24,61 +82,61 @@ const ChallanAdd = () => {
 
 
                     {/* MAIN DATA */}
-                    <div className="challan-add-main-right-container py-5">
+                    <form action='' className="challan-add-main-right-container py-5" onSubmit={handleSubmit}>
                         <div className="form-section client-info-container client-info-container">
                             <h3 className=''>Delivery Challan</h3>
-                            <form action="" className='py-3'>
+                            <div action="" className='py-3'>
                                 <div className="row">
                                     <div className="col-md-6 ">
                                         <div className="party-name">
                                             <label> Party Name</label>
-                                            <input type="text" placeholder='Enter Your Party Name' />
+                                            <input type="text" placeholder='Enter Your Party Name' value={partyName} onChange={(e) => setPartyName(e.target.value)} />
                                         </div>
                                         <div className="party-name">
                                             <label> Bill To Address</label>
-                                            <input type="text" placeholder='Enter Your Bill To Address' />
+                                            <input type="text" placeholder='Enter Your Bill To Address' value={billToAddress} onChange={(e) => setBillToAddress(e.target.value)} />
                                         </div>
                                         <div className="party-name">
                                             <label> GST No</label>
-                                            <input type="text" placeholder='Enter Your GST No' />
+                                            <input type="text" placeholder='Enter Your GST No' value={gstNo} onChange={(e) => setGstNo(e.target.value)} />
                                         </div>
                                         <div className="party-name">
                                             <label>Ship To Party Name</label>
-                                            <input type="text" placeholder='Enter Your Ship To Party Name' />
+                                            <input type="text" placeholder='Enter Your Ship To Party Name' value={shipToPartyName} onChange={(e) => setShipToPartyName(e.target.value)}/>
                                         </div>
                                         <div className="party-name">
                                             <label>Ship To Address</label>
-                                            <input type="text" placeholder='Enter Your Ship To Address' />
+                                            <input type="text" placeholder='Enter Your Ship To Address' value={shipToAddress} onChange={(e) => setShipToAddress(e.target.value)}/>
                                         </div>
                                         <div className="party-name">
                                             <label> Payment Terms</label>
-                                            <input type="text" placeholder='Enter Your Payment Terms' />
+                                            <input type="text" placeholder='Enter Your Payment Terms' value={paymentTerms} onChange={(e) => setPaymentTerms(e.target.value)}/>
                                         </div>
                                     </div>
                                     <div className="col-md-6">
                                         <div className="party-name">
                                             <label> D.O. Date</label>
-                                            <input type="date" placeholder='Enter Your D.O. No' />
+                                            <input type="date" placeholder='Enter Your D.O. No' value={dODate} onChange={(e) => setDoDate(e.target.value)}/>
                                         </div>
                                         <div className="party-name">
                                             <label> D.O. No</label>
-                                            <input type="text" placeholder='Enter Your D.O. No' />
+                                            <input type="text" placeholder='Enter Your D.O. No' value={dONumber} onChange={(e) => setDoNumber(e.target.value)}/>
                                         </div>
                                         <div className="party-name">
                                             <label> Sales Rep.</label>
-                                            <input type="text" placeholder='Enter Your Sales Representative' />
+                                            <input type="text" placeholder='Enter Your Sales Representative'  value={salesRep} onChange={(e) => setSalesRep(e.target.value)}/>
                                         </div>
                                         <div className="party-name">
                                             <label>Party P.O. No</label>
-                                            <input type="text" placeholder='Enter Your P.O. No' />
+                                            <input type="text" placeholder='Enter Your P.O. No' value={partyPoNumber} onChange={(e) => setPartyPoNumber(e.target.value)}/>
                                         </div>
                                         <div className="party-name">
                                             <label>Party P.O. No Date</label>
-                                            <input type="date" placeholder='Enter Your Ship To Address' />
+                                            <input type="date" placeholder='Enter Your Ship To Address' value={partyPoDate} onChange={(e) => setPartyPoDate(e.target.value)}/>
                                         </div>
                                     </div>
                                 </div>
-                            </form>
+                            </div>
                         </div>
 
                         <div className="form-section client-info-container">
@@ -158,24 +216,24 @@ const ChallanAdd = () => {
 
                         <div className="form-section client-info-container client-info-container">
                             <h3 className=''>Notes</h3>
-                            <form action="" className='py-3'>
+                            <div action="" className='py-3'>
                                 <div className="row">
                                     <div className="col-md-12 ">
                                         <div className="party-name">
                                             <label> Order Notes</label>
-                                            <textarea type="text" placeholder='Enter Your Order Note' />
+                                            <textarea type="text" placeholder='Enter Your Order Note' value={orderNote} onChange={(e) => setOrderNote(e.target.value)}/>
                                         </div>
                                         <div className="party-name">
                                             <label> Warehouse/Delivery Notes</label>
-                                            <textarea type="text" placeholder='Enter Warehouse/Delivery Notes' />
+                                            <textarea type="text" placeholder='Enter Warehouse/Delivery Notes' value={deliveryNote} onChange={(e) => setDeliveryNote(e.target.value)}/>
                                         </div>
                                         <div className="party-name">
                                             <label> Transport Notes</label>
-                                            <textarea type="text" placeholder='Enter Your Transport Notes' />
+                                            <textarea type="text" placeholder='Enter Your Transport Notes' value={transportNote} onChange={(e) => setTransportNote(e.target.value)}/>
                                         </div>
                                     </div>
                                 </div>
-                            </form>
+                            </div>
                         </div>
 
                         <div className="form-section client-info-container client-info-container">
@@ -301,7 +359,12 @@ const ChallanAdd = () => {
                             </div>
                         </div>
 
-                    </div>
+                         <div className="chllan-page-form-btn-container">
+                            <button type='submit' className='submit-btn'>Submit</button>
+                            <button type='reset' className='clear-btn'>Clear</button>
+                        </div>
+
+                    </form>
 
 
                 </div>

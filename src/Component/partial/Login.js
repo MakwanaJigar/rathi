@@ -62,7 +62,7 @@ const Login = () => {
 
       if (attempts >= 3) {
         setIsLocked(true);
-        setLockTimeLeft(120); // 2 minutes = 120 seconds
+        setLockTimeLeft(60); 
         setModalMessage('Too many failed attempts. Try again in 2 minutes.');
       } else {
         setModalMessage(`Invalid username or password. Attempt ${attempts} of 3.`);
@@ -143,7 +143,7 @@ const Login = () => {
                     GoToForgotPassword();
                   }}
                 >
-                  Forgot Password
+                  Forgot Password ?
                 </a>
               </div>
 

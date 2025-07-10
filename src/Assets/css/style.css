@@ -54,11 +54,11 @@ nav.navbar.navbar-expand-lg.navbar-custom.px-3.py-3 {
   font-size: 16px;
 }
 
-Link.sidebar-links i{
-   color: "#00662f";
+Link.sidebar-links i {
+  color: "#00662f";
 }
 
-.notification-dot { 
+.notification-dot {
   position: absolute;
   top: 3px;
   right: -2px;
@@ -175,9 +175,11 @@ p.main-container-title {
   transform: translateX(0);
   transition: transform 0.3s ease;
 }
+
 .sidebar.hidden {
   /* transform: translateX(-100%); */
 }
+
 .sidebar .nav-link {
   color: #333;
   padding: 0.6rem;
@@ -191,12 +193,14 @@ p.main-container-title {
   background-color: #00662f;
   color: white;
 }
-.courier-checkbox-container{
+
+.courier-checkbox-container {
   display: flex;
   align-items: center;
   justify-content: start;
   gap: 20px;
 }
+
 .sidebar .nav-link.active {
   background-color: #00662f;
   color: white;
@@ -229,12 +233,14 @@ p.main-container-title {
   align-items: center;
   justify-content: space-between;
 }
-.export-addnew-btn0-container-back-btn{
+
+.export-addnew-btn0-container-back-btn {
   display: flex;
   align-items: center;
   justify-content: end !important;
   gap: 10px;
 }
+
 .export-addnew-btn0-container-back-btn a {
   background-color: #00662f;
   color: #ffffff;
@@ -246,10 +252,12 @@ p.main-container-title {
   justify-content: center;
   gap: 10px;
 }
+
 .export-addnew-btn0-container-back-btn a:hover {
   background-color: #000000;
   color: #ffffff;
 }
+
 .export-addnew-btn0-container {
   display: flex;
   align-items: center;
@@ -331,6 +339,7 @@ h3.main-container-title {
   border-radius: 10px;
   width: 70%;
 }
+
 .party-name .direct-party-dropdown {
   border: 1px solid #cfcfcf80;
   padding: 10px;
@@ -433,4 +442,52 @@ textarea.delete-modal-textarea {
 /* Optional: Also make the ring (focus outline) same color */
 .form-check-input:focus {
   box-shadow: 0 0 0 0.2rem green;
+}
+
+
+
+
+.chllan-page-form-btn-container {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  gap: 20px;
+}
+
+button.submit-btn {
+  background-color: green;
+  border: none;
+  color: #ffffff;
+  padding: 8px 45px;
+  border-radius: 5px;
+  font-size: 18px;
+}
+
+button.clear-btn {
+  background-color: rgb(209, 242, 209);
+  border: none;
+  color: #000000;
+  border: 1px solid green;
+  padding: 8px 50px;  
+  border-radius: 5px;
+  font-size: 18px;
+}
+
+.make-search-and-btn-container{
+   display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.make-list-btns{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+.make-list-btns button{
+  background-color: #006400;
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 25px;
 }
