@@ -1,161 +1,211 @@
-import React, { useState } from "react";
-import { Link, NavLink } from "react-router-dom";
+import React, { useEffect, useState, useMemo } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { fetchSalesReps ,exportRepresentative} from "../../redux/actions/representativeActions";
 
 const SalesRepresentative = () => {
-    const [formData, setFormData] = useState({
-        name: "",
-        phone: "",
-        email: ""
-    });
+  const dispatch = useDispatch();
+  const navigate  = useNavigate();
 
-    const [submittedData, setSubmittedData] = useState([]);
+  /* ── Select representatives from Redux ── */
+  const reps = useSelector((state) =>
+    Array.isArray(state.salesRep.representatives)
+      ? state.salesRep.representatives
+      : []
+  );
 
-    const handleChange = (e) => {
-        const { id, value } = e.target;
-        setFormData((prev) => ({
-            ...prev,
-            [id]: value
-        }));
-    };
+     const exporting = useSelector((state) => state.salesRep.exporting);
+  
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        setSubmittedData((prevData) => [...prevData, formData]);
-        setFormData({ name: "", phone: "", email: "" }); // Clear the form
-    };
+  /* ── Local UI state ── */
+  const [filteredReps, setFilteredReps] = useState([]);
+  const [searchQuery, setSearchQuery]   = useState("");
+  const [loading, setLoading]           = useState(true);
+  const [error, setError]               = useState(null);
 
-    const handleReset = () => {
-        setFormData({ name: "", phone: "", email: "" });
-    };
+  const itemsPerPage = 10;
+  const [currentPage, setCurrentPage] = useState(1);
 
-    const handleDelete = (indexToDelete) => {
-        setSubmittedData((prevData) =>
-            prevData.filter((_, index) => index !== indexToDelete)
-        );
-    };
+  /* ── Fetch reps once ── */
+  useEffect(() => {
+    (async () => {
+      try {
+        setLoading(true);
+        await dispatch(fetchSalesReps());
+        setError(null);
+      } catch {
+        setError("Failed to fetch representatives.");
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [dispatch]);
 
-    return (
-        <>
-            <div className="container-fluid">
-                <div className=" main-content">
-                    <p className='main-container-title'>Dashboard <i class="fa-solid fa-angles-right"></i> Master <i class="fa-solid fa-angles-right"></i> Sales Representative</p>
-                    <div className="delivery-challan-top-title-container container">
-                        <div className="export-addnew-btn0-container">
-                            <a href="">Go Back</a>
-                        </div>
-                    </div>
-
-                    {/* MAIN DATA */}
-                    <div className=" challan-add-main-right-container py-3">
-                        <div className="form-section client-info-container client-info-container">
-                            <h3 className="">Sales Representative</h3>
-                            <form onSubmit={handleSubmit} onReset={handleReset}>
-                                <div className="mb-3 row">
-                                    <label htmlFor="name" className="col-sm-2 col-form-label">
-                                        Name
-                                    </label>
-                                    <div className="col-sm-10">
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            id="name"
-                                            placeholder="Enter Your Name"
-                                            value={formData.name}
-                                            onChange={handleChange}
-                                        />
-                                    </div>
-                                </div>
-                                <div className="mb-3 row">
-                                    <label htmlFor="phone" className="col-sm-2 col-form-label">
-                                        Phone Number
-                                    </label>
-                                    <div className="col-sm-10">
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            id="phone"
-                                            placeholder="Enter Your Phone Number"
-                                            value={formData.phone}
-                                            onChange={handleChange}
-                                        />
-                                    </div>
-                                </div>
-                                <div className="mb-3 row">
-                                    <label htmlFor="email" className="col-sm-2 col-form-label">
-                                        Email Id
-                                    </label>
-                                    <div className="col-sm-10">
-                                        <input
-                                            type="email"
-                                            className="form-control"
-                                            id="email"
-                                            placeholder="Enter Your Email Id"
-                                            value={formData.email}
-                                            onChange={handleChange}
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="d-flex gap-3">
-                                    <button type="submit" className="btn btn-submit px-4">
-                                        Submit
-                                    </button>
-                                    <button type="reset" className="btn btn-clear px-4">
-                                        Clear
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                        {/* <div class="d-flex gap-3">
-                                <button type="submit" class="btn btn-submit px-4">
-                                    Submit
-                                </button>
-                                <button type="reset" class="btn btn-clear px-4">
-                                    Clear
-                                </button>
-                            </div> */}
-
-                        {submittedData.length > 0 && (
-                            <div className=" mt-3">
-
-                                <table className="table align-middle table-bordered">
-                                    <thead className="table-light ">
-                                        <tr>
-                                            <th className="fw-300">Name</th>
-                                            <th className="fw-300">Phone</th>
-                                            <th className="fw-300">Email Id</th>
-                                            <th className="fw-300">Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {submittedData.map((entry, index) => (
-                                            <tr key={index}>
-                                                <td>{entry.name}</td>
-                                                <td>{entry.phone}</td>
-                                                <td>{entry.email}</td>
-                                                <td className="text-center action-btns">
-                                                    <button className="btn btn-sm me-1">
-                                                        <i className="fas fa-pen"></i>
-                                                    </button>
-                                                    <button
-                                                        className="btn btn-sm"
-                                                        onClick={() => handleDelete(index)}
-                                                    >
-                                                        <i className="fas fa-trash"></i>
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </div >
-        </>
+  /* ── Search filter ── */
+  useEffect(() => {
+    const q = searchQuery.toLowerCase();
+    const filtered = reps.filter((r) =>
+      (r.name || r.representative_name || "").toLowerCase().includes(q)
     );
+    setFilteredReps(filtered);
+    setCurrentPage(1);
+  }, [searchQuery, reps]);
+
+  /* ── Pagination helpers ── */
+  const totalPages = Math.ceil(filteredReps.length / itemsPerPage);
+
+  const currentItems = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return filteredReps.slice(start, start + itemsPerPage);
+  }, [filteredReps, currentPage]);
+
+  const changePage = (page) => {
+    if (page < 1 || page > totalPages) return;
+    setCurrentPage(page);
+  };
+
+  const handleExportClick = () => {
+      dispatch(exportRepresentative());
+    };
+
+
+
+  /* ── UI ── */
+  return (
+    <div className="container-fluid">
+      <div className="main-content">
+        <p className="main-container-title">
+          Dashboard <i className="fa-solid fa-angles-right" /> Master
+          <i className="fa-solid fa-angles-right" /> Sales Representative
+        </p>
+
+        <div className="challan-add-main-right-container">
+          <div className="make-search-and-btn-container">
+            <div className="make-title">
+              <h3>Sales Representative</h3>
+            </div>
+            <div className="make-list-btns">
+              <div className="make-list-search">
+                <i className="fa-solid fa-magnifying-glass" />
+                <input
+                  type="search"
+                  placeholder="Search ..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+              <button className="import-btn">
+                <i className="fa-solid fa-upload" /> Import
+              </button>
+              <button
+                className="export-btn"
+                onClick={handleExportClick}
+                disabled={exporting}
+              >
+                {exporting ? (
+                  <>
+                    <i className="fa-solid fa-spinner fa-spin" /> Exporting…
+                  </>
+                ) : (
+                  <>
+                    <i className="fa-solid fa-upload" /> Export
+                  </>
+                )}
+              </button>
+              <button
+                className="add-btn"
+                onClick={() => navigate("/sales-representative-add")}
+              >
+                <i className="fa-solid fa-plus" /> Add
+              </button>
+            </div>
+          </div>
+
+          {/* Table */}
+          <div className="mt-3">
+            {loading ? (
+              <div>Loading...</div>
+            ) : error ? (
+              <div className="alert alert-danger">{error}</div>
+            ) : (
+              <>
+                <table className="table align-middle table-bordered">
+                  <thead className="table-light">
+                    <tr>
+                      <th>Name</th>
+                      <th>Phone</th>
+                      <th>Email</th>
+                      <th className="text-center">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {currentItems.length > 0 ? (
+                      currentItems.map((r) => (
+                        <tr key={r.id}>
+                          <td>{r.name || r.representative_name || "-"}</td>
+                          <td>{r.phone || "-"}</td>
+                          <td>{r.email || "-"}</td>
+                          <td className="text-center">
+                            <button
+                              className="btn btn-sm me-1"
+                              onClick={() =>
+                                navigate(`/sales-representative-edit/${r.id}`, {
+                                  state: { repData: r },
+                                })
+                              }
+                            >
+                              <i className="fas fa-pen" />
+                            </button>
+                            <button className="btn btn-sm">
+                              <i className="fas fa-trash" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="4" className="text-center">
+                          No matching results found.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <nav aria-label="Rep pagination">
+                    <ul className="pagination justify-content-end">
+                      <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+                        <button className="page-link" onClick={() => changePage(currentPage - 1)}>
+                          <i className="fa-solid fa-arrow-left" />
+                        </button>
+                      </li>
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                        <li
+                          key={page}
+                          className={`page-item ${currentPage === page ? "active" : ""}`}
+                        >
+                          <button className="page-link" onClick={() => changePage(page)}>
+                            {page}
+                          </button>
+                        </li>
+                      ))}
+                      <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
+                        <button className="page-link" onClick={() => changePage(currentPage + 1)}>
+                          <i className="fa-solid fa-arrow-right" />
+                        </button>
+                      </li>
+                    </ul>
+                  </nav>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default SalesRepresentative;

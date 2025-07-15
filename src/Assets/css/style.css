@@ -35,7 +35,7 @@ nav.navbar.navbar-expand-lg.navbar-custom.px-3.py-3 {
 }
 
 .navbar-custom {
-  background-color: #0b722f;
+  background-color: #046725;
 }
 
 .circle-icon {
@@ -50,7 +50,7 @@ nav.navbar.navbar-expand-lg.navbar-custom.px-3.py-3 {
 }
 
 .circle-icon i {
-  color: green !important;
+  color: #046725 !important;
   font-size: 16px;
 }
 
@@ -64,17 +64,17 @@ Link.sidebar-links i {
   right: -2px;
   width: 13px;
   height: 13px;
-  background-color: rgb(7, 235, 7);
+  background-color: #046725;
   border-radius: 50%;
   border: 2px solid #ffffff;
 }
 
 i.fa-solid.fa-bars {
-  color: #0b722f;
+  color: #046725;
 }
 
 button.btn.btn-sm.item-info-btns i {
-  background-color: #0b722f;
+  background-color: #046725;
   color: #ffffff;
   padding: 10px;
   border-radius: 5px;
@@ -130,12 +130,12 @@ p.main-container-title {
 }
 
 .tab-title.active {
-  color: green;
+  color: #046725;
 }
 
 .btn-filter,
 .btn-export {
-  background-color: #006400;
+  background-color: #046725;
   color: white;
 }
 
@@ -190,7 +190,7 @@ p.main-container-title {
 }
 
 .sidebar .nav-link:hover {
-  background-color: #00662f;
+  background-color: #046725;
   color: white;
 }
 
@@ -202,7 +202,7 @@ p.main-container-title {
 }
 
 .sidebar .nav-link.active {
-  background-color: #00662f;
+  background-color: #046725;
   color: white;
 }
 
@@ -223,7 +223,7 @@ p.main-container-title {
 .sidebar-links i {
   background-color: #ffffff;
   padding: 7px;
-  color: #00662f;
+  color: #046725;
   border-radius: 7px;
 }
 
@@ -233,16 +233,21 @@ p.main-container-title {
   align-items: center;
   justify-content: space-between;
 }
+.delivery-challan-top-title-container1 {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+}
 
 .export-addnew-btn0-container-back-btn {
   display: flex;
   align-items: center;
-  justify-content: end !important;
+  justify-content: flex-end !important;
   gap: 10px;
 }
 
 .export-addnew-btn0-container-back-btn a {
-  background-color: #00662f;
+  background-color: #046725;
   color: #ffffff;
   padding: 7px 30px;
   text-decoration: none;
@@ -266,7 +271,7 @@ p.main-container-title {
 }
 
 .export-addnew-btn0-container a {
-  background-color: #00662f;
+  background-color: #046725;
   color: #ffffff;
   padding: 7px 30px;
   text-decoration: none;
@@ -288,14 +293,14 @@ h3.main-container-title {
 }
 
 .action-btns button i {
-  background-color: #00662f;
+  background-color: #046725;
   color: #ffffff;
   padding: 10px;
   border-radius: 5px;
 }
 
 .action-btns button i:hover {
-  background-color: #004d00;
+  background-color: #046725;
 }
 
 /* CHALLAN ADD NEW STYLE*/
@@ -339,6 +344,12 @@ h3.main-container-title {
   border-radius: 10px;
   width: 70%;
 }
+.party-name select.form-control {
+  border: 1px solid #cfcfcf80;
+  padding: 10px;
+  border-radius: 10px;
+  width: 70%;
+}
 
 .party-name .direct-party-dropdown {
   border: 1px solid #cfcfcf80;
@@ -363,20 +374,20 @@ h3.main-container-title {
 
 /* SalesRepresentative */
 button.btn-submit {
-  background-color: #006400;
+  background-color: #046725;
   color: white;
   border: none;
 }
 
 button.btn-submit:hover {
-  background-color: #004d00;
+  background-color: #046725;
   color: #ffffff;
 }
 
 button.btn-clear {
   background-color: #eef6ee;
-  color: #006400;
-  border: 1px solid #006400;
+  color: #046725;
+  border: 1px solid #046725;
 }
 
 button.btn-clear:hover {
@@ -409,7 +420,7 @@ textarea.delete-modal-textarea {
 
 .active-user p {
   color: #ffffff;
-  background-color: #006400;
+  background-color: #046725;
   padding: 5px;
   border-radius: 20px;
   text-align: center;
@@ -435,13 +446,13 @@ textarea.delete-modal-textarea {
 
 /* Custom radio active color */
 .form-check-input:checked {
-  background-color: green;
-  border-color: green;
+  background-color: #046725;
+  border-color: #046725;
 }
 
 /* Optional: Also make the ring (focus outline) same color */
 .form-check-input:focus {
-  box-shadow: 0 0 0 0.2rem green;
+  box-shadow: 0 0 0 0.2rem #046725;
 }
 
 
@@ -455,7 +466,7 @@ textarea.delete-modal-textarea {
 }
 
 button.submit-btn {
-  background-color: green;
+  background-color: #046725;
   border: none;
   color: #ffffff;
   padding: 8px 45px;
@@ -467,7 +478,7 @@ button.clear-btn {
   background-color: rgb(209, 242, 209);
   border: none;
   color: #000000;
-  border: 1px solid green;
+  border: 1px solid #046725;
   padding: 8px 50px;  
   border-radius: 5px;
   font-size: 18px;
@@ -484,10 +495,83 @@ button.clear-btn {
   justify-content: center;
   gap: 20px;
 }
-.make-list-btns button{
-  background-color: #006400;
+.make-list-btns .import-btn{
+  background-color: #046725;
   color: #ffffff;
   border: none;
   border-radius: 5px;
-  padding: 5px 25px;
+  padding: 7px 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+.make-list-btns .export-btn{
+  background-color: #046725;
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  padding: 7px 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+.make-list-btns .add-btn{
+  background-color: #046725;
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  padding: 7px 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+.make-list-search{
+  border: 1px solid #00000030;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  padding: 7px 10px;
+  border-radius: 7px;
+   background-color: #f3f3f3;
+   width: 40%;
+}
+.make-list-search input{
+  border: none;
+ background: transparent;
+ width: 100%;
+}
+.make-list-search input:focus {
+  outline: none;
+  box-shadow: none;
+  border: none; 
+}
+
+
+
+ul.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+button.page-link{
+  background-color: rgb(209, 242, 209);
+  color: #000000;
+  border-radius: 10px;
+  border: 1px solid #046725;
+  font-weight: 500;
+  padding: 8px 15px;
+}
+li.page-item.active button.page-link{
+  background-color: #046725;
+  color: #ffffff;
+  border: 1px solid #046725;
+}
+button.page-link:hover{
+  background-color: #046725;
+  color: #ffffff;
 }

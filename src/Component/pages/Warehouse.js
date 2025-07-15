@@ -1,79 +1,84 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { fetchClients, exportClients  } from "../../redux/actions/clientActions";
+import { fetchWarehouses , exportWarehouse} from "../../redux/actions/warehouseActions";
 
-const Client = () => {
+const Warehouse = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const clients = useSelector((state) =>
-    Array.isArray(state.client.clients) ? state.client.clients : []
-  );
+  const warehouses = useSelector((state) => state.warehouse.warehouses);
 
-  const exporting = useSelector((state) => state.client.exporting);
+  const exporting = useSelector((state) => state.warehouse.exporting);
+  
 
-  const [filteredClients, setFilteredClients] = useState([]);
+  const [filteredWarehouses, setFilteredWarehouses] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const itemsPerPage = 10;
-  const [currentPage, setCurrentPage] = useState(1);
-
+  // Fetch from Redux store
   useEffect(() => {
-    const loadClients = async () => {
+    const loadData = async () => {
       try {
         setLoading(true);
-        await dispatch(fetchClients());
+        await dispatch(fetchWarehouses());
         setError(null);
       } catch (err) {
-        setError("Failed to fetch client data.");
+        setError("Failed to load warehouse data");
       } finally {
         setLoading(false);
       }
     };
 
-    loadClients();
+    loadData();
   }, [dispatch]);
 
+  // Search logic
   useEffect(() => {
     const q = searchQuery.toLowerCase();
-    const filtered = clients.filter((c) =>
-      (c.company_name || "").toLowerCase().includes(q)
+    const filtered = warehouses.filter(
+      (w) =>
+        (w.warehouse_name || "").toLowerCase().includes(q) ||
+        (w.warehouse_address || "").toLowerCase().includes(q)
     );
-    setFilteredClients(filtered);
+    setFilteredWarehouses(filtered);
     setCurrentPage(1);
-  }, [searchQuery, clients]);
+  }, [searchQuery, warehouses]);
 
-  const totalPages = Math.ceil(filteredClients.length / itemsPerPage);
+  // Pagination
+  const itemsPerPage = 10;
+  const [currentPage, setCurrentPage] = useState(1);
+  const totalPages = Math.ceil(filteredWarehouses.length / itemsPerPage);
 
   const currentItems = useMemo(() => {
     const start = (currentPage - 1) * itemsPerPage;
-    return filteredClients.slice(start, start + itemsPerPage);
-  }, [filteredClients, currentPage]);
+    return filteredWarehouses.slice(start, start + itemsPerPage);
+  }, [filteredWarehouses, currentPage]);
 
   const changePage = (page) => {
     if (page < 1 || page > totalPages) return;
     setCurrentPage(page);
   };
 
+
+
   const handleExportClick = () => {
-    dispatch(exportClients());
-  };
+          dispatch(exportWarehouse());
+        };
 
   return (
     <div className="container-fluid">
       <div className="main-content">
         <p className="main-container-title">
-          Dashboard <i className="fa-solid fa-angles-right" /> Master{" "}
-          <i className="fa-solid fa-angles-right" /> Client
+          Dashboard <i className="fa-solid fa-angles-right" /> Master
+          <i className="fa-solid fa-angles-right" /> Warehouse
         </p>
 
         <div className="challan-add-main-right-container">
           <div className="make-search-and-btn-container">
             <div className="make-title">
-              <h3>Client</h3>
+              <h3>Warehouse</h3>
             </div>
             <div className="make-list-btns">
               <div className="make-list-search">
@@ -85,11 +90,9 @@ const Client = () => {
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
-
               <button className="import-btn">
-                <i className="fa-solid fa-download" /> Import
+                <i className="fa-solid fa-upload" /> Import
               </button>
-
               <button
                 className="export-btn"
                 onClick={handleExportClick}
@@ -105,16 +108,13 @@ const Client = () => {
                   </>
                 )}
               </button>
-
-              <button
-                className="add-btn"
-                onClick={() => navigate("/client-add")}
-              >
+              <button className="add-btn" onClick={() => navigate("/warehouse-add")}>
                 <i className="fa-solid fa-plus" /> Add
               </button>
             </div>
           </div>
 
+          {/* list */}
           <div className="mt-3">
             {loading ? (
               <div>Loading...</div>
@@ -125,23 +125,17 @@ const Client = () => {
                 <table className="table align-middle table-bordered">
                   <thead className="table-light">
                     <tr>
-                      <th>Company</th>
-                      <th>Contact Person</th>
-                      <th>Phone</th>
-                      <th>Email</th>
-                      <th>GST No</th>
-                      <th>Action</th>
+                      <th>Warehouse Name</th>
+                      <th>Warehouse Address</th>
+                      <th className="text-center">Action</th>
                     </tr>
                   </thead>
                   <tbody>
                     {currentItems.length > 0 ? (
-                      currentItems.map((item, index) => (
-                        <tr key={index}>
-                          <td>{item.company_name || "-"}</td>
-                          <td>{item.client_personal_name || "-"}</td>
-                          <td>{item.phone || "-"}</td>
-                          <td>{item.email || "-"}</td>
-                          <td>{item.gst_no || "-"}</td>
+                      currentItems.map((w) => (
+                        <tr key={w.id ?? w.warehouse_id}>
+                          <td>{w.warehouse_name || "N/A"}</td>
+                          <td>{w.warehouse_address || "N/A"}</td>
                           <td className="text-center">
                             <button className="btn btn-sm me-1">
                               <i className="fas fa-pen" />
@@ -154,7 +148,7 @@ const Client = () => {
                       ))
                     ) : (
                       <tr>
-                        <td colSpan="6" className="text-center">
+                        <td colSpan="3" className="text-center">
                           No matching results found.
                         </td>
                       </tr>
@@ -162,50 +156,29 @@ const Client = () => {
                   </tbody>
                 </table>
 
+                {/* pagination */}
                 {totalPages > 1 && (
-                  <nav aria-label="Client pagination">
+                  <nav aria-label="Warehouse pagination">
                     <ul className="pagination justify-content-end">
-                      <li
-                        className={`page-item ${
-                          currentPage === 1 ? "disabled" : ""
-                        }`}
-                      >
-                        <button
-                          className="page-link"
-                          onClick={() => changePage(currentPage - 1)}
-                        >
+                      <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+                        <button className="page-link" onClick={() => changePage(currentPage - 1)}>
                           <i className="fa-solid fa-arrow-left" />
                         </button>
                       </li>
 
-                      {Array.from(
-                        { length: totalPages },
-                        (_, i) => i + 1
-                      ).map((page) => (
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                         <li
                           key={page}
-                          className={`page-item ${
-                            currentPage === page ? "active" : ""
-                          }`}
+                          className={`page-item ${currentPage === page ? "active" : ""}`}
                         >
-                          <button
-                            className="page-link"
-                            onClick={() => changePage(page)}
-                          >
+                          <button className="page-link" onClick={() => changePage(page)}>
                             {page}
                           </button>
                         </li>
                       ))}
 
-                      <li
-                        className={`page-item ${
-                          currentPage === totalPages ? "disabled" : ""
-                        }`}
-                      >
-                        <button
-                          className="page-link"
-                          onClick={() => changePage(currentPage + 1)}
-                        >
+                      <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
+                        <button className="page-link" onClick={() => changePage(currentPage + 1)}>
                           <i className="fa-solid fa-arrow-right" />
                         </button>
                       </li>
@@ -221,4 +194,4 @@ const Client = () => {
   );
 };
 
-export default Client;
+export default Warehouse;

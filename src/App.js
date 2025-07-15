@@ -37,6 +37,11 @@ import WKubadThal from './Component/pages/WKubadThal';
 import DirectParty from './Component/pages/DirectParty';
 import Summary from './Component/pages/Summary';
 import MakeAdd from './Component/pages/MakeAdd';
+import ItemAdd from './Component/pages/ItemAdd';
+import Warehouse from './Component/pages/Warehouse';
+import UserEdit from './Component/pages/UserEdit';
+import SalesRepresentativeAdd from './Component/pages/SalesRepresentativeAdd';
+import MakeEdit from './Component/pages/MakeEdit';
 
 const App = () => {
   const location = useLocation();
@@ -76,6 +81,12 @@ const App = () => {
             <Route path="/direct-party" element={<DirectParty />} />
             <Route path="/summary" element={<Summary />} />
             <Route path="/make-add" element={<MakeAdd />} />
+            <Route path="/make-edit/:id" element={<MakeEdit />} />
+            {/* <Route path="/make-edit" element={<MakeEdit />} /> */}
+            <Route path="/item-add" element={<ItemAdd />} />
+            <Route path="/warehouse" element={<Warehouse />} />
+            <Route path="/sales-Representative-add" element={<SalesRepresentativeAdd />} />
+            <Route path="/user-edit/:id" element={<UserEdit />} />
           </Routes>
         </div>
       </div>

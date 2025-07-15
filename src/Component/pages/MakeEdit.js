@@ -1,13 +1,27 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 
-const MakeAdd = () => {
-  const navigate = useNavigate();
+const MakeEdit = () => {
+  const navigate   = useNavigate();
+  const { id }     = useParams();
+  const location   = useLocation();
 
-  const [name, setName] = useState("");
+  const makeData   = location.state?.makeData;      
+  const [name,  setName]  = useState(makeData?.name || "");
   const [alert, setAlert] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
+  /* ---------- If no data in state, show error ---------- */
+  useEffect(() => {
+    if (!makeData) {
+      setAlert({
+        type: "danger",
+        text: "No make data found. Please navigate from the list page.",
+      });
+    }
+  }, [makeData]);
+
+  /* ---------- Submit updated make ---------- */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setAlert(null);
@@ -21,48 +35,40 @@ const MakeAdd = () => {
 
     try {
       const response = await fetch(
-        "https://replete-software.com/projects/rathi/api/addmake",
+        `https://replete-software.com/projects/rathi/api/update-make/${id}`,
         {
-          method: "POST",
+          method: "POST",                 
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name }),
+          body: JSON.stringify({ id, name }), 
         }
       );
 
       const data = await response.json();
-      console.log("API Response:", data); 
+      console.log("Update‑make response →", data);
 
       const isSuccess =
-        (response.ok && data?.status === 1) ||
-        data?.status === "success" ||
-        data?.message?.toLowerCase()?.includes("success");
+        response.ok &&
+        (
+          data?.status === 1 ||
+          data?.status === "success" ||
+          (typeof data?.message === "string" && data.message.toLowerCase().includes("success"))
+        );
 
       if (isSuccess) {
-        setAlert({
-          type: "success",
-          text: data.message || "Make added successfully!",
-        });
-        setTimeout(() => navigate("/make"), 2000);
+        setAlert({ type: "success", text: data.message || "Make updated!" });
+        setTimeout(() => navigate("/make", { state: { refresh: true } }), 1200);
       } else {
-        // setAlert({
-        //   type: "danger",
-        //   text: data?.message || "Something went wrong, please try again.",
-        // });
-        setTimeout(() => navigate("/make"), 200);
+        setAlert({ type: "danger", text: data?.message || "Update failed, please retry." });
       }
     } catch (err) {
-      console.error("Error:", err);
-      setAlert({
-        type: "danger",
-        text: err.message || "Unexpected error occurred.",
-      });
+      setAlert({ type: "danger", text: err.message || "Network error." });
     } finally {
       setSubmitting(false);
     }
   };
 
   const handleReset = () => {
-    setName("");
+    setName(makeData?.name || "");
     setAlert(null);
   };
 
@@ -71,7 +77,7 @@ const MakeAdd = () => {
       <div className="main-content">
         <p className="main-container-title">
           Dashboard <i className="fa-solid fa-angles-right"></i> Master{" "}
-          <i className="fa-solid fa-angles-right"></i> Make Add
+          <i className="fa-solid fa-angles-right"></i> Make Edit
         </p>
 
         <div className="challan-add-main-right-container">
@@ -87,9 +93,8 @@ const MakeAdd = () => {
           </div>
 
           <div className="form-section client-info-container">
-            <h3>Add Make</h3>
+            <h3>Edit Make</h3>
 
-            {/* Alert */}
             {alert && (
               <div className={`alert alert-${alert.type}`} role="alert">
                 {alert.text}
@@ -104,8 +109,8 @@ const MakeAdd = () => {
                 <div className="col-sm-10">
                   <input
                     type="text"
-                    className="form-control"
                     id="name"
+                    className="form-control"
                     placeholder="Enter Make Name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
@@ -127,19 +132,18 @@ const MakeAdd = () => {
                         role="status"
                         aria-hidden="true"
                       ></span>
-                      Submitting...
+                      Updating...
                     </>
                   ) : (
-                    "Submit"
+                    "Update"
                   )}
                 </button>
-
                 <button
                   type="reset"
                   className="btn btn-clear px-4"
                   disabled={submitting}
                 >
-                  Clear
+                  Reset
                 </button>
               </div>
             </form>
@@ -150,4 +154,4 @@ const MakeAdd = () => {
   );
 };
 
-export default MakeAdd;
+export default MakeEdit;

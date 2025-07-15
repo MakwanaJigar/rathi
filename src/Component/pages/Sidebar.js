@@ -62,9 +62,13 @@ const Sidebar = () => {
                         <li>
                             <Link className={`nav-link sidebar-links ${isActive('/make') ? 'active' : ''}`} to="/make">Make</Link>
                         </li>
+                             <li>
+                            <Link className={`nav-link sidebar-links ${isActive('/warehouse') ? 'active' : ''}`} to="/warehouse">Warehouse</Link>
+                        </li>
                         <li>
                             <Link className={`nav-link sidebar-links ${isActive('/user') ? 'active' : ''}`} to="/user">User</Link>
                         </li>
+                    
                     </ul>
                 </div>
 
