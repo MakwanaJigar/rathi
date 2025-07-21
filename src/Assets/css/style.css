@@ -338,7 +338,13 @@ h3.main-container-title {
   width: 30%;
 }
 
-.party-name input {
+.party-name input,textarea.form-control {
+  border: 1px solid #cfcfcf80;
+  padding: 10px;
+  border-radius: 10px;
+  width: 70%;
+}
+.party-name textarea.form-control {
   border: 1px solid #cfcfcf80;
   padding: 10px;
   border-radius: 10px;
@@ -537,7 +543,7 @@ button.clear-btn {
   padding: 7px 10px;
   border-radius: 7px;
    background-color: #f3f3f3;
-   width: 40%;
+   width: 60%;
 }
 .make-list-search input{
   border: none;

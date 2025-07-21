@@ -1,87 +1,50 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { addSalesRep } from "../../redux/actions/representativeActions";
 
 const SalesRepresentativeAdd = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [name, setName] = useState("");
+  /* local input state */
+  const [name,  setName]  = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
-  const [alert, setAlert] = useState(null);
-  const [submitting, setSubmitting] = useState(false);
 
+  /* redux add status */
+  const adding   = useSelector((s) => s.salesRep.adding);
+  const addError = useSelector((s) => s.salesRep.addError);
+
+  /* success alert */
+  const [successMsg, setSuccessMsg] = useState("");
+
+  /* dispatch on submit */
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setAlert(null);
+    e.preventDefault();
+    if (!name.trim() || !phone.trim() || !email.trim()) return;
 
-  if (!name.trim() || !phone.trim() || !email.trim()) {
-    setAlert({ type: "danger", text: "All fields are required." });
-    return;
-  }
-
-  setSubmitting(true);
-
-  try {
-    const payload = { name, phone, email };
-
-    const res = await fetch(
-      "https://replete-software.com/projects/rathi/api/add_representative",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      }
-    );
-
-    const text = await res.text();
-    let data = {};
-
-    try {
-      data = JSON.parse(text);
-    } catch {
-      throw new Error("Invalid JSON response from server.");
-    }
-
-    console.log("Server response:", data);
-
-    const message = data?.message?.toLowerCase() || "";
-
-    const success =
-      res.ok &&
-      (
-        data.status === 1 ||
-        data.status === true ||
-        data.success === 1 ||
-        message.includes("success") ||
-        message.includes("added")
-      );
-
-    if (success) {
-      setAlert({ type: "success", text: data.message || "Representative added successfully!" });
+    const { ok, message } = await dispatch(addSalesRep({ name, phone, email }));
+    if (ok) {
+      setSuccessMsg(message);
       setTimeout(() => navigate("/sales-representative"), 1500);
-    } else {
-      throw new Error(data.message || "Failed to add representative.");
     }
-  } catch (err) {
-    setAlert({ type: "danger", text: err.message || "Something went wrong." });
-  } finally {
-    setSubmitting(false);
-  }
-};
+  };
 
+  /* reset */
   const handleReset = () => {
     setName("");
     setPhone("");
     setEmail("");
-    setAlert(null);
+    setSuccessMsg("");
   };
 
   return (
     <div className="container-fluid">
       <div className="main-content">
         <p className="main-container-title">
-          Dashboard <i className="fa-solid fa-angles-right"></i> Master
-          <i className="fa-solid fa-angles-right"></i> Sales Representative Add
+          Dashboard <i className="fa-solid fa-angles-right" /> Master{" "}
+          <i className="fa-solid fa-angles-right" /> Sales Representative Add
         </p>
 
         <div className="challan-add-main-right-container">
@@ -91,7 +54,7 @@ const SalesRepresentativeAdd = () => {
             </div>
             <div className="make-list-btns">
               <button className="export-btn" onClick={() => navigate("/sales-representative")}>
-                Go Back
+                Go Back
               </button>
             </div>
           </div>
@@ -99,48 +62,43 @@ const SalesRepresentativeAdd = () => {
           <div className="form-section client-info-container">
             <h3>Add Representative</h3>
 
-            {alert && (
-              <div className={`alert alert-${alert.type}`} role="alert">
-                {alert.text}
-              </div>
-            )}
+            {addError && <div className="alert alert-danger">Error: {addError}</div>}
+
+           {!successMsg && addError && <div className="alert alert-danger">Error: {addError}</div>}
+
 
             <form onSubmit={handleSubmit} onReset={handleReset}>
+              {/* name */}
               <div className="mb-3 row">
                 <label className="col-sm-2 col-form-label">Name</label>
                 <div className="col-sm-10">
                   <input
-                    type="text"
                     className="form-control"
-                    placeholder="Enter Representative Name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
                   />
                 </div>
               </div>
-
+              {/* phone */}
               <div className="mb-3 row">
                 <label className="col-sm-2 col-form-label">Phone</label>
                 <div className="col-sm-10">
                   <input
-                    type="tel"
                     className="form-control"
-                    placeholder="Enter Phone Number"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     required
                   />
                 </div>
               </div>
-
+              {/* email */}
               <div className="mb-3 row">
                 <label className="col-sm-2 col-form-label">Email</label>
                 <div className="col-sm-10">
                   <input
                     type="email"
                     className="form-control"
-                    placeholder="Enter Email Address"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
@@ -148,33 +106,18 @@ const SalesRepresentativeAdd = () => {
                 </div>
               </div>
 
-              <div className="d-flex gap-3">
-                <button
-                  type="submit"
-                  className="btn btn-submit px-4"
-                  disabled={submitting}
-                >
-                  {submitting ? (
-                    <>
-                      <span
-                        className="spinner-border spinner-border-sm me-2"
-                        role="status"
-                        aria-hidden="true"
-                      ></span>
-                      Submitting...
-                    </>
-                  ) : (
-                    "Submit"
-                  )}
-                </button>
-                <button
-                  type="reset"
-                  className="btn btn-clear px-4"
-                  disabled={submitting}
-                >
-                  Clear
-                </button>
-              </div>
+              <button className="btn btn-submit" disabled={adding}>
+                {adding ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-2" /> Submitting…
+                  </>
+                ) : (
+                  "Submit"
+                )}
+              </button>
+              <button type="reset" className="btn btn-clear ms-2" disabled={adding}>
+                Clear
+              </button>
             </form>
           </div>
         </div>

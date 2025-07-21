@@ -95,7 +95,7 @@ const SalesRepresentative = () => {
                 />
               </div>
               <button className="import-btn">
-                <i className="fa-solid fa-upload" /> Import
+                <i className="fa-solid fa-download" /> Import
               </button>
               <button
                 className="export-btn"

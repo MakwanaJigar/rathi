@@ -3,22 +3,25 @@ export const DELETE_USER_REQUEST = "DELETE_USER_REQUEST";
 export const DELETE_USER_SUCCESS = "DELETE_USER_SUCCESS";
 export const DELETE_USER_FAIL = "DELETE_USER_FAIL";
 
+export const ADD_USER_REQUEST = "ADD_USER_REQUEST";
+export const ADD_USER_SUCCESS = "ADD_USER_SUCCESS";
+export const ADD_USER_FAIL = "ADD_USER_FAIL";
+export const RESET_CREATE_USER = "RESET_CREATE_USER";
 
-export const fetchUsers = () => {
-    return async (dispatch) => {
-        const res = await fetch("https://replete-software.com/projects/rathi/api/user-list");
-        const data = await res.json();
+// Fetch users
+export const fetchUsers = () => async (dispatch) => {
+    const res = await fetch("https://replete-software.com/projects/rathi/api/user-list");
+    const data = await res.json();
 
-        let items = [];
-        if (Array.isArray(data)) items = data;
-        else if (Array.isArray(data.data)) items = data.data;
-        else if (Array.isArray(data.items)) items = data.items;
+    let items = [];
+    if (Array.isArray(data)) items = data;
+    else if (Array.isArray(data.data)) items = data.data;
+    else if (Array.isArray(data.items)) items = data.items;
 
-        dispatch({ type: FETCH_USERS_SUCCESS, payload: items });
-    };
+    dispatch({ type: FETCH_USERS_SUCCESS, payload: items });
 };
 
-
+// Delete user
 export const deleteUser = (id) => async (dispatch) => {
     try {
         dispatch({ type: DELETE_USER_REQUEST, payload: id });
@@ -29,17 +32,38 @@ export const deleteUser = (id) => async (dispatch) => {
 
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-        // If API returns JSON you can parse it, not needed here
         dispatch({ type: DELETE_USER_SUCCESS, payload: id });
     } catch (err) {
         dispatch({ type: DELETE_USER_FAIL, payload: err.message });
     }
 };
 
+// Add user
+export const createUser = (userData) => async (dispatch) => {
+    try {
+        dispatch({ type: ADD_USER_REQUEST });
 
+        const res = await fetch("https://replete-software.com/projects/rathi/api/add-user", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(userData),
+        });
 
+        const result = await res.json();
 
+        if (!res.ok) throw new Error(result.message || "Failed to create user");
 
+        dispatch({ type: ADD_USER_SUCCESS, payload: result });
 
+        dispatch(fetchUsers());
+    } catch (error) {
+        dispatch({ type: ADD_USER_FAIL, payload: error.message });
+    }
+};
 
-
+// Reset create success
+export const resetCreateUser = () => ({
+    type: RESET_CREATE_USER,
+});

@@ -45,7 +45,7 @@ const Item = () => {
   useEffect(() => {
     const q = searchQuery.toLowerCase();
     setFilteredItems(
-      items.filter(it => (it.item_name || "").toLowerCase().includes(q))
+      items.filter(it => (it.name || "").toLowerCase().includes(q))
     );
     setCurrentPage(1);
   }, [searchQuery, items]);

@@ -5,6 +5,9 @@ export const FETCH_WAREHOUSE_SUCCESS = 'FETCH_WAREHOUSE_SUCCESS';
 export const EXPORT_WAREHOUSE_REQUEST    =  "EXPORT_WAREHOUSE_REQUEST";
 export const EXPORT_WAREHOUSE_SUCCESS    =  "EXPORT_WAREHOUSE_SUCCESS";
 export const EXPORT_WAREHOUSE_FAIL       =  "EXPORT_WAREHOUSE_FAIL";
+export const ADD_WAREHOUSE_REQUEST = "ADD_WAREHOUSE_REQUEST";
+export const ADD_WAREHOUSE_SUCCESS = "ADD_WAREHOUSE_SUCCESS";
+export const ADD_WAREHOUSE_FAIL    = "ADD_WAREHOUSE_FAIL";
 
 export const fetchWarehouses = () => {
   return async (dispatch) => {
@@ -34,11 +37,51 @@ export const exportWarehouse = () => async dispatch => {
     const blob = await res.blob();               // CSV as binary
 
     // Use file‑saver for the download (handles all browsers incl. Edge)
-    const fileName = `representative_${new Date().toISOString().slice(0, 10)}.csv`;
+    const fileName = `Warehouse_${new Date().toISOString().slice(0, 10)}.csv`;
     saveAs(blob, fileName);
 
     dispatch({ type: EXPORT_WAREHOUSE_SUCCESS });
   } catch (err) {
     dispatch({ type: EXPORT_WAREHOUSE_FAIL, payload: err.message || "Export failed" });
+  }
+};
+
+
+
+
+
+/* ---------- ADD ---------- */
+export const addWarehouse = (payload) => async (dispatch) => {
+  dispatch({ type: ADD_WAREHOUSE_REQUEST });
+
+  try {
+    const res = await fetch(
+      "https://replete-software.com/projects/rathi/api/add-warehouse",
+      {
+        method : "POST",
+        headers: { "Content-Type": "application/json" },
+        body   : JSON.stringify(payload),
+      }
+    );
+
+    const data = await res.json();
+
+    const isSuccess =
+      res.ok ||
+      data?.status === 1 ||
+      data?.status === "success" ||
+      data?.message?.toLowerCase()?.includes("success");
+
+    if (isSuccess) {
+      dispatch({ type: ADD_WAREHOUSE_SUCCESS });
+      return { ok: true, message: data?.message || "Warehouse added successfully!" };
+    } else {
+      const errMsg = data?.message || "Failed to add warehouse.";
+      dispatch({ type: ADD_WAREHOUSE_FAIL, payload: errMsg });
+      return { ok: false, message: errMsg };
+    }
+  } catch (err) {
+    dispatch({ type: ADD_WAREHOUSE_FAIL, payload: err.message });
+    return { ok: false, message: err.message || "Network error." };
   }
 };

@@ -91,12 +91,12 @@ const User = () => {
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
-              <button className="import-btn">
+              {/* <button className="import-btn">
                 <i className="fa-solid fa-upload" /> Import
               </button>
               <button className="export-btn">
                 <i className="fa-solid fa-download" /> Export
-              </button>
+              </button> */}
               <button className="add-btn" onClick={() => navigate("/user-add")}>
                 <i className="fa-solid fa-plus" /> Add
               </button>

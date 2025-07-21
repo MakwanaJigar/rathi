@@ -1,10 +1,10 @@
 import React from "react";
-import { useSelector } from "react-redux";
+// import { useSelector } from "react-redux";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 
 const DeliveryChallan = () => {
   const navigation = useNavigate()
-  const challanData = useSelector((state) => state.form.challanData);
+  // const challanData = useSelector((state) => state.form.challanData);
 
   return (
     <>
@@ -16,7 +16,7 @@ const DeliveryChallan = () => {
             <h3 className="main-container-title">Delivery Challan</h3>
             <div className="export-addnew-btn0-container">
               <a href="">
-                <i className="fa-solid fa-download"></i> Export Now
+                <i className="fa-solid fa-upload"></i> Export Now
               </a>
               <Link to="/challan-add">
                 <i className="fa-solid fa-plus"></i> Add New
@@ -26,9 +26,9 @@ const DeliveryChallan = () => {
 
           {/* MAIN TABLE DATA */}
           <div className=" mt-3">
-            {Object.keys(challanData).length === 0 ? (
+            {/* {Object.keys(challanData).length === 0 ? (
               <p>No data submitted yet.</p>
-            ) : (
+            ) : ( */}
               <table className="table align-middle table-bordered">
                 <thead className="table-light ">
                   <tr>
@@ -46,9 +46,9 @@ const DeliveryChallan = () => {
                 </thead>
                 <tbody>
                   <tr>
-                    <td>{challanData.dODate}</td>
-                    <td>{challanData.dONumber}</td>
-                    <td>{challanData.partyName}</td>
+                    <td>Pending</td>
+                    <td>Pending</td>
+                    <td>Pending</td>
                     <td>Pending</td>
                     <td>Pending</td>
                     <td>Pending</td>
@@ -73,7 +73,7 @@ const DeliveryChallan = () => {
                   </tr>
                 </tbody>
               </table>
-              ) }
+              {/* ) } */}
 
             {/* DELETE MODAL  */}
             <div className="modal fade" id="deleteModal" tabIndex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">

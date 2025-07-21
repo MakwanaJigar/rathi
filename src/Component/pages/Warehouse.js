@@ -91,7 +91,7 @@ const Warehouse = () => {
                 />
               </div>
               <button className="import-btn">
-                <i className="fa-solid fa-upload" /> Import
+                <i className="fa-solid fa-download" /> Import
               </button>
               <button
                 className="export-btn"
@@ -108,7 +108,7 @@ const Warehouse = () => {
                   </>
                 )}
               </button>
-              <button className="add-btn" onClick={() => navigate("/warehouse-add")}>
+              <button className="add-btn" onClick={() => navigate("/warehouser-add")}>
                 <i className="fa-solid fa-plus" /> Add
               </button>
             </div>

@@ -5,7 +5,7 @@ import {
   ADD_SALES_REP_FAIL,
   EXPORT_SALES_REP_REQUEST,
   EXPORT_SALES_REP_SUCCESS,
-  EXPORT_SALES_REP_FAIL
+  EXPORT_SALES_REP_FAIL,
 } from "../../redux/actions/representativeActions";
 
 const initialState = {
@@ -23,16 +23,11 @@ const salesRepReducer = (state = initialState, action) => {
   switch (action.type) {
     case FETCH_SALES_REPS_SUCCESS:
       return { ...state, representatives: action.payload };
+     /* add */
     case ADD_SALES_REP_REQUEST:
       return { ...state, adding: true, addError: null };
-
     case ADD_SALES_REP_SUCCESS:
-      return {
-        ...state,
-        adding: false,
-        representatives: [...state.representatives, action.payload],
-      };
-
+      return { ...state, adding: false };
     case ADD_SALES_REP_FAIL:
       return { ...state, adding: false, addError: action.payload };
 

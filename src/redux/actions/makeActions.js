@@ -2,9 +2,12 @@ import { saveAs } from "file-saver";
 
 
 export const FETCH_MAKES_SUCCESS = "FETCH_MAKES_SUCCESS";
-export const EXPORT_MAKES_REQUEST    =  "EXPORT_MAKES_REQUEST";
-export const EXPORT_MAKES_SUCCESS    =  "EXPORT_MAKES_SUCCESS";
-export const EXPORT_MAKES_FAIL       =  "EXPORT_MAKES_FAIL";
+export const EXPORT_MAKES_REQUEST =  "EXPORT_MAKES_REQUEST";
+export const EXPORT_MAKES_SUCCESS =  "EXPORT_MAKES_SUCCESS";
+export const EXPORT_MAKES_FAIL    =  "EXPORT_MAKES_FAIL";
+export const ADD_MAKE_REQUEST  = "ADD_MAKE_REQUEST";
+export const ADD_MAKE_SUCCESS  = "ADD_MAKE_SUCCESS";
+export const ADD_MAKE_FAIL     = "ADD_MAKE_FAIL";
 
 
 export const fetchMakes = () => {
@@ -52,6 +55,34 @@ export const exportMakes = () => async dispatch => {
 
 
 
+/* ---------- ADD ---------- */
+export const addMake = (payload, /** optional */ onSuccess) => async dispatch => {
+  dispatch({ type: ADD_MAKE_REQUEST });
+
+  try {
+    const res = await fetch(
+      "https://replete-software.com/projects/rathi/api/addmake",
+      {
+        method : "POST",
+        headers: { "Content-Type": "application/json" },
+        body   : JSON.stringify(payload),
+      }
+    );
+
+    if (!res.ok)
+      throw new Error((await res.json())?.message || "Failed to add make");
+
+    const created = await res.json();           // API echoes back whole row
+
+    // Add the new record to the list *optimistically* so UI updates instantly.
+    dispatch({ type: ADD_MAKE_SUCCESS, payload: created });
+
+    // Allow component to redirect / reset if it needs to
+    onSuccess && onSuccess();
+  } catch (err) {
+    dispatch({ type: ADD_MAKE_FAIL, payload: err.message });
+  }
+};
 
 
 

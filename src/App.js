@@ -42,6 +42,7 @@ import Warehouse from './Component/pages/Warehouse';
 import UserEdit from './Component/pages/UserEdit';
 import SalesRepresentativeAdd from './Component/pages/SalesRepresentativeAdd';
 import MakeEdit from './Component/pages/MakeEdit';
+import WarehouserAdd from './Component/pages/WarehouseAdd';
 
 const App = () => {
   const location = useLocation();
@@ -87,6 +88,7 @@ const App = () => {
             <Route path="/warehouse" element={<Warehouse />} />
             <Route path="/sales-Representative-add" element={<SalesRepresentativeAdd />} />
             <Route path="/user-edit/:id" element={<UserEdit />} />
+            <Route path="/warehouser-add" element={<WarehouserAdd />} />
           </Routes>
         </div>
       </div>

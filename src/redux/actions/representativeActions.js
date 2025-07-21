@@ -2,9 +2,9 @@ import { saveAs } from "file-saver";
 
 
 export const FETCH_SALES_REPS_SUCCESS = "FETCH_SALES_REPS_SUCCESS";
-export const ADD_SALES_REP_REQUEST    = "ADD_SALES_REP_REQUEST";
-export const ADD_SALES_REP_SUCCESS    = "ADD_SALES_REP_SUCCESS";
-export const ADD_SALES_REP_FAIL       = "ADD_SALES_REP_FAIL";
+export const ADD_SALES_REP_REQUEST     = "ADD_SALES_REP_REQUEST";
+export const ADD_SALES_REP_SUCCESS     = "ADD_SALES_REP_SUCCESS";
+export const ADD_SALES_REP_FAIL        = "ADD_SALES_REP_FAIL";
 export const EXPORT_SALES_REP_REQUEST    =  "EXPORT_SALES_REP_REQUEST";
 export const EXPORT_SALES_REP_SUCCESS    =  "EXPORT_SALES_REP_SUCCESS";
 export const EXPORT_SALES_REP_FAIL       =  "EXPORT_SALES_REP_FAIL";
@@ -25,33 +25,39 @@ export const fetchSalesReps = () => {
 
 
 
-/* ---------- NEW add‑representative thunk ---------- */
+/* ── add representative (POST) ─────────────────────────────────────── */
 export const addSalesRep = (payload) => async (dispatch) => {
-  try {
-    dispatch({ type: ADD_SALES_REP_REQUEST });
+  dispatch({ type: ADD_SALES_REP_REQUEST });
 
-    const res  = await fetch(
-      "https://replete-software.com/projects/rathi/api/add_representative",
-      {
-        method : "POST",
-        headers: { "Content-Type": "application/json" },
-        body   : JSON.stringify(payload),
-      }
-    );
+  try {
+    const res = await fetch("https://replete-software.com/projects/rathi/api/add_representative", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
     const data = await res.json();
 
-    // the API returns { status: 1, data: {...}, message: "Success"} (adjust if different)
-    if (res.ok && (data.status === 1 || data.status === "success")) {
-      dispatch({ type: ADD_SALES_REP_SUCCESS, payload: data.data ?? payload });
-      return { ok: true, message: data.message || "Added!" };
+    const isSuccess =
+      res.ok ||
+      data?.status === 1 ||
+      data?.status === "success" ||
+      data?.message?.toLowerCase()?.includes("success");
+
+    if (isSuccess) {
+      dispatch({ type: ADD_SALES_REP_SUCCESS });
+      return { ok: true, message: data?.message || "Sales representative added successfully!" };
     } else {
-      throw new Error(data.message || "Failed to add representative.");
+      const errorMsg = data?.message || "Failed to add sales representative.";
+      dispatch({ type: ADD_SALES_REP_FAIL, payload: errorMsg });
+      return { ok: false, message: errorMsg };
     }
   } catch (err) {
     dispatch({ type: ADD_SALES_REP_FAIL, payload: err.message });
-    return { ok: false, message: err.message };
+    return { ok: false, message: err.message || "Unexpected error occurred." };
   }
 };
+
 
 
 

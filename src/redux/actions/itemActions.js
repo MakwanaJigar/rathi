@@ -28,32 +28,34 @@ export const fetchItems = () => async (dispatch) => {
 
 
 // POST  add‑item
-export const addItem = (payload) => async (dispatch) => {
-  dispatch({ type: ADD_ITEM_REQUEST });
+export const addItem = (payload) => async dispatch => {
   try {
-    const res  = await fetch(
-      "https://replete-software.com/projects/rathi/api/additem",
-      {
-        method : "POST",
-        headers: { "Content-Type": "application/json" },
-        body   : JSON.stringify(payload),
-      }
-    );
+    const res = await fetch("https://replete-software.com/projects/rathi/api/additem", {
+      method : "POST",
+      headers: { "Content-Type": "application/json" },
+      body   : JSON.stringify(payload),
+    });
+
     const data = await res.json();
 
-    const ok =
-      res.ok &&
-      (data.status === 1 || data.status === "success" || data.error === false);
+    const isSuccess =
+      res.ok ||
+      data?.status === 1 ||
+      data?.status === "success" ||
+      (typeof data?.message === "string" && data.message.toLowerCase().includes("success"));
 
-    if (!ok) throw new Error(data.message || "Failed to add item.");
-
-    dispatch({ type: ADD_ITEM_SUCCESS, payload: data.data ?? payload });
-    return { ok: true, message: data.message || "Item added successfully." };
+    return {
+      ok: isSuccess,
+      message: data?.message || (isSuccess ? "Item added successfully" : "Failed to add item"),
+    };
   } catch (err) {
-    dispatch({ type: ADD_ITEM_FAIL, payload: err.message });
-    return { ok: false, message: err.message };
+    return {
+      ok: false,
+      message: err.message || "Something went wrong",
+    };
   }
 };
+
 
 
 

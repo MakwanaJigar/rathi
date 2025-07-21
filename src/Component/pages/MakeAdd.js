@@ -30,33 +30,30 @@ const MakeAdd = () => {
       );
 
       const data = await response.json();
-      console.log("API Response:", data); 
+      console.log("API Response:", data);
 
-      const isSuccess =
-        (response.ok && data?.status === 1) ||
-        data?.status === "success" ||
-        data?.message?.toLowerCase()?.includes("success");
+      if (response.ok) {
+  setAlert({
+    type: "success",
+    text: data?.message || "Make added successfully!",
+  });
 
-      if (isSuccess) {
-        setAlert({
-          type: "success",
-          text: data.message || "Make added successfully!",
-        });
-        setTimeout(() => navigate("/make"), 2000);
-      } else {
-        // setAlert({
-        //   type: "danger",
-        //   text: data?.message || "Something went wrong, please try again.",
-        // });
-        setTimeout(() => navigate("/make"), 200);
-      }
+  setSubmitting(true);
+  setTimeout(() => navigate("/make"), 2000);
+} else {
+  setAlert({
+    type: "danger",
+    text: data?.message || "Something went wrong, please try again.",
+  });
+  setSubmitting(false);
+}
+
     } catch (err) {
       console.error("Error:", err);
       setAlert({
         type: "danger",
         text: err.message || "Unexpected error occurred.",
       });
-    } finally {
       setSubmitting(false);
     }
   };
@@ -110,6 +107,7 @@ const MakeAdd = () => {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
+                    disabled={submitting}
                   />
                 </div>
               </div>
