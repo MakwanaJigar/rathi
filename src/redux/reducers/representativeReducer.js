@@ -6,6 +6,8 @@ import {
   EXPORT_SALES_REP_REQUEST,
   EXPORT_SALES_REP_SUCCESS,
   EXPORT_SALES_REP_FAIL,
+  DELETE_REP_SUCCESS,
+  DELETE_REP_FAIL,
 } from "../../redux/actions/representativeActions";
 
 const initialState = {
@@ -41,6 +43,22 @@ const salesRepReducer = (state = initialState, action) => {
 
     case EXPORT_SALES_REP_FAIL:
       return { ...state, exporting: false, exportError: action.payload };
+
+
+       // delete
+
+       case DELETE_REP_SUCCESS:
+  return {
+    ...state,
+    representatives: state.representatives.filter((r) => r.id !== action.payload),
+  };
+      
+  
+      case DELETE_REP_FAIL:
+        return {
+          ...state,
+          // Optionally handle error UI
+        };
 
     default:
       return state;

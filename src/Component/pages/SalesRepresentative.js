@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { fetchSalesReps ,exportRepresentative} from "../../redux/actions/representativeActions";
+import { fetchSalesReps ,exportRepresentative , deleteRepresentative} from "../../redux/actions/representativeActions";
 
 const SalesRepresentative = () => {
   const dispatch = useDispatch();
@@ -68,6 +68,12 @@ const SalesRepresentative = () => {
       dispatch(exportRepresentative());
     };
 
+// delete
+const handleDelete = (id) => {
+  if (window.confirm("Are you sure you want to delete this make?")) {
+    dispatch(deleteRepresentative(id));
+  }
+};
 
 
   /* ── UI ── */
@@ -156,7 +162,10 @@ const SalesRepresentative = () => {
                             >
                               <i className="fas fa-pen" />
                             </button>
-                            <button className="btn btn-sm">
+                            <button
+                              className="btn btn-sm"
+                              onClick={() => handleDelete(r.id)}
+                            >
                               <i className="fas fa-trash" />
                             </button>
                           </td>

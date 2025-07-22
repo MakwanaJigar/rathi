@@ -6,12 +6,13 @@ import {
     ADD_USER_REQUEST,
     ADD_USER_SUCCESS,
     ADD_USER_FAIL,
-    RESET_CREATE_USER
+    RESET_CREATE_USER,
 } from "../actions/userActions";
 
 const initialState = {
     users: [],
     deletingId: null,
+    deleteError: null,
     error: null,
     creating: false,
     createSuccess: false,
@@ -23,17 +24,21 @@ const userReducer = (state = initialState, action) => {
             return { ...state, users: action.payload };
 
         case DELETE_USER_REQUEST:
-            return { ...state, deletingId: action.payload, error: null };
+            return { ...state, deletingId: action.payload, deleteError: null };
 
         case DELETE_USER_SUCCESS:
             return {
                 ...state,
-                deletingId: null,
                 users: state.users.filter((u) => u.id !== action.payload),
+                deletingId: null,
             };
 
         case DELETE_USER_FAIL:
-            return { ...state, deletingId: null, error: action.payload };
+            return {
+                ...state,
+                deletingId: null,
+                deleteError: action.payload,
+            };
 
         case ADD_USER_REQUEST:
             return { ...state, creating: true, createSuccess: false, error: null };

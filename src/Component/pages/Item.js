@@ -2,7 +2,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { fetchItems, exportItems } from "../../redux/actions/itemActions";
+import { fetchItems, exportItems, deleteItem } from "../../redux/actions/itemActions";
 
 const Item = () => {
   const dispatch = useDispatch();
@@ -13,18 +13,18 @@ const Item = () => {
     exporting,
     exportError,
   } = useSelector(state => ({
-    items      : Array.isArray(state.item.items) ? state.item.items : [],
-    exporting  : state.item.exporting,
+    items: Array.isArray(state.item.items) ? state.item.items : [],
+    exporting: state.item.exporting,
     exportError: state.item.exportError,
   }));
 
   const [filteredItems, setFilteredItems] = useState([]);
-  const [searchQuery, setSearchQuery]   = useState("");
-  const [loading, setLoading]           = useState(true);
-  const [error, setError]               = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const itemsPerPage = 10;
-  const [currentPage, setCurrentPage]   = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
 
   // ----------------------------------------------------------
   useEffect(() => {
@@ -62,6 +62,14 @@ const Item = () => {
     setCurrentPage(page);
   };
 
+  // delete
+  const handleDelete = (id) => {
+    if (window.confirm("Are you sure you want to delete this item?")) {
+      dispatch(deleteItem(id));
+    }
+  };
+
+
   // ----------------------------------------------------------
   return (
     <div className="container-fluid">
@@ -92,7 +100,7 @@ const Item = () => {
               {/* ---- import (left as‑is) ---- */}
               <button className="import-btn">
                 <i className="fa-solid fa-download" />
-                 Import
+                Import
               </button>
 
               {/* ---- Export CSV ---- */}
@@ -155,9 +163,13 @@ const Item = () => {
                             <button className="btn btn-sm me-1">
                               <i className="fas fa-pen" />
                             </button>
-                            <button className="btn btn-sm">
+                            <button className="btn btn-sm me-1">
+                              <i className="fas fa-pen" />
+                            </button>
+                            <button className="btn btn-sm" onClick={() => handleDelete(item.id)}>
                               <i className="fas fa-trash" />
                             </button>
+
                           </td>
                         </tr>
                       ))
@@ -176,9 +188,8 @@ const Item = () => {
                   <nav aria-label="Item pagination">
                     <ul className="pagination justify-content-end">
                       <li
-                        className={`page-item ${
-                          currentPage === 1 ? "disabled" : ""
-                        }`}
+                        className={`page-item ${currentPage === 1 ? "disabled" : ""
+                          }`}
                       >
                         <button
                           className="page-link"
@@ -191,9 +202,8 @@ const Item = () => {
                         page => (
                           <li
                             key={page}
-                            className={`page-item ${
-                              currentPage === page ? "active" : ""
-                            }`}
+                            className={`page-item ${currentPage === page ? "active" : ""
+                              }`}
                           >
                             <button
                               className="page-link"
@@ -205,9 +215,8 @@ const Item = () => {
                         )
                       )}
                       <li
-                        className={`page-item ${
-                          currentPage === totalPages ? "disabled" : ""
-                        }`}
+                        className={`page-item ${currentPage === totalPages ? "disabled" : ""
+                          }`}
                       >
                         <button
                           className="page-link"

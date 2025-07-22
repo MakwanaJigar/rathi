@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { fetchWarehouses , exportWarehouse} from "../../redux/actions/warehouseActions";
+import { fetchWarehouses, exportWarehouse, deleteWarehouse } from "../../redux/actions/warehouseActions";
 
 const Warehouse = () => {
   const dispatch = useDispatch();
@@ -10,7 +10,7 @@ const Warehouse = () => {
   const warehouses = useSelector((state) => state.warehouse.warehouses);
 
   const exporting = useSelector((state) => state.warehouse.exporting);
-  
+
 
   const [filteredWarehouses, setFilteredWarehouses] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -64,8 +64,16 @@ const Warehouse = () => {
 
 
   const handleExportClick = () => {
-          dispatch(exportWarehouse());
-        };
+    dispatch(exportWarehouse());
+  };
+
+  // delete
+  const handleDelete = (id) => {
+    if (window.confirm("Are you sure you want to delete this warehouse?")) {
+      dispatch(deleteWarehouse(id));
+    }
+  };
+
 
   return (
     <div className="container-fluid">
@@ -140,9 +148,10 @@ const Warehouse = () => {
                             <button className="btn btn-sm me-1">
                               <i className="fas fa-pen" />
                             </button>
-                            <button className="btn btn-sm">
+                            <button className="btn btn-sm" onClick={() => handleDelete(w.id ?? w.warehouse_id)}>
                               <i className="fas fa-trash" />
                             </button>
+
                           </td>
                         </tr>
                       ))

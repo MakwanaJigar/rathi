@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { fetchMakes ,exportMakes} from "../../redux/actions/makeActions";
+import { fetchMakes, exportMakes, deleteMake } from "../../redux/actions/makeActions";
 
 const Make = () => {
   const dispatch = useDispatch();
@@ -12,7 +12,7 @@ const Make = () => {
   );
 
   const exporting = useSelector((state) => state.make.exporting);
-  
+
 
 
   const [filteredMakes, setFilteredMakes] = useState([]);
@@ -60,9 +60,18 @@ const Make = () => {
   };
 
 
-    const handleExportClick = () => {
-        dispatch(exportMakes());
-      };
+  const handleExportClick = () => {
+    dispatch(exportMakes());
+  };
+
+
+  // delete
+  const handleDelete = (id) => {
+    if (window.confirm("Are you sure you want to delete this make?")) {
+      dispatch(deleteMake(id));
+    }
+  };
+
 
   return (
     <div className="container-fluid">
@@ -90,7 +99,7 @@ const Make = () => {
               <button className="import-btn">
                 <i className="fa-solid fa-download" /> Import
               </button>
-               <button
+              <button
                 className="export-btn"
                 onClick={handleExportClick}
                 disabled={exporting}
@@ -141,9 +150,13 @@ const Make = () => {
                             >
                               <i className="fas fa-pen" />
                             </button>
-                            <button className="btn btn-sm">
+                            <button
+                              className="btn btn-sm"
+                              onClick={() => handleDelete(item.id)}
+                            >
                               <i className="fas fa-trash" />
                             </button>
+
                           </td>
                         </tr>
                       ))

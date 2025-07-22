@@ -3,6 +3,8 @@ import {
   ADD_ITEM_REQUEST,
   ADD_ITEM_SUCCESS,
   ADD_ITEM_FAIL,
+  DELETE_ITEM_SUCCESS,
+  DELETE_ITEM_FAIL,
   EXPORT_ITEMS_REQUEST,
   EXPORT_ITEMS_SUCCESS,
   EXPORT_ITEMS_FAIL,
@@ -44,6 +46,18 @@ const itemReducer = (state = initialState, action) => {
 
     case EXPORT_ITEMS_FAIL:
       return { ...state, exporting: false, exportError: action.payload };
+
+      case DELETE_ITEM_SUCCESS:
+      return {
+        ...state,
+        items: state.items.filter((item) => item.id !== action.payload),
+      };
+
+    case DELETE_ITEM_FAIL:
+      return {
+        ...state,
+        // optionally handle delete error here
+      };
 
     default:
       return state;

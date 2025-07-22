@@ -8,6 +8,9 @@ export const ADD_SALES_REP_FAIL        = "ADD_SALES_REP_FAIL";
 export const EXPORT_SALES_REP_REQUEST    =  "EXPORT_SALES_REP_REQUEST";
 export const EXPORT_SALES_REP_SUCCESS    =  "EXPORT_SALES_REP_SUCCESS";
 export const EXPORT_SALES_REP_FAIL       =  "EXPORT_SALES_REP_FAIL";
+export const DELETE_REP_SUCCESS = "DELETE_REP_SUCCESS";
+export const DELETE_REP_FAIL = "DELETE_REP_FAIL";
+
 
 export const fetchSalesReps = () => {
   return async (dispatch) => {
@@ -84,5 +87,26 @@ export const exportRepresentative = () => async dispatch => {
     dispatch({ type: EXPORT_SALES_REP_SUCCESS });
   } catch (err) {
     dispatch({ type: EXPORT_SALES_REP_FAIL, payload: err.message || "Export failed" });
+  }
+};
+
+
+
+// delete
+
+export const deleteRepresentative = (id) => async (dispatch) => {
+  try {
+    const res = await fetch(
+      `https://replete-software.com/projects/rathi/api/delete_representative/${id}`,
+      {
+        method: "POST",
+      }
+    );
+
+    if (!res.ok) throw new Error("Failed to delete representative");
+
+    dispatch({ type: DELETE_REP_SUCCESS, payload: id });
+  } catch (err) {
+    dispatch({ type: DELETE_REP_FAIL, payload: err.message });
   }
 };

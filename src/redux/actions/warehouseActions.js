@@ -1,13 +1,16 @@
-import { saveAs } from "file-saver"; 
+import { saveAs } from "file-saver";
 
 
 export const FETCH_WAREHOUSE_SUCCESS = 'FETCH_WAREHOUSE_SUCCESS';
-export const EXPORT_WAREHOUSE_REQUEST    =  "EXPORT_WAREHOUSE_REQUEST";
-export const EXPORT_WAREHOUSE_SUCCESS    =  "EXPORT_WAREHOUSE_SUCCESS";
-export const EXPORT_WAREHOUSE_FAIL       =  "EXPORT_WAREHOUSE_FAIL";
+export const EXPORT_WAREHOUSE_REQUEST = "EXPORT_WAREHOUSE_REQUEST";
+export const EXPORT_WAREHOUSE_SUCCESS = "EXPORT_WAREHOUSE_SUCCESS";
+export const EXPORT_WAREHOUSE_FAIL = "EXPORT_WAREHOUSE_FAIL";
 export const ADD_WAREHOUSE_REQUEST = "ADD_WAREHOUSE_REQUEST";
 export const ADD_WAREHOUSE_SUCCESS = "ADD_WAREHOUSE_SUCCESS";
-export const ADD_WAREHOUSE_FAIL    = "ADD_WAREHOUSE_FAIL";
+export const ADD_WAREHOUSE_FAIL = "ADD_WAREHOUSE_FAIL";
+
+export const DELETE_WAREHOUSE_SUCCESS = "DELETE_WAREHOUSE_SUCCESS";
+export const DELETE_WAREHOUSE_FAIL = "DELETE_WAREHOUSE_FAIL";
 
 export const fetchWarehouses = () => {
   return async (dispatch) => {
@@ -58,9 +61,9 @@ export const addWarehouse = (payload) => async (dispatch) => {
     const res = await fetch(
       "https://replete-software.com/projects/rathi/api/add-warehouse",
       {
-        method : "POST",
+        method: "POST",
         headers: { "Content-Type": "application/json" },
-        body   : JSON.stringify(payload),
+        body: JSON.stringify(payload),
       }
     );
 
@@ -83,5 +86,26 @@ export const addWarehouse = (payload) => async (dispatch) => {
   } catch (err) {
     dispatch({ type: ADD_WAREHOUSE_FAIL, payload: err.message });
     return { ok: false, message: err.message || "Network error." };
+  }
+};
+
+
+
+// delete
+
+export const deleteWarehouse = (id) => async (dispatch) => {
+  try {
+    const res = await fetch(
+      `https://replete-software.com/projects/rathi/api/deletewarehouse/${id}`,
+      {
+        method: "POST", // ✅ Correct method
+      }
+    );
+
+    if (!res.ok) throw new Error("Failed to delete warehouse");
+
+    dispatch({ type: DELETE_WAREHOUSE_SUCCESS, payload: id });
+  } catch (err) {
+    dispatch({ type: DELETE_WAREHOUSE_FAIL, payload: err.message });
   }
 };

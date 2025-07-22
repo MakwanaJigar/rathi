@@ -5,7 +5,9 @@ import {
   EXPORT_CLIENT_FAIL,
   ADD_CLIENT_REQUEST,
   ADD_CLIENT_SUCCESS,
-  ADD_CLIENT_FAILURE
+  ADD_CLIENT_FAILURE,
+  DELETE_CLIENT_SUCCESS,
+  DELETE_CLIENT_FAIL
 } from '../actions/clientActions';
 
 
@@ -44,6 +46,18 @@ const clientReducer = (state = initialState, action) => {
 
     case EXPORT_CLIENT_FAIL:
       return { ...state, exporting: false, exportError: action.payload };
+
+      case DELETE_CLIENT_SUCCESS:
+  return {
+    ...state,
+    clients: state.clients.filter((client) => client.id !== action.payload),
+};
+
+case DELETE_CLIENT_FAIL:
+  return {
+    ...state,
+    // You can add error UI logic here if needed
+};
 
     default:
       return state;

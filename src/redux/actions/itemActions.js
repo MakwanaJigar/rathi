@@ -10,6 +10,10 @@ export const EXPORT_ITEMS_REQUEST    =  "EXPORT_ITEMS_REQUEST";
 export const EXPORT_ITEMS_SUCCESS    =  "EXPORT_ITEMS_SUCCESS";
 export const EXPORT_ITEMS_FAIL       =  "EXPORT_ITEMS_FAIL";
 
+export const DELETE_ITEM_SUCCESS = "DELETE_ITEM_SUCCESS";
+export const DELETE_ITEM_FAIL = "DELETE_ITEM_FAIL";
+
+
 // GET  list
 export const fetchItems = () => async (dispatch) => {
   const res  = await fetch(
@@ -81,5 +85,26 @@ export const exportItems = () => async dispatch => {
     dispatch({ type: EXPORT_ITEMS_SUCCESS });
   } catch (err) {
     dispatch({ type: EXPORT_ITEMS_FAIL, payload: err.message || "Export failed" });
+  }
+};
+
+
+
+// delete
+
+export const deleteItem = (id) => async (dispatch) => {
+  try {
+    const res = await fetch(
+      `https://replete-software.com/projects/rathi/api/deleteitem/${id}`,
+      {
+        method: "POST",
+      }
+    );
+
+    if (!res.ok) throw new Error("Failed to delete item");
+
+    dispatch({ type: DELETE_ITEM_SUCCESS, payload: id });
+  } catch (err) {
+    dispatch({ type: DELETE_ITEM_FAIL, payload: err.message });
   }
 };

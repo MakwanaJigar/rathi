@@ -6,12 +6,14 @@ import {
   ADD_WAREHOUSE_REQUEST,
   ADD_WAREHOUSE_SUCCESS,
   ADD_WAREHOUSE_FAIL,
+  DELETE_WAREHOUSE_SUCCESS,
+  DELETE_WAREHOUSE_FAIL,
 } from '../actions/warehouseActions';
 
 const initialState = {
   warehouses: [],
 
-   /* add */
+  /* add */
   adding: false,
   addError: null,
 
@@ -25,7 +27,7 @@ const warehouseReducer = (state = initialState, action) => {
     case FETCH_WAREHOUSE_SUCCESS:
       return { ...state, warehouses: action.payload };
 
-      /* ---------- ADD ---------- */
+    /* ---------- ADD ---------- */
     case ADD_WAREHOUSE_REQUEST:
       return { ...state, adding: true, addError: null };
 
@@ -44,6 +46,22 @@ const warehouseReducer = (state = initialState, action) => {
 
     case EXPORT_WAREHOUSE_FAIL:
       return { ...state, exporting: false, exportError: action.payload };
+
+
+    // delete
+
+    case DELETE_WAREHOUSE_SUCCESS:
+      return {
+        ...state,
+        warehouses: state.warehouses.filter((w) => w.id !== action.payload),
+      };
+
+
+    case DELETE_WAREHOUSE_FAIL:
+      return {
+        ...state,
+        // Optionally handle error UI
+      };
 
     default:
       return state;

@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { fetchClients, exportClients  } from "../../redux/actions/clientActions";
+import { fetchClients, exportClients, deleteClient } from "../../redux/actions/clientActions";
 
 const Client = () => {
   const dispatch = useDispatch();
@@ -61,6 +61,16 @@ const Client = () => {
   const handleExportClick = () => {
     dispatch(exportClients());
   };
+
+
+  // delete
+  const handleDelete = (id) => {
+    if (window.confirm("Are you sure you want to delete this client?")) {
+      dispatch(deleteClient(id));
+    }
+  };
+
+
 
   return (
     <div className="container-fluid">
@@ -146,9 +156,10 @@ const Client = () => {
                             <button className="btn btn-sm me-1">
                               <i className="fas fa-pen" />
                             </button>
-                            <button className="btn btn-sm">
+                            <button className="btn btn-sm" onClick={() => handleDelete(item.id)}>
                               <i className="fas fa-trash" />
                             </button>
+
                           </td>
                         </tr>
                       ))
@@ -166,9 +177,8 @@ const Client = () => {
                   <nav aria-label="Client pagination">
                     <ul className="pagination justify-content-end">
                       <li
-                        className={`page-item ${
-                          currentPage === 1 ? "disabled" : ""
-                        }`}
+                        className={`page-item ${currentPage === 1 ? "disabled" : ""
+                          }`}
                       >
                         <button
                           className="page-link"
@@ -184,9 +194,8 @@ const Client = () => {
                       ).map((page) => (
                         <li
                           key={page}
-                          className={`page-item ${
-                            currentPage === page ? "active" : ""
-                          }`}
+                          className={`page-item ${currentPage === page ? "active" : ""
+                            }`}
                         >
                           <button
                             className="page-link"
@@ -198,9 +207,8 @@ const Client = () => {
                       ))}
 
                       <li
-                        className={`page-item ${
-                          currentPage === totalPages ? "disabled" : ""
-                        }`}
+                        className={`page-item ${currentPage === totalPages ? "disabled" : ""
+                          }`}
                       >
                         <button
                           className="page-link"

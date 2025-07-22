@@ -7,6 +7,8 @@ import {
    ADD_MAKE_REQUEST,
   ADD_MAKE_SUCCESS,
   ADD_MAKE_FAIL,
+  DELETE_MAKE_SUCCESS,
+  DELETE_MAKE_FAIL,
 } from "../actions/makeActions";
 
 const initialState = {
@@ -49,6 +51,20 @@ const makeReducer = (state = initialState, action) => {
 
     case EXPORT_MAKES_FAIL:
       return { ...state, exporting: false, exportError: action.payload };
+
+      // delete
+
+      case DELETE_MAKE_SUCCESS:
+      return {
+        ...state,
+        makes: state.makes.filter((make) => make.id !== action.payload),
+      };
+
+    case DELETE_MAKE_FAIL:
+      return {
+        ...state,
+        // Optionally handle error UI
+      };
 
     default:
       return state;

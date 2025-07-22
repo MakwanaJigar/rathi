@@ -8,6 +8,8 @@ export const ADD_USER_SUCCESS = "ADD_USER_SUCCESS";
 export const ADD_USER_FAIL = "ADD_USER_FAIL";
 export const RESET_CREATE_USER = "RESET_CREATE_USER";
 
+
+
 // Fetch users
 export const fetchUsers = () => async (dispatch) => {
     const res = await fetch("https://replete-software.com/projects/rathi/api/user-list");
@@ -24,19 +26,20 @@ export const fetchUsers = () => async (dispatch) => {
 // Delete user
 export const deleteUser = (id) => async (dispatch) => {
     try {
-        dispatch({ type: DELETE_USER_REQUEST, payload: id });
-
-        const res = await fetch(`https://replete-software.com/projects/rathi/api/delete-user/${id}`, {
-            method: 'DELETE',
-        });
-
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-        dispatch({ type: DELETE_USER_SUCCESS, payload: id });
+      dispatch({ type: DELETE_USER_REQUEST, payload: id });
+  
+      const res = await fetch(`https://replete-software.com/projects/rathi/api/delete-user/${id}`, {
+        method: "POST", // 🔁 switched from DELETE to POST
+      });
+  
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  
+      dispatch({ type: DELETE_USER_SUCCESS, payload: id });
     } catch (err) {
-        dispatch({ type: DELETE_USER_FAIL, payload: err.message });
+      dispatch({ type: DELETE_USER_FAIL, payload: err.message });
     }
-};
+  };
+  
 
 // Add user
 export const createUser = (userData) => async (dispatch) => {
@@ -65,5 +68,6 @@ export const createUser = (userData) => async (dispatch) => {
 
 // Reset create success
 export const resetCreateUser = () => ({
-    type: RESET_CREATE_USER,
+
+  type: RESET_CREATE_USER,
 });

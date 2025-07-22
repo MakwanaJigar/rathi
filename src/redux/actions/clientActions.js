@@ -8,6 +8,8 @@ export const EXPORT_CLIENT_FAIL       =  "EXPORT_CLIENT_FAIL";
 export const ADD_CLIENT_REQUEST = 'ADD_CLIENT_REQUEST';
 export const ADD_CLIENT_SUCCESS = 'ADD_CLIENT_SUCCESS';
 export const ADD_CLIENT_FAILURE = 'ADD_CLIENT_FAILURE';
+export const DELETE_CLIENT_SUCCESS = 'DELETE_CLIENT_SUCCESS';
+export const DELETE_CLIENT_FAIL = 'DELETE_CLIENT_FAIL';
 
 export const fetchClients = () => {
   return async (dispatch) => {
@@ -83,5 +85,28 @@ export const addClient = (data) => async (dispatch) => {
     dispatch({ type: ADD_CLIENT_SUCCESS, payload: result });
   } catch (error) {
     dispatch({ type: ADD_CLIENT_FAILURE, payload: error.message });
+  }
+};
+
+
+
+
+
+// delete 
+
+export const deleteClient = (id) => async (dispatch) => {
+  try {
+    const res = await fetch(
+      `https://replete-software.com/projects/rathi/api/delete-client/${id}`,
+      {
+        method: "POST",
+      }
+    );
+
+    if (!res.ok) throw new Error("Failed to delete client");
+
+    dispatch({ type: DELETE_CLIENT_SUCCESS, payload: id });
+  } catch (err) {
+    dispatch({ type: DELETE_CLIENT_FAIL, payload: err.message });
   }
 };

@@ -65,6 +65,7 @@ const User = () => {
       dispatch(deleteUser(id));
     }
   };
+  
 
   /* ---------- UI ---------- */
   return (

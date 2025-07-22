@@ -8,6 +8,8 @@ export const EXPORT_MAKES_FAIL    =  "EXPORT_MAKES_FAIL";
 export const ADD_MAKE_REQUEST  = "ADD_MAKE_REQUEST";
 export const ADD_MAKE_SUCCESS  = "ADD_MAKE_SUCCESS";
 export const ADD_MAKE_FAIL     = "ADD_MAKE_FAIL";
+export const DELETE_MAKE_SUCCESS = "DELETE_MAKE_SUCCESS";
+export const DELETE_MAKE_FAIL = "DELETE_MAKE_FAIL";
 
 
 export const fetchMakes = () => {
@@ -87,3 +89,21 @@ export const addMake = (payload, /** optional */ onSuccess) => async dispatch =>
 
 
 
+// delete
+
+export const deleteMake = (id) => async (dispatch) => {
+  try {
+    const res = await fetch(
+      `https://replete-software.com/projects/rathi/api/deletemake/${id}`,
+      {
+        method: "POST",
+      }
+    );
+
+    if (!res.ok) throw new Error("Failed to delete make");
+
+    dispatch({ type: DELETE_MAKE_SUCCESS, payload: id });
+  } catch (err) {
+    dispatch({ type: DELETE_MAKE_FAIL, payload: err.message });
+  }
+};
