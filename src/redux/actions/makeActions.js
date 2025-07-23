@@ -10,6 +10,9 @@ export const ADD_MAKE_SUCCESS  = "ADD_MAKE_SUCCESS";
 export const ADD_MAKE_FAIL     = "ADD_MAKE_FAIL";
 export const DELETE_MAKE_SUCCESS = "DELETE_MAKE_SUCCESS";
 export const DELETE_MAKE_FAIL = "DELETE_MAKE_FAIL";
+export const UPDATE_MAKE_REQUEST = "UPDATE_MAKE_REQUEST";
+export const UPDATE_MAKE_SUCCESS = "UPDATE_MAKE_SUCCESS";
+export const UPDATE_MAKE_FAIL = "UPDATE_MAKE_FAIL";
 
 
 export const fetchMakes = () => {
@@ -105,5 +108,33 @@ export const deleteMake = (id) => async (dispatch) => {
     dispatch({ type: DELETE_MAKE_SUCCESS, payload: id });
   } catch (err) {
     dispatch({ type: DELETE_MAKE_FAIL, payload: err.message });
+  }
+};
+
+
+
+// edit
+export const updateMake = (id, payload) => async (dispatch) => {
+  dispatch({ type: UPDATE_MAKE_REQUEST });
+
+  try {
+    const res = await fetch(`https://replete-software.com/projects/rathi/api/updatemake/${id}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await res.json();
+
+    if (res.ok && (data.status === 1 || data.status === "success")) {
+      dispatch({ type: UPDATE_MAKE_SUCCESS, payload: { id, updated: payload } });
+      return { ok: true, message: data.message || "Make updated successfully!" };
+    } else {
+      dispatch({ type: UPDATE_MAKE_FAIL, payload: data.message || "Failed to update make" });
+      return { ok: false, message: data.message || "Failed to update make" };
+    }
+  } catch (error) {
+    dispatch({ type: UPDATE_MAKE_FAIL, payload: error.message });
+    return { ok: false, message: error.message || "Network error." };
   }
 };

@@ -8,6 +8,9 @@ import {
   EXPORT_SALES_REP_FAIL,
   DELETE_REP_SUCCESS,
   DELETE_REP_FAIL,
+  UPDATE_SALES_REP_REQUEST,
+  UPDATE_SALES_REP_SUCCESS,
+  UPDATE_SALES_REP_FAIL,
 } from "../../redux/actions/representativeActions";
 
 const initialState = {
@@ -19,13 +22,16 @@ const initialState = {
   // export‑client state
   exporting: false,
   exportError: null,
+
+  updating: false,
+  updateError: null,
 };
 
 const salesRepReducer = (state = initialState, action) => {
   switch (action.type) {
     case FETCH_SALES_REPS_SUCCESS:
       return { ...state, representatives: action.payload };
-     /* add */
+    /* add */
     case ADD_SALES_REP_REQUEST:
       return { ...state, adding: true, addError: null };
     case ADD_SALES_REP_SUCCESS:
@@ -45,20 +51,37 @@ const salesRepReducer = (state = initialState, action) => {
       return { ...state, exporting: false, exportError: action.payload };
 
 
-       // delete
+    // delete
 
-       case DELETE_REP_SUCCESS:
-  return {
-    ...state,
-    representatives: state.representatives.filter((r) => r.id !== action.payload),
-  };
-      
-  
-      case DELETE_REP_FAIL:
-        return {
-          ...state,
-          // Optionally handle error UI
-        };
+    case DELETE_REP_SUCCESS:
+      return {
+        ...state,
+        representatives: state.representatives.filter((r) => r.id !== action.payload),
+      };
+
+
+    case DELETE_REP_FAIL:
+      return {
+        ...state,
+      };
+
+    // edit
+    case UPDATE_SALES_REP_REQUEST:
+      return { ...state, updating: true, updateError: null };
+
+    case UPDATE_SALES_REP_SUCCESS:
+      return {
+        ...state,
+        updating: false,
+        representatives: state.representatives.map((rep) =>
+          rep.id === parseInt(action.payload.id)
+            ? { ...rep, ...action.payload.updated }
+            : rep
+        ),
+      };
+
+    case UPDATE_SALES_REP_FAIL:
+      return { ...state, updating: false, updateError: action.payload };
 
     default:
       return state;

@@ -8,6 +8,9 @@ import {
   EXPORT_ITEMS_REQUEST,
   EXPORT_ITEMS_SUCCESS,
   EXPORT_ITEMS_FAIL,
+  UPDATE_ITEM_REQUEST,
+  UPDATE_ITEM_SUCCESS,
+  UPDATE_ITEM_FAIL,
 } from "../actions/itemActions";
 
 const initialState = {
@@ -17,6 +20,10 @@ const initialState = {
   // export‑items state
   exporting: false,
   exportError: null,
+
+   updating: false,
+  updateError: null,
+
 };
 
 const itemReducer = (state = initialState, action) => {
@@ -37,7 +44,7 @@ const itemReducer = (state = initialState, action) => {
     case ADD_ITEM_FAIL:
       return { ...state, adding: false, addError: action.payload };
 
-      // -------- export‑items ----------
+    // -------- export‑items ----------
     case EXPORT_ITEMS_REQUEST:
       return { ...state, exporting: true, exportError: null };
 
@@ -47,7 +54,7 @@ const itemReducer = (state = initialState, action) => {
     case EXPORT_ITEMS_FAIL:
       return { ...state, exporting: false, exportError: action.payload };
 
-      case DELETE_ITEM_SUCCESS:
+    case DELETE_ITEM_SUCCESS:
       return {
         ...state,
         items: state.items.filter((item) => item.id !== action.payload),
@@ -58,6 +65,21 @@ const itemReducer = (state = initialState, action) => {
         ...state,
         // optionally handle delete error here
       };
+
+      case UPDATE_ITEM_REQUEST:
+  return { ...state, updating: true, updateError: null };
+
+case UPDATE_ITEM_SUCCESS:
+  return {
+    ...state,
+    updating: false,
+    items: state.items.map(item =>
+      item.id === action.payload.id ? { ...item, ...action.payload.updated } : item
+    ),
+  };
+
+case UPDATE_ITEM_FAIL:
+  return { ...state, updating: false, updateError: action.payload };
 
     default:
       return state;

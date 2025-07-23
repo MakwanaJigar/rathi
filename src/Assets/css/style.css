@@ -291,17 +291,22 @@ h3.main-container-title {
   border-bottom: 1px solid #000000;
   padding-bottom: 7px;
 }
-
-.action-btns button i {
+i.fas.fa-trash{
+    color: #ea0505 !important;
+}
+i.fas.fa-pen {
+    color: #046725 !important;
+}
+/* .action-btns button i {
   background-color: #046725;
   color: #ffffff;
   padding: 10px;
   border-radius: 5px;
-}
+} */
 
-.action-btns button i:hover {
+/* .action-btns button i:hover {
   background-color: #046725;
-}
+} */
 
 /* CHALLAN ADD NEW STYLE*/
 .challan-add-main-right-container {

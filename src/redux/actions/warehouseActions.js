@@ -2,12 +2,18 @@ import { saveAs } from "file-saver";
 
 
 export const FETCH_WAREHOUSE_SUCCESS = 'FETCH_WAREHOUSE_SUCCESS';
+
 export const EXPORT_WAREHOUSE_REQUEST = "EXPORT_WAREHOUSE_REQUEST";
 export const EXPORT_WAREHOUSE_SUCCESS = "EXPORT_WAREHOUSE_SUCCESS";
 export const EXPORT_WAREHOUSE_FAIL = "EXPORT_WAREHOUSE_FAIL";
+
 export const ADD_WAREHOUSE_REQUEST = "ADD_WAREHOUSE_REQUEST";
 export const ADD_WAREHOUSE_SUCCESS = "ADD_WAREHOUSE_SUCCESS";
 export const ADD_WAREHOUSE_FAIL = "ADD_WAREHOUSE_FAIL";
+
+export const UPDATE_WAREHOUSE_REQUEST = "UPDATE_WAREHOUSE_REQUEST";
+export const UPDATE_WAREHOUSE_SUCCESS = "UPDATE_WAREHOUSE_SUCCESS";
+export const UPDATE_WAREHOUSE_FAIL = "UPDATE_WAREHOUSE_FAIL";
 
 export const DELETE_WAREHOUSE_SUCCESS = "DELETE_WAREHOUSE_SUCCESS";
 export const DELETE_WAREHOUSE_FAIL = "DELETE_WAREHOUSE_FAIL";
@@ -109,3 +115,52 @@ export const deleteWarehouse = (id) => async (dispatch) => {
     dispatch({ type: DELETE_WAREHOUSE_FAIL, payload: err.message });
   }
 };
+
+
+// edit
+
+export const updateWarehouse = (id, payload) => async (dispatch) => {
+  dispatch({ type: UPDATE_WAREHOUSE_REQUEST });
+
+  try {
+    console.log('Dispatching update for ID:', id);
+    console.log('Payload:', payload);
+
+    const res = await fetch(
+      `https://replete-software.com/projects/rathi/api/updatewarehouse/${id}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    const data = await res.json();
+
+    console.log('Fetch response status:', res.status);
+    console.log('Update response:', data);
+
+    if (res.ok) {
+      dispatch({ type: UPDATE_WAREHOUSE_SUCCESS, payload: { id, updated: payload } });
+      return { ok: true, message: data?.message || "Warehouse updated successfully!" };
+    } else {
+      if (data && typeof data === 'object') {
+        // Concatenate all error messages from all fields
+        const errorMessages = Object.values(data)
+          .map(arr => (Array.isArray(arr) ? arr.join(' ') : arr))
+          .join(' ');
+        dispatch({ type: UPDATE_WAREHOUSE_FAIL, payload: errorMessages });
+        return { ok: false, message: errorMessages };
+      }
+      dispatch({ type: UPDATE_WAREHOUSE_FAIL, payload: data?.message || "Failed to update warehouse." });
+      return { ok: false, message: data?.message || "Failed to update warehouse." };
+    }
+  } catch (err) {
+    dispatch({ type: UPDATE_WAREHOUSE_FAIL, payload: err.message });
+    return { ok: false, message: err.message || "Network error." };
+  }
+};
+
+

@@ -43,6 +43,11 @@ import UserEdit from './Component/pages/UserEdit';
 import SalesRepresentativeAdd from './Component/pages/SalesRepresentativeAdd';
 import MakeEdit from './Component/pages/MakeEdit';
 import WarehouserAdd from './Component/pages/WarehouseAdd';
+import WarehouserEdit from './Component/pages/WarehouseEdit';
+import WarehouseEdit from './Component/pages/WarehouseEdit';
+import ItemEdit from './Component/pages/ItemEdit';
+import SalesRepresentativeEdit from './Component/pages/SalesRepresentativeEdit';
+import ClientEdit from './Component/pages/ClientEdit';
 
 const App = () => {
   const location = useLocation();
@@ -70,6 +75,7 @@ const App = () => {
             <Route path="/user" element={<User />} />
             <Route path="/user-add" element={<UserAdd />} />
             <Route path="/client-add" element={<ClientAdd />} />
+            <Route path="/client/edit/:id" element={<ClientEdit />} />
             <Route path="/item" element={<Item />} />
             <Route path="/logistics" element={<Logistics />} />
             <Route path="/pending-logistics" element={<PendingLogistics />} />
@@ -85,10 +91,13 @@ const App = () => {
             <Route path="/make-edit/:id" element={<MakeEdit />} />
             {/* <Route path="/make-edit" element={<MakeEdit />} /> */}
             <Route path="/item-add" element={<ItemAdd />} />
+            <Route path="/item-edit/:id" element={<ItemEdit />} />
             <Route path="/warehouse" element={<Warehouse />} />
             <Route path="/sales-Representative-add" element={<SalesRepresentativeAdd />} />
+            <Route path="/sales-representative-edit/:id" element={<SalesRepresentativeEdit />} />
             <Route path="/user-edit/:id" element={<UserEdit />} />
             <Route path="/warehouser-add" element={<WarehouserAdd />} />
+            <Route path="/warehouse/edit/:id" element={<WarehouseEdit />} />
           </Routes>
         </div>
       </div>

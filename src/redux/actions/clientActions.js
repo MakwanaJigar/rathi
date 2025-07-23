@@ -10,6 +10,9 @@ export const ADD_CLIENT_SUCCESS = 'ADD_CLIENT_SUCCESS';
 export const ADD_CLIENT_FAILURE = 'ADD_CLIENT_FAILURE';
 export const DELETE_CLIENT_SUCCESS = 'DELETE_CLIENT_SUCCESS';
 export const DELETE_CLIENT_FAIL = 'DELETE_CLIENT_FAIL';
+export const UPDATE_CLIENT_REQUEST = 'UPDATE_CLIENT_REQUEST';
+export const UPDATE_CLIENT_SUCCESS = 'UPDATE_CLIENT_SUCCESS';
+export const UPDATE_CLIENT_FAILURE = 'UPDATE_CLIENT_FAILURE';
 
 export const fetchClients = () => {
   return async (dispatch) => {
@@ -110,3 +113,34 @@ export const deleteClient = (id) => async (dispatch) => {
     dispatch({ type: DELETE_CLIENT_FAIL, payload: err.message });
   }
 };
+
+
+
+
+
+
+// edit
+
+export const updateClient = (id, data) => async (dispatch) => {
+  dispatch({ type: UPDATE_CLIENT_REQUEST });
+
+  try {
+    const response = await fetch(`https://replete-software.com/projects/rathi/api/update_client/${id}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      throw new Error(`Server responded with error: ${errText}`);
+    }
+
+    const result = await response.json();
+    dispatch({ type: UPDATE_CLIENT_SUCCESS, payload: result });
+  } catch (error) {
+    dispatch({ type: UPDATE_CLIENT_FAILURE, payload: error.message });
+  }
+};  

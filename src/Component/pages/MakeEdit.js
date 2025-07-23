@@ -1,17 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { updateMake } from "../../redux/actions/makeActions"; // Adjust the path as needed
 
 const MakeEdit = () => {
-  const navigate   = useNavigate();
-  const { id }     = useParams();
-  const location   = useLocation();
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const location = useLocation();
+  const dispatch = useDispatch();
 
-  const makeData   = location.state?.makeData;      
-  const [name,  setName]  = useState(makeData?.name || "");
+  const makeData = location.state?.makeData;
+  const [name, setName] = useState(makeData?.name || "");
   const [alert, setAlert] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
-  /* ---------- If no data in state, show error ---------- */
+  // Show alert if no makeData found in state
   useEffect(() => {
     if (!makeData) {
       setAlert({
@@ -21,7 +24,7 @@ const MakeEdit = () => {
     }
   }, [makeData]);
 
-  /* ---------- Submit updated make ---------- */
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setAlert(null);
@@ -34,31 +37,13 @@ const MakeEdit = () => {
     setSubmitting(true);
 
     try {
-      const response = await fetch(
-        `https://replete-software.com/projects/rathi/api/update-make/${id}`,
-        {
-          method: "POST",                 
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id, name }), 
-        }
-      );
+      const result = await dispatch(updateMake(id, { name: name.trim() }));
 
-      const data = await response.json();
-      console.log("Update‑make response →", data);
-
-      const isSuccess =
-        response.ok &&
-        (
-          data?.status === 1 ||
-          data?.status === "success" ||
-          (typeof data?.message === "string" && data.message.toLowerCase().includes("success"))
-        );
-
-      if (isSuccess) {
-        setAlert({ type: "success", text: data.message || "Make updated!" });
+      if (result.ok) {
+        setAlert({ type: "success", text: result.message });
         setTimeout(() => navigate("/make", { state: { refresh: true } }), 1200);
       } else {
-        setAlert({ type: "danger", text: data?.message || "Update failed, please retry." });
+        setAlert({ type: "danger", text: result.message });
       }
     } catch (err) {
       setAlert({ type: "danger", text: err.message || "Network error." });
@@ -67,6 +52,7 @@ const MakeEdit = () => {
     }
   };
 
+  // Reset form to original data
   const handleReset = () => {
     setName(makeData?.name || "");
     setAlert(null);

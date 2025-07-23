@@ -153,7 +153,10 @@ const Client = () => {
                           <td>{item.email || "-"}</td>
                           <td>{item.gst_no || "-"}</td>
                           <td className="text-center">
-                            <button className="btn btn-sm me-1">
+                            <button
+                              className="btn btn-sm me-1"
+                              onClick={() => navigate(`/client/edit/${item.id}`)}
+                            >
                               <i className="fas fa-pen" />
                             </button>
                             <button className="btn btn-sm" onClick={() => handleDelete(item.id)}>

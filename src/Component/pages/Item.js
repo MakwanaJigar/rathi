@@ -160,10 +160,10 @@ const Item = () => {
                           <td>{item.approx_weight}</td>
                           <td>{item.hsn_code}</td>
                           <td className="text-center action-btns">
-                            <button className="btn btn-sm me-1">
-                              <i className="fas fa-pen" />
-                            </button>
-                            <button className="btn btn-sm me-1">
+                            <button
+                              className="btn btn-sm me-1"
+                              onClick={() => navigate(`/item-edit/${item.id}`)}
+                            >
                               <i className="fas fa-pen" />
                             </button>
                             <button className="btn btn-sm" onClick={() => handleDelete(item.id)}>

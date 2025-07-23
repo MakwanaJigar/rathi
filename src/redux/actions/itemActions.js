@@ -1,30 +1,36 @@
-import { saveAs } from "file-saver"; 
+import { saveAs } from "file-saver";
 
 // Action types
 export const FETCH_ITEMS_SUCCESS = "FETCH_ITEMS_SUCCESS";
 export const ADD_ITEM_REQUEST = "ADD_ITEM_REQUEST";
 export const ADD_ITEM_SUCCESS = "ADD_ITEM_SUCCESS";
-export const ADD_ITEM_FAIL    = "ADD_ITEM_FAIL";
+export const ADD_ITEM_FAIL = "ADD_ITEM_FAIL";
 
-export const EXPORT_ITEMS_REQUEST    =  "EXPORT_ITEMS_REQUEST";
-export const EXPORT_ITEMS_SUCCESS    =  "EXPORT_ITEMS_SUCCESS";
-export const EXPORT_ITEMS_FAIL       =  "EXPORT_ITEMS_FAIL";
+export const EXPORT_ITEMS_REQUEST = "EXPORT_ITEMS_REQUEST";
+export const EXPORT_ITEMS_SUCCESS = "EXPORT_ITEMS_SUCCESS";
+export const EXPORT_ITEMS_FAIL = "EXPORT_ITEMS_FAIL";
 
 export const DELETE_ITEM_SUCCESS = "DELETE_ITEM_SUCCESS";
 export const DELETE_ITEM_FAIL = "DELETE_ITEM_FAIL";
 
+export const UPDATE_ITEM_REQUEST = "UPDATE_ITEM_REQUEST";
+export const UPDATE_ITEM_SUCCESS = "UPDATE_ITEM_SUCCESS";
+export const UPDATE_ITEM_FAIL = "UPDATE_ITEM_FAIL";
+
+
+
 
 // GET  list
 export const fetchItems = () => async (dispatch) => {
-  const res  = await fetch(
+  const res = await fetch(
     "https://replete-software.com/projects/rathi/api/item-list"
   );
   const data = await res.json();
 
   const items =
-    Array.isArray(data)        ? data :
-    Array.isArray(data.data)   ? data.data :
-    Array.isArray(data.items)  ? data.items : [];
+    Array.isArray(data) ? data :
+      Array.isArray(data.data) ? data.data :
+        Array.isArray(data.items) ? data.items : [];
 
   dispatch({ type: FETCH_ITEMS_SUCCESS, payload: items });
 };
@@ -35,9 +41,9 @@ export const fetchItems = () => async (dispatch) => {
 export const addItem = (payload) => async dispatch => {
   try {
     const res = await fetch("https://replete-software.com/projects/rathi/api/additem", {
-      method : "POST",
+      method: "POST",
       headers: { "Content-Type": "application/json" },
-      body   : JSON.stringify(payload),
+      body: JSON.stringify(payload),
     });
 
     const data = await res.json();
@@ -106,5 +112,44 @@ export const deleteItem = (id) => async (dispatch) => {
     dispatch({ type: DELETE_ITEM_SUCCESS, payload: id });
   } catch (err) {
     dispatch({ type: DELETE_ITEM_FAIL, payload: err.message });
+  }
+};
+
+
+
+// edit
+
+export const updateItem = (id, payload) => async (dispatch) => {
+  dispatch({ type: UPDATE_ITEM_REQUEST });
+
+  try {
+    const res = await fetch(
+      `https://replete-software.com/projects/rathi/api/updateitem/${id}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    const data = await res.json();
+
+    const isSuccess =
+      res.ok ||
+      data?.status === 1 ||
+      data?.status === "success" ||
+      data?.message?.toLowerCase()?.includes("success");
+
+    if (isSuccess) {
+      dispatch({ type: UPDATE_ITEM_SUCCESS, payload: { id, updated: payload } });
+      return { ok: true, message: data?.message || "Item updated successfully!" };
+    } else {
+      const errorMsg = data?.message || "Failed to update item.";
+      dispatch({ type: UPDATE_ITEM_FAIL, payload: errorMsg });
+      return { ok: false, message: errorMsg };
+    }
+  } catch (err) {
+    dispatch({ type: UPDATE_ITEM_FAIL, payload: err.message });
+    return { ok: false, message: err.message || "Network error." };
   }
 };

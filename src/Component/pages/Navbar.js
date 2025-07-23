@@ -6,8 +6,8 @@ const Navbar = () => {
 
     // Example user object
     const user = {
-        firstName: "Jigar",
-        lastName: "Makwana",
+        firstName: "Rathi",
+        lastName: "Ispat",
         profileImage: "https://static.vecteezy.com/system/resources/previews/019/900/322/non_2x/happy-young-cute-illustration-face-profile-png.png" 
     };
 

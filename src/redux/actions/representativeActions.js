@@ -1,15 +1,19 @@
-import { saveAs } from "file-saver"; 
+import { saveAs } from "file-saver";
 
 
 export const FETCH_SALES_REPS_SUCCESS = "FETCH_SALES_REPS_SUCCESS";
-export const ADD_SALES_REP_REQUEST     = "ADD_SALES_REP_REQUEST";
-export const ADD_SALES_REP_SUCCESS     = "ADD_SALES_REP_SUCCESS";
-export const ADD_SALES_REP_FAIL        = "ADD_SALES_REP_FAIL";
-export const EXPORT_SALES_REP_REQUEST    =  "EXPORT_SALES_REP_REQUEST";
-export const EXPORT_SALES_REP_SUCCESS    =  "EXPORT_SALES_REP_SUCCESS";
-export const EXPORT_SALES_REP_FAIL       =  "EXPORT_SALES_REP_FAIL";
+export const ADD_SALES_REP_REQUEST = "ADD_SALES_REP_REQUEST";
+export const ADD_SALES_REP_SUCCESS = "ADD_SALES_REP_SUCCESS";
+export const ADD_SALES_REP_FAIL = "ADD_SALES_REP_FAIL";
+export const EXPORT_SALES_REP_REQUEST = "EXPORT_SALES_REP_REQUEST";
+export const EXPORT_SALES_REP_SUCCESS = "EXPORT_SALES_REP_SUCCESS";
+export const EXPORT_SALES_REP_FAIL = "EXPORT_SALES_REP_FAIL";
 export const DELETE_REP_SUCCESS = "DELETE_REP_SUCCESS";
 export const DELETE_REP_FAIL = "DELETE_REP_FAIL";
+export const UPDATE_SALES_REP_REQUEST = "UPDATE_SALES_REP_REQUEST";
+export const UPDATE_SALES_REP_SUCCESS = "UPDATE_SALES_REP_SUCCESS";
+export const UPDATE_SALES_REP_FAIL = "UPDATE_SALES_REP_FAIL";
+
 
 
 export const fetchSalesReps = () => {
@@ -110,3 +114,42 @@ export const deleteRepresentative = (id) => async (dispatch) => {
     dispatch({ type: DELETE_REP_FAIL, payload: err.message });
   }
 };
+
+
+
+
+
+// edit
+
+export const updateSalesRep = (id, payload) => async (dispatch) => {
+  try {
+    const res = await fetch(
+      `https://replete-software.com/projects/rathi/api/update_representative/${id}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    const data = await res.json();
+
+    const isSuccess =
+      res.ok ||
+      data?.status === 1 ||
+      data?.status === "success" ||
+      data?.message?.toLowerCase()?.includes("success");
+
+    return {
+      ok: isSuccess,
+      message: data?.message || (isSuccess ? "Updated successfully" : "Update failed"),
+    };
+  } catch (err) {
+    return {
+      ok: false,
+      message: err.message || "Something went wrong",
+    };
+  }
+};
+
+

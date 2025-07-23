@@ -7,7 +7,10 @@ import {
   ADD_CLIENT_SUCCESS,
   ADD_CLIENT_FAILURE,
   DELETE_CLIENT_SUCCESS,
-  DELETE_CLIENT_FAIL
+  DELETE_CLIENT_FAIL,
+   UPDATE_CLIENT_REQUEST,
+  UPDATE_CLIENT_SUCCESS,
+  UPDATE_CLIENT_FAILURE,
 } from '../actions/clientActions';
 
 
@@ -19,7 +22,11 @@ const initialState = {
 
   adding: false,
   addError: null,
-  addSuccess: false, // 👈 Add this
+  addSuccess: false, 
+  
+   updating: false,
+  updateError: null,
+  updateSuccess: false,// 👈 Add this
 };
 
 const clientReducer = (state = initialState, action) => {
@@ -58,6 +65,15 @@ case DELETE_CLIENT_FAIL:
     ...state,
     // You can add error UI logic here if needed
 };
+
+
+// edit 
+ case UPDATE_CLIENT_REQUEST:
+      return { ...state, updating: true, updateError: null, updateSuccess: false };
+    case UPDATE_CLIENT_SUCCESS:
+      return { ...state, updating: false, updateSuccess: true };
+    case UPDATE_CLIENT_FAILURE:
+      return { ...state, updating: false, updateError: action.payload };
 
     default:
       return state;

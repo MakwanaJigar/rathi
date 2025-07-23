@@ -8,6 +8,9 @@ import {
   ADD_WAREHOUSE_FAIL,
   DELETE_WAREHOUSE_SUCCESS,
   DELETE_WAREHOUSE_FAIL,
+  UPDATE_WAREHOUSE_REQUEST,
+  UPDATE_WAREHOUSE_SUCCESS,
+  UPDATE_WAREHOUSE_FAIL,
 } from '../actions/warehouseActions';
 
 const initialState = {
@@ -20,6 +23,10 @@ const initialState = {
   // export‑client state
   exporting: false,
   exportError: null,
+
+  // edit 
+  updating: false,
+  updateError: null,
 };
 
 const warehouseReducer = (state = initialState, action) => {
@@ -61,6 +68,24 @@ const warehouseReducer = (state = initialState, action) => {
       return {
         ...state,
         // Optionally handle error UI
+      };
+
+
+    // edit 
+    case UPDATE_WAREHOUSE_SUCCESS:
+      return {
+        ...state,
+        warehouses: state.warehouses.map((w) =>
+          w.id === parseInt(action.payload.id)
+            ? { ...w, ...action.payload.updated }
+            : w
+        ),
+      };
+
+    case UPDATE_WAREHOUSE_FAIL:
+      return {
+        ...state,
+        // optionally store error
       };
 
     default:

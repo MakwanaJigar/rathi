@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { fetchSalesReps ,exportRepresentative , deleteRepresentative} from "../../redux/actions/representativeActions";
+import { fetchSalesReps, exportRepresentative, deleteRepresentative } from "../../redux/actions/representativeActions";
 
 const SalesRepresentative = () => {
   const dispatch = useDispatch();
-  const navigate  = useNavigate();
+  const navigate = useNavigate();
 
   /* ── Select representatives from Redux ── */
   const reps = useSelector((state) =>
@@ -14,14 +14,14 @@ const SalesRepresentative = () => {
       : []
   );
 
-     const exporting = useSelector((state) => state.salesRep.exporting);
-  
+  const exporting = useSelector((state) => state.salesRep.exporting);
+
 
   /* ── Local UI state ── */
   const [filteredReps, setFilteredReps] = useState([]);
-  const [searchQuery, setSearchQuery]   = useState("");
-  const [loading, setLoading]           = useState(true);
-  const [error, setError]               = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const itemsPerPage = 10;
   const [currentPage, setCurrentPage] = useState(1);
@@ -65,15 +65,15 @@ const SalesRepresentative = () => {
   };
 
   const handleExportClick = () => {
-      dispatch(exportRepresentative());
-    };
+    dispatch(exportRepresentative());
+  };
 
-// delete
-const handleDelete = (id) => {
-  if (window.confirm("Are you sure you want to delete this make?")) {
-    dispatch(deleteRepresentative(id));
-  }
-};
+  // delete
+  const handleDelete = (id) => {
+    if (window.confirm("Are you sure you want to delete this make?")) {
+      dispatch(deleteRepresentative(id));
+    }
+  };
 
 
   /* ── UI ── */
@@ -156,12 +156,13 @@ const handleDelete = (id) => {
                               className="btn btn-sm me-1"
                               onClick={() =>
                                 navigate(`/sales-representative-edit/${r.id}`, {
-                                  state: { repData: r },
+                                  state: { repData: r }, // pass data to edit page
                                 })
                               }
                             >
                               <i className="fas fa-pen" />
                             </button>
+
                             <button
                               className="btn btn-sm"
                               onClick={() => handleDelete(r.id)}
