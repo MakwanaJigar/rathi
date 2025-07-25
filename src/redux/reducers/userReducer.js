@@ -7,6 +7,10 @@ import {
     ADD_USER_SUCCESS,
     ADD_USER_FAIL,
     RESET_CREATE_USER,
+    UPDATE_USER_REQUEST,
+  UPDATE_USER_SUCCESS,
+  UPDATE_USER_FAIL,
+  RESET_UPDATE_USER,
 } from "../actions/userActions";
 
 const initialState = {
@@ -16,6 +20,9 @@ const initialState = {
     error: null,
     creating: false,
     createSuccess: false,
+    updating: false,
+  updateSuccess: false,
+  updateError: null,
 };
 
 const userReducer = (state = initialState, action) => {
@@ -55,6 +62,26 @@ const userReducer = (state = initialState, action) => {
 
         case RESET_CREATE_USER:
             return { ...state, createSuccess: false };
+
+        case UPDATE_USER_REQUEST:
+      return { ...state, updating: true, updateSuccess: false, updateError: null };
+
+    case UPDATE_USER_SUCCESS:
+      return {
+        ...state,
+        updating: false,
+        updateSuccess: true,
+        users: state.users.map((user) =>
+          user.id === action.payload.id ? { ...user, ...action.payload.updated } : user
+        ),
+      };
+
+    case UPDATE_USER_FAIL:
+      return { ...state, updating: false, updateSuccess: false, updateError: action.payload };
+
+    case RESET_UPDATE_USER:
+      return { ...state, updateSuccess: false, updateError: null };
+
 
         default:
             return state;

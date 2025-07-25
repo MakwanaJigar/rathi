@@ -162,11 +162,11 @@ const UserAdd = () => {
                       required
                     >
                       <option value="">None</option>
-                      <option value="none / view">None / View</option>
-                      <option value="none / view / add">None / View / Add</option>
-                      <option value="none / view / add / edit">None / View / Add / Edit</option>
-                      <option value="none / view / add / edit / delete">
-                        None / View / Add / Edit / Delete
+                      <option value="view">View</option>
+                      <option value="view / add">View / Add</option>
+                      <option value="view / add / edit">View / Add / Edit</option>
+                      <option value="view / add / edit / delete">
+                        View / Add / Edit / Delete
                       </option>
                     </select>
                   </div>

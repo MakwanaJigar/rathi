@@ -24,14 +24,14 @@ const Navbar = () => {
                 </div>
 
                 <div className="ms-auto d-flex align-items-center gap-3">
-                    <div className="circle-icon">
+                    {/* <div className="circle-icon">
                         <i className="fa-solid fa-message"></i>
                         <div className="notification-dot"></div>
-                    </div>
-                    <div className="circle-icon">
+                    </div> */}
+                    {/* <div className="circle-icon">
                         <i className="fa-solid fa-bell"></i>
                         <div className="notification-dot"></div>
-                    </div>
+                    </div> */}
                     <div className="circle-icon">
                            {hasImage ? (
                             <img

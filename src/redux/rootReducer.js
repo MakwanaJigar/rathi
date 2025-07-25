@@ -6,6 +6,7 @@ import itemReducer from '../redux/reducers/itemReducer';
 import makeReducer from '../redux/reducers/makeReducer';
 import userReducer from '../redux/reducers/userReducer';
 import salesRepReducer from "../redux/reducers/representativeReducer";
+import deliveryChallanReducer from "../redux/reducers/deliveryChallanReducer"
 
 const rootReducer = combineReducers({
   // warehouse: warehouseReducer,
@@ -16,6 +17,7 @@ const rootReducer = combineReducers({
   item: itemReducer,
   make: makeReducer,
   user: userReducer,
+  deliveryChallan: deliveryChallanReducer, 
 });
 
 export default rootReducer;

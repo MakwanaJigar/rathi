@@ -121,11 +121,11 @@ export const deleteClient = (id) => async (dispatch) => {
 
 // edit
 
-export const updateClient = (id, data) => async (dispatch) => {
+export const updateClient = (id, data, onSuccess) => async (dispatch) => {
   dispatch({ type: UPDATE_CLIENT_REQUEST });
 
   try {
-    const response = await fetch(`https://replete-software.com/projects/rathi/api/update_client/${id}`, {
+    const res = await fetch(`https://replete-software.com/projects/rathi/api/update_client/${id}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -133,14 +133,21 @@ export const updateClient = (id, data) => async (dispatch) => {
       body: JSON.stringify(data),
     });
 
-    if (!response.ok) {
-      const errText = await response.text();
-      throw new Error(`Server responded with error: ${errText}`);
-    }
+    const result = await res.json();
 
-    const result = await response.json();
-    dispatch({ type: UPDATE_CLIENT_SUCCESS, payload: result });
+    if (res.ok && (result.status === 1 || result.status === "success")) {
+      dispatch({ type: UPDATE_CLIENT_SUCCESS, payload: { id, updated: data } });
+
+      // Trigger callback
+      onSuccess && onSuccess();
+
+      return { ok: true, message: result.message || "Client updated successfully!" };
+    } else {
+      dispatch({ type: UPDATE_CLIENT_FAILURE, payload: result.message || "Failed to update client" });
+      return { ok: false, message: result.message || "Failed to update client" };
+    }
   } catch (error) {
     dispatch({ type: UPDATE_CLIENT_FAILURE, payload: error.message });
+    return { ok: false, message: error.message || "Network error." };
   }
-};  
+};

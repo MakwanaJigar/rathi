@@ -8,7 +8,7 @@ import {
   ADD_CLIENT_FAILURE,
   DELETE_CLIENT_SUCCESS,
   DELETE_CLIENT_FAIL,
-   UPDATE_CLIENT_REQUEST,
+  UPDATE_CLIENT_REQUEST,
   UPDATE_CLIENT_SUCCESS,
   UPDATE_CLIENT_FAILURE,
 } from '../actions/clientActions';
@@ -22,9 +22,9 @@ const initialState = {
 
   adding: false,
   addError: null,
-  addSuccess: false, 
-  
-   updating: false,
+  addSuccess: false,
+
+  updating: false,
   updateError: null,
   updateSuccess: false,// 👈 Add this
 };
@@ -34,7 +34,7 @@ const clientReducer = (state = initialState, action) => {
     case FETCH_CLIENT_SUCCESS:
       return { ...state, clients: action.payload };
 
-      // Add client
+    // Add client
     case ADD_CLIENT_REQUEST:
       return { ...state, adding: true, addError: null, addSuccess: false };
 
@@ -54,21 +54,21 @@ const clientReducer = (state = initialState, action) => {
     case EXPORT_CLIENT_FAIL:
       return { ...state, exporting: false, exportError: action.payload };
 
-      case DELETE_CLIENT_SUCCESS:
-  return {
-    ...state,
-    clients: state.clients.filter((client) => client.id !== action.payload),
-};
+    case DELETE_CLIENT_SUCCESS:
+      return {
+        ...state,
+        clients: state.clients.filter((client) => client.id !== action.payload),
+      };
 
-case DELETE_CLIENT_FAIL:
-  return {
-    ...state,
-    // You can add error UI logic here if needed
-};
+    case DELETE_CLIENT_FAIL:
+      return {
+        ...state,
+        // You can add error UI logic here if needed
+      };
 
 
-// edit 
- case UPDATE_CLIENT_REQUEST:
+    // edit 
+    case UPDATE_CLIENT_REQUEST:
       return { ...state, updating: true, updateError: null, updateSuccess: false };
     case UPDATE_CLIENT_SUCCESS:
       return { ...state, updating: false, updateSuccess: true };
