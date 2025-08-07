@@ -74,6 +74,25 @@ const ClientAdd = () => {
     }
   }, [addSuccess, navigate]);
 
+
+
+  // add and dlt addresses
+  const addAddress = (index) => {
+    const newAddresses = [...formData.shipping_addresses];
+    // Duplicate the current address at 'index'
+    newAddresses.splice(index + 1, 0, { ...newAddresses[index] });
+    setFormData({ ...formData, shipping_addresses: newAddresses });
+  };
+
+  const deleteAddress = (index) => {
+    const newAddresses = [...formData.shipping_addresses];
+    if (newAddresses.length > 1) { // prevent deleting all addresses
+      newAddresses.splice(index, 1);
+      setFormData({ ...formData, shipping_addresses: newAddresses });
+    }
+  };
+
+
   return (
     <div className="container-fluid">
       <div className="main-content">
@@ -160,6 +179,7 @@ const ClientAdd = () => {
 
             {formData.shipping_addresses.map((address, index) => (
               <div className="row mb-3" key={index}>
+                {/* Existing input fields */}
                 <div className="col-md-2">
                   <input
                     name="address_line1"
@@ -205,8 +225,29 @@ const ClientAdd = () => {
                     placeholder="Postal Code"
                   />
                 </div>
+                {/* Buttons for add/delete */}
+                <div className="col-md-2 d-flex align-items-center">
+                  <button
+                    type="button"
+                    onClick={() => addAddress(index)}
+                    className="client-address-dlt-btn"
+                    title="Add address"
+                  >
+                    <i className="fas fa-plus" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => deleteAddress(index)}
+                    className="client-address-dlt-btn"
+                    title="Delete address"
+                    disabled={formData.shipping_addresses.length === 1} 
+                  >
+                    <i className="fas fa-trash"/>
+                  </button>
+                </div>
               </div>
             ))}
+
           </div>
 
           <div className="d-flex gap-3 mt-4">

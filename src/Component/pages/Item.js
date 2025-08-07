@@ -2,7 +2,11 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { fetchItems, exportItems, deleteItem } from "../../redux/actions/itemActions";
+import {
+  fetchItems,
+  exportItems,
+  deleteItem,
+} from "../../redux/actions/itemActions";
 
 const Item = () => {
   const dispatch = useDispatch();
@@ -12,7 +16,7 @@ const Item = () => {
     items,
     exporting,
     exportError,
-  } = useSelector(state => ({
+  } = useSelector((state) => ({
     items: Array.isArray(state.item.items) ? state.item.items : [],
     exporting: state.item.exporting,
     exportError: state.item.exportError,
@@ -26,7 +30,11 @@ const Item = () => {
   const itemsPerPage = 10;
   const [currentPage, setCurrentPage] = useState(1);
 
-  // ----------------------------------------------------------
+  // Import modal states
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [importing, setImporting] = useState(false);
+
   useEffect(() => {
     (async () => {
       try {
@@ -41,11 +49,10 @@ const Item = () => {
     })();
   }, [dispatch]);
 
-  // search filter
   useEffect(() => {
     const q = searchQuery.toLowerCase();
     setFilteredItems(
-      items.filter(it => (it.name || "").toLowerCase().includes(q))
+      items.filter((it) => (it.name || "").toLowerCase().includes(q))
     );
     setCurrentPage(1);
   }, [searchQuery, items]);
@@ -57,20 +64,51 @@ const Item = () => {
     return filteredItems.slice(start, start + itemsPerPage);
   }, [filteredItems, currentPage]);
 
-  const changePage = page => {
+  const changePage = (page) => {
     if (page < 1 || page > totalPages) return;
     setCurrentPage(page);
   };
 
-  // delete
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this item?")) {
       dispatch(deleteItem(id));
     }
   };
 
+  const handleSubmitImport = async () => {
+    if (!selectedFile) {
+      alert("Please select a CSV file.");
+      return;
+    }
 
-  // ----------------------------------------------------------
+    const formData = new FormData();
+    formData.append("csv_file", selectedFile);
+
+    try {
+      setImporting(true);
+      const response = await fetch(
+        "https://replete-software.com/projects/rathi/api/import-items",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to import items");
+      }
+
+      await dispatch(fetchItems());
+      alert("Items imported successfully!");
+      setShowImportModal(false);
+      setSelectedFile(null);
+    } catch (error) {
+      alert(error.message || "Something went wrong during import.");
+    } finally {
+      setImporting(false);
+    }
+  };
+
   return (
     <div className="container-fluid">
       <div className="main-content">
@@ -86,24 +124,23 @@ const Item = () => {
             </div>
 
             <div className="make-list-btns">
-              {/* ---- search box ---- */}
               <div className="make-list-search">
                 <i className="fa-solid fa-magnifying-glass" />
                 <input
                   type="search"
                   placeholder="Search ..."
                   value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
 
-              {/* ---- import (left as‑is) ---- */}
-              <button className="import-btn">
-                <i className="fa-solid fa-download" />
-                Import
+              <button
+                className="import-btn"
+                onClick={() => setShowImportModal(true)}
+              >
+                <i className="fa-solid fa-download" /> Import
               </button>
 
-              {/* ---- Export CSV ---- */}
               <button
                 className="export-btn"
                 onClick={() => dispatch(exportItems())}
@@ -120,22 +157,16 @@ const Item = () => {
                 )}
               </button>
 
-              {/* ---- Add item ---- */}
-              <button
-                className="add-btn"
-                onClick={() => navigate("/item-add")}
-              >
+              <button className="add-btn" onClick={() => navigate("/item-add")}>
                 <i className="fa-solid fa-plus" /> Add
               </button>
             </div>
           </div>
 
-          {/* show export error, if any */}
           {exportError && (
             <div className="alert alert-danger mt-2">{exportError}</div>
           )}
 
-          {/* ---------- table ----------- */}
           <div className="mt-3">
             {loading ? (
               <div>Loading...</div>
@@ -166,10 +197,12 @@ const Item = () => {
                             >
                               <i className="fas fa-pen" />
                             </button>
-                            <button className="btn btn-sm" onClick={() => handleDelete(item.id)}>
+                            <button
+                              className="btn btn-sm"
+                              onClick={() => handleDelete(item.id)}
+                            >
                               <i className="fas fa-trash" />
                             </button>
-
                           </td>
                         </tr>
                       ))
@@ -183,14 +216,10 @@ const Item = () => {
                   </tbody>
                 </table>
 
-                {/* pagination */}
                 {totalPages > 1 && (
                   <nav aria-label="Item pagination">
                     <ul className="pagination justify-content-end">
-                      <li
-                        className={`page-item ${currentPage === 1 ? "disabled" : ""
-                          }`}
-                      >
+                      <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
                         <button
                           className="page-link"
                           onClick={() => changePage(currentPage - 1)}
@@ -198,25 +227,23 @@ const Item = () => {
                           <i className="fa-solid fa-arrow-left" />
                         </button>
                       </li>
-                      {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                        page => (
-                          <li
-                            key={page}
-                            className={`page-item ${currentPage === page ? "active" : ""
-                              }`}
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                        <li
+                          key={page}
+                          className={`page-item ${currentPage === page ? "active" : ""}`}
+                        >
+                          <button
+                            className="page-link"
+                            onClick={() => changePage(page)}
                           >
-                            <button
-                              className="page-link"
-                              onClick={() => changePage(page)}
-                            >
-                              {page}
-                            </button>
-                          </li>
-                        )
-                      )}
+                            {page}
+                          </button>
+                        </li>
+                      ))}
                       <li
-                        className={`page-item ${currentPage === totalPages ? "disabled" : ""
-                          }`}
+                        className={`page-item ${
+                          currentPage === totalPages ? "disabled" : ""
+                        }`}
                       >
                         <button
                           className="page-link"
@@ -233,6 +260,35 @@ const Item = () => {
           </div>
         </div>
       </div>
+
+      {/* Import Modal */}
+      {showImportModal && (
+        <div className="import-modal-container">
+          <div className="import-modal-box">
+            <h5>📦 Import Item CSV</h5>
+            <input
+              type="file"
+              accept=".csv"
+              onChange={(e) => setSelectedFile(e.target.files[0])}
+            />
+            <div className="import-modal-actions">
+              <button
+                className="import-btn-modal"
+                onClick={handleSubmitImport}
+                disabled={importing}
+              >
+                {importing ? "Uploading..." : "Upload"}
+              </button>
+              <button
+                className="import-btn-modal-cancel"
+                onClick={() => setShowImportModal(false)}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

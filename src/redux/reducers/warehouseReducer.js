@@ -11,6 +11,9 @@ import {
   UPDATE_WAREHOUSE_REQUEST,
   UPDATE_WAREHOUSE_SUCCESS,
   UPDATE_WAREHOUSE_FAIL,
+  IMPORT_WAREHOUSE_REQUEST,
+  IMPORT_WAREHOUSE_SUCCESS,
+  IMPORT_WAREHOUSE_FAILURE,
 } from '../actions/warehouseActions';
 
 const initialState = {
@@ -87,6 +90,21 @@ const warehouseReducer = (state = initialState, action) => {
         ...state,
         // optionally store error
       };
+
+
+      // import
+                case IMPORT_WAREHOUSE_REQUEST:
+              return { ...state, loading: true, error: null };
+            
+            case IMPORT_WAREHOUSE_SUCCESS:
+              return {
+                ...state,
+                loading: false,
+                makes: Array.isArray(action.payload) ? action.payload : state.makes,
+              };
+            
+            case IMPORT_WAREHOUSE_FAILURE:
+              return { ...state, loading: false, error: action.payload };
 
     default:
       return state;

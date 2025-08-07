@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { addClient, updateClient, fetchClients } from '../../redux/actions/clientActions';
 import { useNavigate, useParams, Link } from 'react-router-dom';
+import { UPDATE_CLIENT_REQUEST } from '../../redux/actions/clientActions'
 
 const ClientEdit = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { id } = useParams(); // If this exists, we're editing
+  const { id } = useParams();
 
   const {
     clients,
@@ -44,39 +45,52 @@ const ClientEdit = () => {
     ],
   });
 
-  // Preload client data if editing
+  // Fetch clients if not already available
   useEffect(() => {
     if (id && clients.length === 0) {
       dispatch(fetchClients());
     }
   }, [id, clients.length, dispatch]);
 
+  // Sanitize null/undefined values
+  const sanitize = (value) => value ?? '';
+
+  // Pre-fill form when editing
   useEffect(() => {
     if (id && clients.length > 0) {
       const clientToEdit = clients.find((c) => String(c.id) === String(id));
       if (clientToEdit) {
         setFormData({
-          ...clientToEdit,
-          billing_address: clientToEdit.billing_address || {
-            address_line1: '',
-            address_line2: '',
-            city: '',
-            state: '',
-            postal_code: '',
-            country: 'India',
+          company_name: sanitize(clientToEdit.company_name),
+          client_personal_name: sanitize(clientToEdit.client_personal_name),
+          phone: sanitize(clientToEdit.phone),
+          email: sanitize(clientToEdit.email),
+          gst_no: sanitize(clientToEdit.gst_no),
+          billing_address: {
+            address_line1: sanitize(clientToEdit.billing_address?.address_line1),
+            address_line2: sanitize(clientToEdit.billing_address?.address_line2),
+            city: sanitize(clientToEdit.billing_address?.city),
+            state: sanitize(clientToEdit.billing_address?.state),
+            postal_code: sanitize(clientToEdit.billing_address?.postal_code),
+            country: sanitize(clientToEdit.billing_address?.country || 'India'),
           },
-          shipping_addresses: clientToEdit.shipping_addresses?.length
-            ? clientToEdit.shipping_addresses
-            : [
-                {
-                  address_line1: '',
-                  address_line2: '',
-                  city: '',
-                  state: '',
-                  postal_code: '',
-                  country: 'India',
-                },
-              ],
+          shipping_addresses: clientToEdit.shipping_addresses?.map((addr) => ({
+            address_line1: sanitize(addr.address_line1),
+            address_line2: sanitize(addr.address_line2),
+            city: sanitize(addr.city),
+            state: sanitize(addr.state),
+            postal_code: sanitize(addr.postal_code),
+            country: sanitize(addr.country || 'India'),
+          })) || [
+              {
+                address_line1: '',
+                address_line2: '',
+                city: '',
+                state: '',
+                postal_code: '',
+                country: 'India',
+              },
+            ],
         });
       }
     }
@@ -110,20 +124,17 @@ const ClientEdit = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
     if (id) {
-      dispatch(updateClient(id, formData));
+      dispatch({ type: UPDATE_CLIENT_REQUEST });
+      dispatch(updateClient(id, formData, () => {
+        alert("Client updated successfully!");
+        navigate('/client');
+      }));
     } else {
       dispatch(addClient(formData));
     }
   };
-
-  // Redirect on success
-  useEffect(() => {
-    if (addSuccess || updateSuccess) {
-      alert(`Client ${id ? 'updated' : 'added'} successfully!`);
-      navigate('/client');
-    }
-  }, [addSuccess, updateSuccess, navigate, id]);
 
   return (
     <div className="container-fluid">
@@ -149,26 +160,26 @@ const ClientEdit = () => {
               <div className="col-md-6 pe-md-5">
                 <div className="mb-3">
                   <label>Company Name</label>
-                  <input name="company_name" value={formData.company_name} onChange={handleChange} className="form-control" />
+                  <input name="company_name" value={formData.company_name || ""} onChange={handleChange} className="form-control" />
                 </div>
                 <div className="mb-3">
                   <label>Phone</label>
-                  <input name="phone" value={formData.phone} onChange={handleChange} className="form-control" />
+                  <input name="phone" value={formData.phone || ""} onChange={handleChange} className="form-control" />
                 </div>
                 <div className="mb-3">
                   <label>GST No.</label>
-                  <input name="gst_no" value={formData.gst_no} onChange={handleChange} className="form-control" />
+                  <input name="gst_no" value={formData.gst_no || ""} onChange={handleChange} className="form-control" />
                 </div>
               </div>
 
               <div className="col-md-6 ps-md-5 border-start">
                 <div className="mb-3">
                   <label>Client Personal Name</label>
-                  <input name="client_personal_name" value={formData.client_personal_name} onChange={handleChange} className="form-control" />
+                  <input name="client_personal_name" value={formData.client_personal_name || ""} onChange={handleChange} className="form-control" />
                 </div>
                 <div className="mb-3">
                   <label>Email</label>
-                  <input name="email" type="email" value={formData.email} onChange={handleChange} className="form-control" />
+                  <input name="email" type="email" value={formData.email || ""} onChange={handleChange} className="form-control" />
                 </div>
               </div>
             </div>
@@ -181,26 +192,26 @@ const ClientEdit = () => {
               <div className="col-md-6 pe-md-5">
                 <div className="mb-3">
                   <label>Address 1</label>
-                  <input name="address_line1" value={formData.billing_address.address_line1} onChange={(e) => handleChange(e, 'billing_address')} className="form-control" />
+                  <input name="address_line1" value={formData.billing_address?.address_line1 || ""} onChange={(e) => handleChange(e, 'billing_address')} className="form-control" />
                 </div>
                 <div className="mb-3">
                   <label>City</label>
-                  <input name="city" value={formData.billing_address.city} onChange={(e) => handleChange(e, 'billing_address')} className="form-control" />
+                  <input name="city" value={formData.billing_address?.city || ""} onChange={(e) => handleChange(e, 'billing_address')} className="form-control" />
                 </div>
                 <div className="mb-3">
                   <label>Postal Code</label>
-                  <input name="postal_code" value={formData.billing_address.postal_code} onChange={(e) => handleChange(e, 'billing_address')} className="form-control" />
+                  <input name="postal_code" value={formData.billing_address?.postal_code || ""} onChange={(e) => handleChange(e, 'billing_address')} className="form-control" />
                 </div>
               </div>
 
               <div className="col-md-6 ps-md-5 border-start">
                 <div className="mb-3">
                   <label>Address 2</label>
-                  <input name="address_line2" value={formData.billing_address.address_line2} onChange={(e) => handleChange(e, 'billing_address')} className="form-control" />
+                  <input name="address_line2" value={formData.billing_address?.address_line2 || ""} onChange={(e) => handleChange(e, 'billing_address')} className="form-control" />
                 </div>
                 <div className="mb-3">
                   <label>State</label>
-                  <input name="state" value={formData.billing_address.state} onChange={(e) => handleChange(e, 'billing_address')} className="form-control" />
+                  <input name="state" value={formData.billing_address?.state || ""} onChange={(e) => handleChange(e, 'billing_address')} className="form-control" />
                 </div>
               </div>
             </div>
@@ -214,7 +225,7 @@ const ClientEdit = () => {
                 <div className="col-md-2">
                   <input
                     name="address_line1"
-                    value={address.address_line1}
+                    value={address.address_line1 || ""}
                     onChange={(e) => handleChange(e, 'shipping_addresses', index)}
                     className="form-control"
                     placeholder="Address 1"
@@ -223,7 +234,7 @@ const ClientEdit = () => {
                 <div className="col-md-2">
                   <input
                     name="address_line2"
-                    value={address.address_line2}
+                    value={address.address_line2 || ""}
                     onChange={(e) => handleChange(e, 'shipping_addresses', index)}
                     className="form-control"
                     placeholder="Address 2"
@@ -232,7 +243,7 @@ const ClientEdit = () => {
                 <div className="col-md-2">
                   <input
                     name="city"
-                    value={address.city}
+                    value={address.city || ""}
                     onChange={(e) => handleChange(e, 'shipping_addresses', index)}
                     className="form-control"
                     placeholder="City"
@@ -241,7 +252,7 @@ const ClientEdit = () => {
                 <div className="col-md-2">
                   <input
                     name="state"
-                    value={address.state}
+                    value={address.state || ""}
                     onChange={(e) => handleChange(e, 'shipping_addresses', index)}
                     className="form-control"
                     placeholder="State"
@@ -250,7 +261,7 @@ const ClientEdit = () => {
                 <div className="col-md-2">
                   <input
                     name="postal_code"
-                    value={address.postal_code}
+                    value={address.postal_code || ""}
                     onChange={(e) => handleChange(e, 'shipping_addresses', index)}
                     className="form-control"
                     placeholder="Postal Code"
@@ -269,8 +280,11 @@ const ClientEdit = () => {
             </button>
           </div>
 
+          {updateError && !updateSuccess && (
+            <p className="text-danger mt-3">Error: {updateError}</p>
+          )}
+
           {(adding || updating) && <p className="text-info mt-3">Submitting...</p>}
-          {(addError || updateError) && <p className="text-danger mt-3">Error: {addError || updateError}</p>}
         </form>
       </div>
     </div>

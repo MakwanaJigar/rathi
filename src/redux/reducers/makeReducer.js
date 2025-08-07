@@ -12,6 +12,9 @@ import {
   UPDATE_MAKE_REQUEST,
   UPDATE_MAKE_SUCCESS,
   UPDATE_MAKE_FAIL,
+  IMPORT_MAKES_REQUEST,
+  IMPORT_MAKES_SUCCESS,
+  IMPORT_MAKES_FAILURE,
 } from "../actions/makeActions";
 
 const initialState = {
@@ -28,6 +31,12 @@ const initialState = {
   // edit
   updating: false,
   updateError: null,
+
+  // import
+  loading: false,
+  data: [],
+  error: null,
+
 };
 
 const makeReducer = (state = initialState, action) => {
@@ -88,6 +97,21 @@ const makeReducer = (state = initialState, action) => {
 
     case UPDATE_MAKE_FAIL:
       return { ...state, updating: false, updateError: action.payload };
+
+
+    // import
+    case IMPORT_MAKES_REQUEST:
+  return { ...state, loading: true, error: null };
+
+case IMPORT_MAKES_SUCCESS:
+  return {
+    ...state,
+    loading: false,
+    makes: Array.isArray(action.payload) ? action.payload : state.makes,
+  };
+
+case IMPORT_MAKES_FAILURE:
+  return { ...state, loading: false, error: action.payload };
 
     default:
       return state;

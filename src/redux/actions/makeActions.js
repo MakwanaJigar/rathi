@@ -1,5 +1,5 @@
 import { saveAs } from "file-saver"; 
-
+import axios from 'axios';
 
 export const FETCH_MAKES_SUCCESS = "FETCH_MAKES_SUCCESS";
 export const EXPORT_MAKES_REQUEST =  "EXPORT_MAKES_REQUEST";
@@ -13,6 +13,11 @@ export const DELETE_MAKE_FAIL = "DELETE_MAKE_FAIL";
 export const UPDATE_MAKE_REQUEST = "UPDATE_MAKE_REQUEST";
 export const UPDATE_MAKE_SUCCESS = "UPDATE_MAKE_SUCCESS";
 export const UPDATE_MAKE_FAIL = "UPDATE_MAKE_FAIL";
+
+export const IMPORT_MAKES_REQUEST = 'IMPORT_MAKES_REQUEST';
+export const IMPORT_MAKES_SUCCESS = 'IMPORT_MAKES_SUCCESS';
+export const IMPORT_MAKES_FAILURE = 'IMPORT_MAKES_FAILURE'; 
+
 
 
 export const fetchMakes = () => {
@@ -136,5 +141,34 @@ export const updateMake = (id, payload) => async (dispatch) => {
   } catch (error) {
     dispatch({ type: UPDATE_MAKE_FAIL, payload: error.message });
     return { ok: false, message: error.message || "Network error." };
+  }
+};
+
+
+
+
+
+
+// import
+export const importMakes = (formData) => async (dispatch) => {
+  dispatch({ type: IMPORT_MAKES_REQUEST });
+
+  try {
+    const response = await axios.post(
+      'https://replete-software.com/projects/rathi/api/import-makes',
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    );
+
+    dispatch({ type: IMPORT_MAKES_SUCCESS, payload: response.data });
+  } catch (error) {
+    dispatch({
+      type: IMPORT_MAKES_FAILURE,
+      payload: error.response?.data?.message || error.message,
+    });
   }
 };

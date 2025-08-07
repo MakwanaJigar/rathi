@@ -1,32 +1,76 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { fetchChallans } from "../../redux/actions/deliveryChallanActions";
+import {
+  fetchChallans,
+  deleteChallan,
+  exportChallans,
+} from "../../redux/actions/deliveryChallanActions";
 
 const DeliveryChallan = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { loading, challans, error } = useSelector((state) => state.deliveryChallan);
+  const { loading, challans, error } = useSelector(
+    (state) => state.deliveryChallan
+  );
+
+  const [selectedChallanId, setSelectedChallanId] = useState(null);
 
   useEffect(() => {
     dispatch(fetchChallans());
   }, [dispatch]);
 
+  const handleDelete = async () => {
+    if (selectedChallanId) {
+      await dispatch(deleteChallan(selectedChallanId));
+      dispatch(fetchChallans());
+      setSelectedChallanId(null);
+      document.querySelector("#deleteModal .btn-close").click(); 
+    }
+  };
+
+  const handleExport = () => {
+    dispatch(exportChallans());
+  };
+
+
+
+
+  // CALCULATING AGEING
+   // ✅ Place the function here inside the component
+  const calculateAgeing = (doDate) => {
+    if (!doDate) return "-"; // No date
+
+    const currentDate = new Date();
+    const challanDate = new Date(doDate);
+
+    const diffTime =  currentDate - challanDate; // in ms
+    return Math.floor(diffTime / (1000 * 60 * 60 * 24)); // convert ms → days
+  };
+
+
+  // CALCULATING WEIGHT
+  const calculateTotalWeight = (items) => {
+  if (!items || items.length === 0) return 0;
+
+  return items.reduce((total, item) => total + (parseFloat(item.qty_mt) || 0), 0);
+};
+
   return (
     <div className="container-fluid">
       <div className="main-content">
-        <p className='main-container-title'>
+        <p className="main-container-title">
           Dashboard <i className="fa-solid fa-angles-right"></i> Delivery Challan
         </p>
 
         <div className="delivery-challan-top-title-container">
           <h3 className="main-container-title">Delivery Challan</h3>
           <div className="export-addnew-btn0-container">
-            <a href="">
+            <a onClick={handleExport} className="btn me-2">
               <i className="fa-solid fa-upload"></i> Export Now
             </a>
-            <Link to="/challan-add">
+            <Link to="/challan-add" className="btn">
               <i className="fa-solid fa-plus"></i> Add New
             </Link>
           </div>
@@ -57,12 +101,12 @@ const DeliveryChallan = () => {
                 {challans.map((challan) => (
                   <tr key={challan.id}>
                     <td>{challan.do_date || "N/A"}</td>
-                    <td>{challan.do_number || "N/A"}</td>
+                    <td>{challan.do_no || "N/A"}</td>
                     <td>{challan.party_name || "N/A"}</td>
-                    <td>{challan.total_weight || "N/A"}</td>
-                    <td>{challan.ageing || "N/A"}</td>
+                    <td>{calculateTotalWeight(challan.items) || "N/A"}</td>
+                    <td>{calculateAgeing(challan.do_date) || "N/A"}</td>
                     <td>{challan.material_readiness || "N/A"}</td>
-                    <td>{challan.delivery_status || "N/A"}</td>
+                    <td>{challan.items?.[0]?.status || "N/A"}</td>
                     <td className="text-center action-btns">
                       <button className="btn btn-sm">
                         <i className="fa-solid fa-cart-shopping"></i>
@@ -80,6 +124,7 @@ const DeliveryChallan = () => {
                         className="btn btn-sm me-1"
                         data-bs-toggle="modal"
                         data-bs-target="#deleteModal"
+                        onClick={() => setSelectedChallanId(challan.id)}
                       >
                         <i className="fas fa-trash"></i>
                       </button>
@@ -91,23 +136,37 @@ const DeliveryChallan = () => {
           )}
 
           {/* DELETE MODAL */}
-          <div className="modal fade" id="deleteModal" tabIndex="-1" aria-hidden="true">
+          <div
+            className="modal fade"
+            id="deleteModal"
+            tabIndex="-1"
+            aria-hidden="true"
+          >
             <div className="modal-dialog modal-dialog-centered">
               <div className="modal-content">
                 <div className="modal-header">
-                  <h5 className="modal-title">Delete Note</h5>
-                  <button type="button" className="btn-close" data-bs-dismiss="modal" />
+                  <h5 className="modal-title">Delete Delivery Challan</h5>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    data-bs-dismiss="modal"
+                  />
                 </div>
                 <div className="modal-body">
-                  <textarea className="delete-modal-textarea" cols={60} rows={3}></textarea>
+                  <p>Are you sure you want to delete this delivery challan?</p>
                 </div>
-                <div className="modal-footer d-flex align-itmes-start justify-content-start">
-                  <button type="button" className="btn btn-danger">Delete</button>
+                <div className="modal-footer d-flex align-items-start justify-content-start">
+                  <button
+                    type="button"
+                    className="btn btn-danger"
+                    onClick={handleDelete}
+                  >
+                    Delete
+                  </button>
                 </div>
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </div>

@@ -11,6 +11,9 @@ import {
   UPDATE_ITEM_REQUEST,
   UPDATE_ITEM_SUCCESS,
   UPDATE_ITEM_FAIL,
+  IMPORT_ITEMS_REQUEST,
+  IMPORT_ITEMS_SUCCESS,
+  IMPORT_ITEMS_FAILURE,
 } from "../actions/itemActions";
 
 const initialState = {
@@ -23,6 +26,10 @@ const initialState = {
 
    updating: false,
   updateError: null,
+
+  items: [],
+  importing: false,
+  importError: null,
 
 };
 
@@ -80,6 +87,19 @@ case UPDATE_ITEM_SUCCESS:
 
 case UPDATE_ITEM_FAIL:
   return { ...state, updating: false, updateError: action.payload };
+
+
+  // import
+  case IMPORT_ITEMS_REQUEST:
+      return { ...state, importing: true, importError: null };
+    case IMPORT_ITEMS_SUCCESS:
+      return {
+        ...state,
+        importing: false,
+        items: action.payload, // Adjust depending on response format
+      };
+    case IMPORT_ITEMS_FAILURE:
+      return { ...state, importing: false, importError: action.payload };
 
     default:
       return state;

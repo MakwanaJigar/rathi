@@ -1,8 +1,9 @@
 // src/App.js
 import React from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import './App.css';
 import './Assets/css/mobile.css'
@@ -48,10 +49,14 @@ import WarehouseEdit from './Component/pages/WarehouseEdit';
 import ItemEdit from './Component/pages/ItemEdit';
 import SalesRepresentativeEdit from './Component/pages/SalesRepresentativeEdit';
 import ClientEdit from './Component/pages/ClientEdit';
+import { useSelector } from 'react-redux';
+
 
 const App = () => {
   const location = useLocation();
 
+ const auth = useSelector((state) => state.auth);
+  const token = auth?.token;
   // Hide Navbar and Sidebar on auth pages
   const hideUIRoutes = ['/login', '/forgot-password', '/confirm-password'];
   const hideUI = hideUIRoutes.includes(location.pathname);
@@ -63,10 +68,10 @@ const App = () => {
         {!hideUI && <Sidebar />}
         <div className="flex-grow-1">
           <Routes>
-            <Route path="/login" element={<Login />} />
+            <Route path="/login" element={!token ? <Login /> : <Navigate to="/" />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/confirm-password" element={<ConfirmPassword />} />
-            <Route path="/" element={<Home />} />
+            <Route path="/dashboard" element={token ? <Home /> : <Navigate to="/login" />} />
             <Route path="/delivery-challan" element={<DeliveryChallan />} />
             <Route path="/challan-add" element={<ChallanAdd />} />
             <Route path="/client" element={<Client />} />

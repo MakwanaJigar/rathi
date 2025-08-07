@@ -1,4 +1,5 @@
 import { saveAs } from "file-saver";
+import axios from 'axios';
 
 
 export const FETCH_WAREHOUSE_SUCCESS = 'FETCH_WAREHOUSE_SUCCESS';
@@ -18,6 +19,14 @@ export const UPDATE_WAREHOUSE_FAIL = "UPDATE_WAREHOUSE_FAIL";
 export const DELETE_WAREHOUSE_SUCCESS = "DELETE_WAREHOUSE_SUCCESS";
 export const DELETE_WAREHOUSE_FAIL = "DELETE_WAREHOUSE_FAIL";
 
+export const IMPORT_WAREHOUSE_REQUEST = 'IMPORT_WAREHOUSE_REQUEST';
+export const IMPORT_WAREHOUSE_SUCCESS = 'IMPORT_WAREHOUSE_SUCCESS';
+export const IMPORT_WAREHOUSE_FAILURE = 'IMPORT_WAREHOUSE_FAILURE';
+
+
+
+
+
 export const fetchWarehouses = () => {
   return async (dispatch) => {
     const res = await fetch(
@@ -27,10 +36,6 @@ export const fetchWarehouses = () => {
     dispatch({ type: FETCH_WAREHOUSE_SUCCESS, payload: data });
   };
 };
-
-
-
-
 
 
 // GET  export‑items  ➜ download CSV to the user’s machine
@@ -163,4 +168,30 @@ export const updateWarehouse = (id, payload) => async (dispatch) => {
   }
 };
 
+
+
+
+// import
+export const importWarehouse = (formData) => async (dispatch) => {
+  dispatch({ type: IMPORT_WAREHOUSE_REQUEST });
+
+  try {
+    const response = await axios.post(
+      'https://replete-software.com/projects/rathi/api/import-warehouse',
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    );
+
+    dispatch({ type: IMPORT_WAREHOUSE_SUCCESS, payload: response.data });
+  } catch (error) {
+    dispatch({
+      type: IMPORT_WAREHOUSE_FAILURE,
+      payload: error.response?.data?.message || error.message,
+    });
+  }
+};
 

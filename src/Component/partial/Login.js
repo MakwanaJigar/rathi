@@ -1,11 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import logo from '../../Assets/login/login-logo.png';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import {loginUser} from '../../redux/actions/loginAction'
 
 const Login = () => {
+
+const dispatch = useDispatch();
+  const { loading, error } = useSelector((state) => state.auth);
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    dispatch(loginUser({ email, password }));
+  };
+
+
   const [showPassword, setShowPassword] = useState(false);
   const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  // const [password, setPassword] = useState('');
   const [modalMessage, setModalMessage] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [loginAttempts, setLoginAttempts] = useState(0);
@@ -29,7 +44,7 @@ const Login = () => {
         });
       }, 1000);
     }
-
+  
     return () => clearInterval(timer);
   }, [isLocked, lockTimeLeft]);
 
@@ -37,45 +52,46 @@ const Login = () => {
     navigate('/forgot-password');
   };
 
-  const handleLogin = (e) => {
-    e.preventDefault();
+  // const handleLogin = (e) => {
+  //   e.preventDefault();
 
-    if (isLocked) return;
+  //   if (isLocked) return;
 
-    if (!username.trim() || !password.trim()) {
-      setModalMessage('Please fill in both username and password.');
-      setShowModal(true);
-      return;
-    }
+  //   if (!username.trim() || !password.trim()) {
+  //     setModalMessage('Please fill in both username and password.');
+  //     setShowModal(true);
+  //     return;
+  //   }
 
-    const dummyUser = {
-      username: 'admin',
-      password: 'admin',
-    };
+  //   const dummyUser = {
+  //     username: 'admin',
+  //     password: 'admin',
+  //   };
 
-    if (username === dummyUser.username && password === dummyUser.password) {
-      localStorage.setItem('isLoggedIn', true);
-      navigate('/');
-    } else {
-      const attempts = loginAttempts + 1;
-      setLoginAttempts(attempts);
+  //   if (username === dummyUser.username && password === dummyUser.password) {
+  //     localStorage.setItem('isLoggedIn', true);
+  //     navigate('/');
+  //   } else {
+  //     const attempts = loginAttempts + 1;
+  //     setLoginAttempts(attempts);
 
-      if (attempts >= 3) {
-        setIsLocked(true);
-        setLockTimeLeft(60); 
-        setModalMessage('Too many failed attempts. Try again in 2 minutes.');
-      } else {
-        setModalMessage(`Invalid username or password. Attempt ${attempts} of 3.`);
-      }
+  //     if (attempts >= 3) {
+  //       setIsLocked(true);
+  //       setLockTimeLeft(60); 
+  //       setModalMessage('Too many failed attempts. Try again in 2 minutes.');
+  //     } else {
+  //       setModalMessage(`Invalid username or password. Attempt ${attempts} of 3.`);
+  //     }
 
-      setShowModal(true);
-    }
-  };
+  //     setShowModal(true);
+  //   }
+  // };
 
   const closeModal = () => {
     setShowModal(false);
     setModalMessage('');
   };
+
 
   return (
     <div className="container-fluid login-container">
@@ -90,8 +106,9 @@ const Login = () => {
             <h3 className="mb-3 text-success fw-bold">Let's Get Started</h3>
             <p className="text-muted">Welcome back! Please enter your details</p>
 
-            <form onSubmit={handleLogin}>
+            <form onSubmit={handleSubmit}>
               <div className="mb-3 text-start">
+                {error && <p style={{ color: 'red' }}>{error}</p>}
                 <label htmlFor="username" className="form-label">
                   User Name
                 </label>
@@ -100,8 +117,7 @@ const Login = () => {
                   className="form-control"
                   id="username"
                   placeholder="Enter Your User Name"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  value={email} onChange={(e) => setEmail(e.target.value)} 
                   disabled={isLocked}
                 />
               </div>
@@ -116,8 +132,7 @@ const Login = () => {
                     className="form-control"
                     id="password"
                     placeholder="********"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    value={password} onChange={(e) => setPassword(e.target.value)}
                     disabled={isLocked}
                   />
                   <span
@@ -153,6 +168,7 @@ const Login = () => {
                 disabled={isLocked}
               >
                 {isLocked ? `Try again in ${lockTimeLeft}s` : 'Sign In'}
+                {/* {loading ? 'Logging in...' : 'Login'} */}
               </button>
             </form>
           </div>

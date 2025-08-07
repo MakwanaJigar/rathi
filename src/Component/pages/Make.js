@@ -1,41 +1,30 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { fetchMakes, exportMakes, deleteMake } from "../../redux/actions/makeActions";
+import {
+  fetchMakes,
+  exportMakes,
+  deleteMake,
+  importMakes,
+} from "../../redux/actions/makeActions";
 
 const Make = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const makes = useSelector((state) =>
-    Array.isArray(state.make.makes) ? state.make.makes : []
-  );
-
+  const { makes, loading, error } = useSelector((state) => state.make);
   const exporting = useSelector((state) => state.make.exporting);
-
-
 
   const [filteredMakes, setFilteredMakes] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
 
   const itemsPerPage = 10;
-  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
-    const loadMakes = async () => {
-      try {
-        setLoading(true);
-        await dispatch(fetchMakes());
-        setError(null);
-      } catch (err) {
-        setError("Failed to fetch make data.");
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadMakes();
+    dispatch(fetchMakes());
   }, [dispatch]);
 
   useEffect(() => {
@@ -47,37 +36,48 @@ const Make = () => {
     setCurrentPage(1);
   }, [searchQuery, makes]);
 
-  const totalPages = Math.ceil(filteredMakes.length / itemsPerPage);
-
   const currentItems = useMemo(() => {
     const start = (currentPage - 1) * itemsPerPage;
     return filteredMakes.slice(start, start + itemsPerPage);
   }, [filteredMakes, currentPage]);
 
   const changePage = (page) => {
-    if (page < 1 || page > totalPages) return;
+    if (page < 1 || page > Math.ceil(filteredMakes.length / itemsPerPage))
+      return;
     setCurrentPage(page);
   };
-
 
   const handleExportClick = () => {
     dispatch(exportMakes());
   };
 
-
-  // delete
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this make?")) {
       dispatch(deleteMake(id));
     }
   };
 
+  const handleSubmitImport = async () => {
+    if (!selectedFile) {
+      alert("Please select a CSV file.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("csv_file", selectedFile); // backend field name must match
+
+    await dispatch(importMakes(formData));
+    await dispatch(fetchMakes());
+
+    setShowImportModal(false);
+    setSelectedFile(null);
+  };
 
   return (
     <div className="container-fluid">
       <div className="main-content">
         <p className="main-container-title">
-          Dashboard <i className="fa-solid fa-angles-right" /> Master
+          Dashboard <i className="fa-solid fa-angles-right" /> Master{" "}
           <i className="fa-solid fa-angles-right" /> Make
         </p>
 
@@ -96,9 +96,14 @@ const Make = () => {
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
-              <button className="import-btn">
+
+              <button
+                className="import-btn"
+                onClick={() => setShowImportModal(true)}
+              >
                 <i className="fa-solid fa-download" /> Import
               </button>
+
               <button
                 className="export-btn"
                 onClick={handleExportClick}
@@ -114,7 +119,10 @@ const Make = () => {
                   </>
                 )}
               </button>
-              <button className="add-btn" onClick={() => navigate("/make-add")}>
+              <button
+                className="add-btn"
+                onClick={() => navigate("/make-add")}
+              >
                 <i className="fa-solid fa-plus" /> Add
               </button>
             </div>
@@ -156,7 +164,6 @@ const Make = () => {
                             >
                               <i className="fas fa-trash" />
                             </button>
-
                           </td>
                         </tr>
                       ))
@@ -170,10 +177,14 @@ const Make = () => {
                   </tbody>
                 </table>
 
-                {totalPages > 1 && (
-                  <nav aria-label="Make pagination">
+                {/* Pagination */}
+                {filteredMakes.length > itemsPerPage && (
+                  <nav aria-label="Pagination">
                     <ul className="pagination justify-content-end">
-                      <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+                      <li
+                        className={`page-item ${currentPage === 1 ? "disabled" : ""
+                          }`}
+                      >
                         <button
                           className="page-link"
                           onClick={() => changePage(currentPage - 1)}
@@ -181,17 +192,32 @@ const Make = () => {
                           Prev
                         </button>
                       </li>
-                      {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                      {Array.from(
+                        {
+                          length: Math.ceil(filteredMakes.length / itemsPerPage),
+                        },
+                        (_, i) => i + 1
+                      ).map((page) => (
                         <li
                           key={page}
-                          className={`page-item ${currentPage === page ? "active" : ""}`}
+                          className={`page-item ${currentPage === page ? "active" : ""
+                            }`}
                         >
-                          <button className="page-link" onClick={() => changePage(page)}>
+                          <button
+                            className="page-link"
+                            onClick={() => changePage(page)}
+                          >
                             {page}
                           </button>
                         </li>
                       ))}
-                      <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
+                      <li
+                        className={`page-item ${currentPage ===
+                          Math.ceil(filteredMakes.length / itemsPerPage)
+                          ? "disabled"
+                          : ""
+                          }`}
+                      >
                         <button
                           className="page-link"
                           onClick={() => changePage(currentPage + 1)}
@@ -207,6 +233,32 @@ const Make = () => {
           </div>
         </div>
       </div>
+
+      {/* Modal */}
+      {showImportModal && (
+        <div className="import-modal-container">
+          <div className="import-modal-box">
+            <h5>📁 Upload CSV File</h5>
+            <input
+              type="file"
+              accept=".csv"
+              onChange={(e) => setSelectedFile(e.target.files[0])}
+            />
+            <div className="import-modal-actions">
+              <button className="import-btn-modal" onClick={handleSubmitImport}>
+                Upload
+              </button>
+              <button
+                className="import-btn-modal-cancel"
+                onClick={() => setShowImportModal(false)}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };

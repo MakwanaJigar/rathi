@@ -1,22 +1,34 @@
 import React, { useEffect, useState, useMemo } from "react";
+import axios from 'axios';
+
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { fetchClients, exportClients, deleteClient } from "../../redux/actions/clientActions";
+import {
+  fetchClients,
+  exportClients,
+  deleteClient,
+  importWarehouse
+} from "../../redux/actions/clientActions";
 
 const Client = () => {
+  const { importResult } = useSelector((state) => state.client);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [importing, setImporting] = useState(false);
 
   const clients = useSelector((state) =>
     Array.isArray(state.client.clients) ? state.client.clients : []
   );
 
   const exporting = useSelector((state) => state.client.exporting);
+  const error = useSelector((state) => state.client.error);
 
   const [filteredClients, setFilteredClients] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   const itemsPerPage = 10;
   const [currentPage, setCurrentPage] = useState(1);
@@ -26,9 +38,8 @@ const Client = () => {
       try {
         setLoading(true);
         await dispatch(fetchClients());
-        setError(null);
       } catch (err) {
-        setError("Failed to fetch client data.");
+        console.error(err);
       } finally {
         setLoading(false);
       }
@@ -62,13 +73,57 @@ const Client = () => {
     dispatch(exportClients());
   };
 
-
-  // delete
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this client?")) {
       dispatch(deleteClient(id));
     }
   };
+
+
+
+
+
+const handleSubmitImport = async () => {
+  if (!selectedFile) {
+    alert("Please select a CSV file.");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("file", selectedFile); // ✅ Use correct field name
+
+  try {
+    await dispatch(importWarehouse(formData));
+    setShowImportModal(false);
+    setSelectedFile(null);
+  } catch (err) {
+    alert("❌ Import failed. See console.");
+    console.error(err);
+  }
+};
+
+
+useEffect(() => {
+  if (importResult?.message) {
+    alert(importResult.message);
+
+    if (importResult.errors?.length > 0) {
+      console.log(" Import errors:", importResult.errors);
+      importResult.errors.forEach((err) => {
+        console.warn(` Row ${err.row}: ${err.error}`);
+      });
+    }
+  }
+
+  if (error) {
+    alert(` Error: ${error}`);
+  }
+}, [importResult, error]);
+
+
+
+
+
 
 
 
@@ -96,7 +151,7 @@ const Client = () => {
                 />
               </div>
 
-              <button className="import-btn">
+              <button className="import-btn" onClick={() => setShowImportModal(true)}>
                 <i className="fa-solid fa-download" /> Import
               </button>
 
@@ -116,10 +171,7 @@ const Client = () => {
                 )}
               </button>
 
-              <button
-                className="add-btn"
-                onClick={() => navigate("/client-add")}
-              >
+              <button className="add-btn" onClick={() => navigate("/client-add")}>
                 <i className="fa-solid fa-plus" /> Add
               </button>
             </div>
@@ -162,7 +214,6 @@ const Client = () => {
                             <button className="btn btn-sm" onClick={() => handleDelete(item.id)}>
                               <i className="fas fa-trash" />
                             </button>
-
                           </td>
                         </tr>
                       ))
@@ -179,10 +230,7 @@ const Client = () => {
                 {totalPages > 1 && (
                   <nav aria-label="Client pagination">
                     <ul className="pagination justify-content-end">
-                      <li
-                        className={`page-item ${currentPage === 1 ? "disabled" : ""
-                          }`}
-                      >
+                      <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
                         <button
                           className="page-link"
                           onClick={() => changePage(currentPage - 1)}
@@ -191,27 +239,19 @@ const Client = () => {
                         </button>
                       </li>
 
-                      {Array.from(
-                        { length: totalPages },
-                        (_, i) => i + 1
-                      ).map((page) => (
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                         <li
                           key={page}
-                          className={`page-item ${currentPage === page ? "active" : ""
-                            }`}
+                          className={`page-item ${currentPage === page ? "active" : ""}`}
                         >
-                          <button
-                            className="page-link"
-                            onClick={() => changePage(page)}
-                          >
+                          <button className="page-link" onClick={() => changePage(page)}>
                             {page}
                           </button>
                         </li>
                       ))}
 
                       <li
-                        className={`page-item ${currentPage === totalPages ? "disabled" : ""
-                          }`}
+                        className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}
                       >
                         <button
                           className="page-link"
@@ -228,6 +268,31 @@ const Client = () => {
           </div>
         </div>
       </div>
+
+      {/* Import Modal */}
+      {showImportModal && (
+  <div className="import-modal-container">
+    <div className="import-modal-box">
+      <h5>📦 Import Client CSV</h5>
+      <input
+        type="file"
+        accept=".csv"
+        onChange={(e) => setSelectedFile(e.target.files[0])}
+      />
+      <div className="import-modal-actions">
+        <button className="import-btn-modal" onClick={handleSubmitImport}>
+          Submit
+        </button>
+        <button
+          className="import-btn-modal-cancel"
+          onClick={() => setShowImportModal(false)}
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+)}
     </div>
   );
 };

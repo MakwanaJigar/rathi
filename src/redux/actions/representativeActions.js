@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { saveAs } from "file-saver";
 
 
@@ -13,6 +14,9 @@ export const DELETE_REP_FAIL = "DELETE_REP_FAIL";
 export const UPDATE_SALES_REP_REQUEST = "UPDATE_SALES_REP_REQUEST";
 export const UPDATE_SALES_REP_SUCCESS = "UPDATE_SALES_REP_SUCCESS";
 export const UPDATE_SALES_REP_FAIL = "UPDATE_SALES_REP_FAIL";
+export const IMPORT_SALES_REP_REQUEST = 'IMPORT_SALES_REP_REQUEST';
+export const IMPORT_SALES_REP_SUCCESS = 'IMPORT_SALES_REP_SUCCESS';
+export const IMPORT_SALES_REP_FAILURE = 'IMPORT_SALES_REP_FAILURE';
 
 
 
@@ -153,3 +157,28 @@ export const updateSalesRep = (id, payload) => async (dispatch) => {
 };
 
 
+
+
+// import
+export const importSalesRepresentatives = (formData) => async (dispatch) => {
+  dispatch({ type: IMPORT_SALES_REP_REQUEST });
+
+  try {
+    const response = await axios.post(
+      'https://replete-software.com/projects/rathi/api/import-representatives',
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    );
+
+    dispatch({ type: IMPORT_SALES_REP_SUCCESS, payload: response.data });
+  } catch (error) {
+    dispatch({
+      type: IMPORT_SALES_REP_FAILURE,
+      payload: error.response?.data?.message || error.message,
+    });
+  }
+};

@@ -17,6 +17,9 @@ export const UPDATE_ITEM_REQUEST = "UPDATE_ITEM_REQUEST";
 export const UPDATE_ITEM_SUCCESS = "UPDATE_ITEM_SUCCESS";
 export const UPDATE_ITEM_FAIL = "UPDATE_ITEM_FAIL";
 
+export const IMPORT_ITEMS_REQUEST = 'IMPORT_ITEMS_REQUEST';
+export const IMPORT_ITEMS_SUCCESS = 'IMPORT_ITEMS_SUCCESS';
+export const IMPORT_ITEMS_FAILURE = 'IMPORT_ITEMS_FAILURE';
 
 
 
@@ -151,5 +154,30 @@ export const updateItem = (id, payload) => async (dispatch) => {
   } catch (err) {
     dispatch({ type: UPDATE_ITEM_FAIL, payload: err.message });
     return { ok: false, message: err.message || "Network error." };
+  }
+};
+
+
+
+
+// import
+export const importItems = (formData) => async (dispatch) => {
+  dispatch({ type: IMPORT_ITEMS_REQUEST });
+
+  try {
+    const response = await fetch(
+      'https://replete-software.com/projects/rathi/api/import-items',
+      {
+        method: 'POST',
+        body: formData,
+      }
+    );
+
+    if (!response.ok) throw new Error("Failed to import items");
+
+    const data = await response.json();
+    dispatch({ type: IMPORT_ITEMS_SUCCESS, payload: data });
+  } catch (error) {
+    dispatch({ type: IMPORT_ITEMS_FAILURE, payload: error.message });
   }
 };

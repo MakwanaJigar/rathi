@@ -11,6 +11,9 @@ import {
   UPDATE_SALES_REP_REQUEST,
   UPDATE_SALES_REP_SUCCESS,
   UPDATE_SALES_REP_FAIL,
+  IMPORT_SALES_REP_REQUEST,
+  IMPORT_SALES_REP_SUCCESS,
+  IMPORT_SALES_REP_FAILURE,
 } from "../../redux/actions/representativeActions";
 
 const initialState = {
@@ -82,6 +85,21 @@ const salesRepReducer = (state = initialState, action) => {
 
     case UPDATE_SALES_REP_FAIL:
       return { ...state, updating: false, updateError: action.payload };
+
+
+      // import
+          case IMPORT_SALES_REP_REQUEST:
+        return { ...state, loading: true, error: null };
+      
+      case IMPORT_SALES_REP_SUCCESS:
+        return {
+          ...state,
+          loading: false,
+          makes: Array.isArray(action.payload) ? action.payload : state.makes,
+        };
+      
+      case IMPORT_SALES_REP_FAILURE:
+        return { ...state, loading: false, error: action.payload };
 
     default:
       return state;

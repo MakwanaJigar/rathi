@@ -1,15 +1,13 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import { submitChallanForm } from "../../redux/action";
 import { fetchClients } from "../../redux/actions/clientActions";
 import { fetchSalesReps } from "../../redux/actions/representativeActions";
 import { fetchMakes } from "../../redux/actions/makeActions";
 import { fetchWarehouses } from "../../redux/actions/warehouseActions";
 
-import {
-  addDeliveryChallan,
-  getNextDONumber,
-} from "../../redux/actions/deliveryChallanActions";
+import { addDeliveryChallan, getNextDONumber } from "../../redux/actions/deliveryChallanActions";
 
 const ChallanAdd = () => {
   const dispatch = useDispatch();
@@ -18,73 +16,57 @@ const ChallanAdd = () => {
   const { adding, addError, addSuccess } = useSelector(
     (state) => state.deliveryChallan
   );
-  const [showAlert, setShowAlert] = useState(false); // ✅ safer name
 
   const [formData, setFormData] = useState({
-    party_name: "",
-    bill_to_address: "",
-    gst_no: "",
-    ship_to_party_name: "",
-    ship_to_address: "",
-    payment_terms: "",
-    do_date: "",
-    sales_rep: "",
-    do_no: "",
-    client_id: "",
-    date: "",
+    party_name: '',
+    bill_to_address: '',
+    gst_no: '',
+    ship_to_party_name: '',
+    ship_to_address: '',
+    payment_terms: '',
+    do_date: '',
+    sales_rep: '',
+    do_number: '',
+    client_id: '',
+    date: '',
     items: [
       {
-        item: "",
-        make: "",
-        pcs: "",
-        qty_mt: "",
-        rate_mt: "",
-        loading: "",
-        eff_rate: "",
-        warehouse: "",
-        status: "",
+        item: '',
+        make: '',
+        pcs: '',
+        qty_mt: '',
+        rate_mt: '',
+        loading: '',
+        eff_rate: '',
+        warehouse: '',
+        status: '',
       },
     ],
-    order_notes: "",
-    warehouse_notes: "",
-    transport_notes: "",
-    freight: "",
-    courier_options: "",
-    mtc: "",
-    party_po_no: "",
-    party_po_date: "",
+    order_notes: '',
+    warehouse_notes: '',
+    transport_notes: '',
+    freight: '',
+    courier_options: '',
+    mtc: '',
   });
 
   // Handle field changes
-  const handleChange = (e, section, index) => {
+  const handleChange = (e, section = null, index = null) => {
     const { name, value } = e.target;
 
-    if (section === "items") {
+    if (section === 'items') {
       const updatedItems = [...formData.items];
       updatedItems[index][name] = value;
-      setFormData({ ...formData, items: updatedItems });
+      setFormData((prev) => ({ ...prev, items: updatedItems }));
     } else {
-      setFormData({
-        ...formData,
-        [name]: value,
-      });
+      setFormData((prev) => ({ ...prev, [name]: value }));
     }
   };
 
   // Add or delete items dynamically
   const addItem = (index) => {
     const newItems = [...formData.items];
-    newItems.splice(index + 1, 0, {
-      item: "",
-      make: "",
-      pcs: "",
-      qty_mt: "",
-      rate_mt: "",
-      loading: "",
-      eff_rate: "",
-      warehouse: "",
-      status: "",
-    });
+    newItems.splice(index + 1, 0, { item_name: '', quantity: '', unit: '' });
     setFormData((prev) => ({ ...prev, items: newItems }));
   };
 
@@ -97,66 +79,17 @@ const ChallanAdd = () => {
   };
 
   // Submit form
- const handleSubmit = async (e) => {
-  e.preventDefault();
-
-  const payload = {
-    party_name: formData.party_name,
-    bill_to_address: formData.bill_to_address,
-    gst_no: formData.gst_no,
-    ship_to_party_name: formData.ship_to_party_name,
-    ship_to_address: formData.ship_to_address,
-    payment_terms: formData.payment_terms,
-    do_date: formData.do_date,
-    do_number: formData.do_no,
-    client_id: Number(formData.client_id),
-    date: formData.date || null,
-    order_notes: formData.order_notes,
-    warehouse_notes: formData.warehouse_notes,
-    transport_notes: formData.transport_notes,
-    freight: formData.freight,
-    courier_options: formData.courier_options,
-    mtc: formData.mtc,
-    party_po_no: formData.party_po_no,
-    party_po_date: formData.party_po_date,
-    sales_rep: representatives.find(rep => rep.id === Number(formData.sales_rep))?.name || "",
-    items: formData.items.map((item) => ({
-      item: item.item || "",
-      make: item.make || "",
-      pcs: Number(item.pcs) || 0,
-      qty_mt: Number(item.qty_mt) || 0,
-      rate_mt: Number(item.rate_mt) || 0,
-      loading: item.loading || "",
-      eff_rate: item.eff_rate || "",
-      warehouse_id: item.warehouse ? Number(item.warehouse) : null,
-      status: item.status || "",
-    })),
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    dispatch(addDeliveryChallan(formData));
+    console.log(formData);
   };
-
-  console.log("✅ Submitting Delivery Challan Payload:", payload);
-
-  try {
-    const response = await dispatch(addDeliveryChallan(payload));
-    console.log("✅ Delivery Challan API Response:", response);
-
-    if (response?.success) {
-      window.alert("Delivery Challan submitted successfully!");
-    } else {
-      window.alert("Form submission failed.\n" + (response?.message || 'Unknown error'));
-      console.error("❌ Submission failed. Server response:", response);
-    }
-  } catch (error) {
-    window.alert("Form submission failed. Please check the console.");
-    console.error("❌ Submission error:", error);
-  }
-};
-
 
   // Redirect on success
   useEffect(() => {
     if (addSuccess) {
-      alert("Delivery Challan added successfully!");
-      navigate("/delivery-challan");
+      alert('Delivery Challan added successfully!');
+      navigate('/delivery-challan');
     }
   }, [addSuccess, navigate]);
   // .............ADD LOGIN ENDED
@@ -184,22 +117,57 @@ const ChallanAdd = () => {
     dispatch(fetchSalesReps());
   }, [dispatch]);
 
+  //   console.log(representatives);
+
   useEffect(() => {
     dispatch(fetchClients());
   }, [dispatch]);
 
   const [shipToAddressList, setShipToAddressList] = useState([]);
+  const [selectedClientId, setSelectedClientId] = useState("");
+
+  const [selectedFreight, setSelectedFreight] = useState("");
+  const [fixValue, setFixValue] = useState("");
+  const [perTonValue, setPerTonValue] = useState("");
 
   // .....INPUT FIELDS STATES.....
+  const [partyName, setPartyName] = useState("");
+  const [billToAddress, setBillToAddress] = useState("");
   const [gstNo, setGstNo] = useState("");
+  const [shipToPartyName, setShipToPartyName] = useState("");
+  const [shipToAddress, setShipToAddress] = useState("");
+  const [paymentTerms, setPaymentTerms] = useState("");
+  const [dODate, setDoDate] = useState("");
   const [dONumber, setDoNumber] = useState("");
+  const [salesRep, setSalesRep] = useState("");
+  const [partyPoNumber, setPartyPoNumber] = useState("");
+  const [partyPoDate, setPartyPoDate] = useState("");
+  const [orderNote, setOrderNote] = useState("");
+  const [deliveryNote, setDeliveryNote] = useState("");
+  const [transportNote, setTransportNote] = useState("");
+  const [freightInput, setfreightInput] = useState("");
+  const [courierOptionsInput, setCourierOptionsInput] = useState("");
+  const [mTCInput, setMTCInput] = useState("");
   const [isChecked, setIsChecked] = useState(false);
+
+  const handleFreightChange = (e) => {
+    setSelectedFreight(e.target.value);
+  };
+
+  useEffect(() => {
+    dispatch(fetchClients());
+  }, [dispatch]);
 
   const handlePartyChange = (e) => {
     const selectedId = e.target.value;
+    setSelectedClientId(selectedId);
+
     const client = clients.find((c) => c.id === parseInt(selectedId));
 
     if (client) {
+      setPartyName(client.company_name || "");
+      setGstNo(client.gst_no || "");
+
       // Bill To
       const billing = client.billing_address || {};
       const billToFullAddress = [
@@ -212,52 +180,39 @@ const ChallanAdd = () => {
       ]
         .filter(Boolean)
         .join(", ");
+      setBillToAddress(billToFullAddress);
 
       // Ship To
+      setShipToPartyName(client.company_name || "");
+
       const shippingAddresses = Array.isArray(client.shipping_addresses)
         ? client.shipping_addresses
         : [];
+      setShipToAddressList(shippingAddresses);
 
-      setShipToAddressList(shippingAddresses); // <-- dropdown ke liye list update
-
-      // Default Ship To Address (pehla)
-      let firstShipTo = "";
       if (shippingAddresses.length > 0) {
-        const first = shippingAddresses[0];
-        firstShipTo = [
-          first.address_line1,
-          first.address_line2,
-          first.city,
-          first.state,
-          first.postal_code,
-          first.country,
+        const firstAddress = shippingAddresses[0];
+        const fullShipTo = [
+          firstAddress.address_line1,
+          firstAddress.address_line2,
+          firstAddress.city,
+          firstAddress.state,
+          firstAddress.postal_code,
+          firstAddress.country,
         ]
           .filter(Boolean)
           .join(", ");
+        setShipToAddress(fullShipTo);
+      } else {
+        setShipToAddress("");
       }
-
-      // Update formData
-      setFormData((prev) => ({
-        ...prev,
-        client_id: selectedId,
-        party_name: client.company_name || "",
-        gst_no: client.gst_no || "",
-        bill_to_address: billToFullAddress,
-        ship_to_party_name: client.company_name || "",
-        ship_to_address: firstShipTo,
-      }));
     } else {
-      // Reset if no client selected
+      setPartyName("");
+      setGstNo("");
+      setBillToAddress("");
+      setShipToPartyName("");
       setShipToAddressList([]);
-      setFormData((prev) => ({
-        ...prev,
-        client_id: "",
-        party_name: "",
-        gst_no: "",
-        bill_to_address: "",
-        ship_to_party_name: "",
-        ship_to_address: "",
-      }));
+      setShipToAddress("");
     }
   };
 
@@ -265,7 +220,84 @@ const ChallanAdd = () => {
   const [alert, setAlert] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  // const handleSubmitChallan = async (e) => {
+  //   e.preventDefault();
+  //   setAlert(null);
+
+  //   if (
+  //     !partyName.trim() ||
+  //     !billToAddress.trim() ||
+  //     !gstNo.trim() ||
+  //     !shipToPartyName.trim() ||
+  //     !shipToAddress.trim() ||
+  //     (!isChecked && !paymentTerms.trim()) || // skip if 'Advance' is checked
+  //     !dODate.trim() ||
+  //     !dONumber.trim() ||
+  //     !salesRep.trim() ||
+  //     !partyPoNumber.trim() ||
+  //     !partyPoDate.trim() ||
+  //     !orderNote.trim() ||
+  //     !deliveryNote.trim() ||
+  //     !transportNote.trim() ||
+  //     !freightInput.trim() ||
+  //     !courierOptionsInput.trim() ||
+  //     !mTCInput.trim()
+  //   ) {
+  //     setAlert("Please fill in all required fields.");
+  //     return;
+  //   }
+
+  //   const challanPayload = {
+  //     party_id: partyName,
+  //     bill_to_address: billToAddress,
+  //     gst_no: gstNo,
+  //     ship_to_party_name: shipToPartyName,
+  //     ship_to_address: shipToAddress,
+  //     payment_terms: isChecked ? "Advance" : paymentTerms,
+  //     do_date: dODate,
+  //     do_no: dONumber,
+  //     sales_rep_id: salesRep,
+  //     party_po_no: partyPoNumber,
+  //     party_po_date: partyPoDate,
+  //     order_note: orderNote,
+  //     delivery_note: deliveryNote,
+  //     transport_note: transportNote,
+  //     freight_type: selectedFreight,
+  //     freight_value:
+  //       selectedFreight === "fix"
+  //         ? fixValue
+  //         : selectedFreight === "perTon"
+  //           ? perTonValue
+  //           : "",
+  //     items: [
+  //       {
+  //         item: "Steel Rod",
+  //         make_id: "1",
+  //         pcs: "20",
+  //         qty_mt: "1.5",
+  //         rate_mt: "50000",
+  //         loading: "1000",
+  //         effective_rate: "51000",
+  //         warehouse_id: "2",
+  //         status: "Pending",
+  //       },
+  //     ],
+  //     courier_option: courierOptionsInput,
+  //     mtc_option: mTCInput,
+  //   };
+
+  //   const result = await dispatch(addDeliveryChallan(challanPayload));
+
+  //   if (result.ok) {
+  //     alert("Delivery Challan Added Successfully!");
+  //     navigation("/delivery-challan");
+  //   } else {
+  //     setAlert(result.message || "Something went wrong.");
+  //   }
+  // };
+
   // GST FORMAT
+
 
   const [isValidGST, setIsValidGST] = useState(true);
 
@@ -287,7 +319,9 @@ const ChallanAdd = () => {
     }
   };
 
-  // D.O.NUMBER
+
+
+  // D.O.NUMBER 
   const challans = useSelector((state) => state.deliveryChallan.challans);
   const [manualEntry, setManualEntry] = useState(false);
 
@@ -295,16 +329,11 @@ const ChallanAdd = () => {
   useEffect(() => {
     if (!manualEntry) {
       const nextDO = getNextDONumber(challans);
-      setDoNumber(nextDO); // for the input
-      setFormData((prev) => ({ ...prev, do_no: nextDO })); // for submission
+      setDoNumber(nextDO);
     }
+    // If manualEntry is true, keep current dONumber and allow typing
   }, [challans, manualEntry]);
 
-  const handleDoNumberChange = (e) => {
-    const value = e.target.value;
-    setDoNumber(value); // for input display
-    setFormData((prev) => ({ ...prev, do_no: value })); // for API
-  };
   return (
     <>
       <div className="container-fluid">
@@ -331,7 +360,7 @@ const ChallanAdd = () => {
               <div className="py-3">
                 <div className="row">
                   <div className="col-md-6 ">
-                    {/* <div className="party-name">
+                    <div className="party-name">
                       <label>Party Name</label>
                       <select
                         className="delivery-challan-dropdown-field"
@@ -351,29 +380,22 @@ const ChallanAdd = () => {
                           </option>
                         ))}
                       </select>
-                    </div> */}
-                    <div className="party-name">
-                      <label>Party Name</label>
-                      <select
-                        className="delivery-challan-dropdown-field"
-                        name="client_id"
-                        value={formData.client_id}
-                        onChange={handlePartyChange}
-                      >
-                        <option value="">Select Party Name</option>
-                        {clients.map((client) => (
-                          <option key={client.id} value={client.id}>
-                            {client.company_name}
-                          </option>
-                        ))}
-                      </select>
                     </div>
-                    <div className="party-name">
-                      <label>Bill To Address</label>
+                    {/* <div className="party-name">
+                      <label> Bill To Address</label>
                       <input
                         type="text"
-                        name="bill_to_address"
                         placeholder="Enter Your Bill To Address"
+                        value={billToAddress}
+                        onChange={(e) => setBillToAddress(e.target.value)}
+                      />
+                    </div> */}
+                    <div className="party-name">
+                      <label> Bill To Address</label>
+                      <input
+                        type="text"
+                        placeholder="Enter Your Bill To Address"
+                        name="bill_to_address"
                         value={formData.bill_to_address}
                         onChange={handleChange}
                       />
@@ -383,11 +405,10 @@ const ChallanAdd = () => {
                       <input
                         type="text"
                         placeholder="Enter Your GST No"
-                        name="gst_no"
-                        value={formData.gst_no}
-                        onChange={handleChange}
+                        value={gstNo}
+                        onChange={handleGstChange}
                         style={{
-                          borderColor: gstNo && !isValidGST ? "red" : "#ccc",
+                          borderColor: gstNo && !isValidGST ? "red" : "#ccc"
                         }}
                       />
                       {!isValidGST && (
@@ -401,23 +422,20 @@ const ChallanAdd = () => {
                       <input
                         type="text"
                         placeholder="Enter Your Ship To Party Name"
-                        name="ship_to_party_name"
-                        value={formData.ship_to_party_name}
-                        onChange={handleChange}
+                        value={shipToPartyName}
+                        onChange={(e) => setShipToPartyName(e.target.value)}
                       />
                     </div>
                     <div className="party-name">
                       <label>Ship To Address</label>
                       <select
                         className="delivery-challan-dropdown-field"
-                        name="ship_to_address"
-                        value={formData.ship_to_address}
-                        onChange={handleChange}
+                        value={shipToAddress}
+                        onChange={(e) => setShipToAddress(e.target.value)}
                       >
                         {shipToAddressList.length === 0 && (
                           <option value="">No shipping addresses</option>
                         )}
-
                         {shipToAddressList.map((address, index) => {
                           const fullAddress = [
                             address.address_line1,
@@ -429,7 +447,6 @@ const ChallanAdd = () => {
                           ]
                             .filter(Boolean)
                             .join(", ");
-
                           return (
                             <option key={index} value={fullAddress}>
                               {fullAddress}
@@ -446,9 +463,8 @@ const ChallanAdd = () => {
                         <input
                           type="text"
                           placeholder="Enter Your Payment Terms"
-                          name="payment_terms"
-                          value={formData.payment_terms}
-                          onChange={handleChange}
+                          value={paymentTerms}
+                          onChange={(e) => setPaymentTerms(e.target.value)}
                           className="form-control"
                           disabled={isChecked}
                         />
@@ -484,40 +500,33 @@ const ChallanAdd = () => {
                       <input
                         type="date"
                         placeholder="Enter Your D.O. Date"
-                        name="do_date"
-                        value={formData.do_date}
-                        onChange={handleChange}
+                        value={dODate}
+                        onChange={(e) => setDoDate(e.target.value)}
                       />
                     </div>
                     <div className="party-name">
                       <label>D.O. No</label>
+
                       <div className="delivery-chall-payment-check-box">
+                        {/* D.O. No input field (readOnly based on checkbox) */}
                         <input
                           type="text"
+                          placeholder="Enter D.O. Number"
+                          name="do_number"
+                          value={formData.do_number}
+                          onChange={handleChange}
                           className="form-control"
-                          placeholder="D.O. Number"
-                          value={dONumber}
-                          onChange={handleDoNumberChange}
+                          readOnly={!manualEntry} // 👈 only editable if manualEntry is true
                         />
 
+                        {/* Checkbox to toggle manual entry */}
                         <div className="form-check d-flex align-items-center">
                           <input
                             type="checkbox"
                             className="form-check-input"
                             id="manualEntry"
                             checked={manualEntry}
-                            onChange={(e) => {
-                              const checked = e.target.checked;
-                              setManualEntry(checked);
-                              if (!checked) {
-                                const nextDO = getNextDONumber(challans);
-                                setDoNumber(nextDO);
-                                setFormData((prev) => ({
-                                  ...prev,
-                                  do_no: nextDO,
-                                }));
-                              }
-                            }}
+                            onChange={(e) => setManualEntry(e.target.checked)}
                             style={{
                               width: "18px",
                               height: "18px",
@@ -535,15 +544,15 @@ const ChallanAdd = () => {
                       </div>
                     </div>
 
+
                     <div className="party-name">
                       <label>Sales Rep.</label>
                       <select
-                        name="sales_rep"
-                        value={formData.sales_rep}
-                        onChange={handleChange}
-                        className="form-control"
+                        className="delivery-challan-dropdown-field"
+                        value={salesRep}
+                        onChange={(e) => setSalesRep(e.target.value)}
                       >
-                        <option value="">Select Sales Rep</option>
+                        <option value="">Select a Sales Representative</option>
                         {representatives.map((rep) => (
                           <option key={rep.id} value={rep.id}>
                             {rep.name}
@@ -566,9 +575,9 @@ const ChallanAdd = () => {
                       <label>Party P.O. No Date</label>
                       <input
                         type="date"
-                        name="party_po_date"
-                        value={formData.party_po_date || ""} // ✅ Always string
-                        onChange={handleChange}
+                        placeholder="Enter Your Ship To Address"
+                        value={partyPoDate}
+                        onChange={(e) => setPartyPoDate(e.target.value)}
                       />
                     </div>
                   </div>
@@ -595,155 +604,98 @@ const ChallanAdd = () => {
               </div>
 
               {/* Row 1 */}
-              {formData.items.map((item, index) => (
-                <div
-                  className="row align-items-center mb-3 text-center"
-                  key={index}
-                >
-                  <div className="col-1 fw-semibold">
-                    {String(index + 1).padStart(2, "0")}.
-                  </div>
+              <div className="row align-items-center mb-3 text-center">
+                <div className="col-1 fw-semibold">01.</div>
 
-                  {/* Item Name */}
-                  <div className="col-1">
-                    <input
-                      type="text"
-                      name="item"
-                      value={formData.items[index].item}
-                      onChange={(e) => handleChange(e, "items", index)}
-                      className="form-control"
-                    />
-                  </div>
-
-                  {/* Make Dropdown */}
-                  <div className="col-1">
-                    <select
-                      className="form-select form-select-sm"
-                      name="make"
-                      value={item.make || ""}
-                      onChange={(e) => handleChange(e, "items", index)}
-                    >
-                      <option value="">Make</option>
-                      {makes.map((make) => (
-                        <option key={make.id} value={make.id}>
-                          {make.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Pcs */}
-                  <div className="col-1">
-                    <input
-                      type="number"
-                      className="form-control form-control-sm"
-                      placeholder="Pcs"
-                      name="pcs"
-                      value={item.pcs || ""}
-                      onChange={(e) => handleChange(e, "items", index)}
-                    />
-                  </div>
-
-                  {/* Qty */}
-                  <div className="col-1">
-                    <input
-                      type="text"
-                      className="form-control form-control-sm"
-                      placeholder="Qty"
-                      name="qty_mt"
-                      value={item.qty_mt || ""}
-                      onChange={(e) => handleChange(e, "items", index)}
-                    />
-                  </div>
-
-                  {/* Rate */}
-                  <div className="col-1">
-                    <input
-                      type="text"
-                      className="form-control form-control-sm"
-                      placeholder="Rate"
-                      name="rate_mt"
-                      value={item.rate_mt || ""}
-                      onChange={(e) => handleChange(e, "items", index)}
-                    />
-                  </div>
-
-                  {/* Loading */}
-                  <div className="col-1">
-                    <input
-                      type="number"
-                      className="form-control form-control-sm"
-                      placeholder="Loading"
-                      name="loading"
-                      value={item.loading || ""}
-                      onChange={(e) => handleChange(e, "items", index)}
-                    />
-                  </div>
-
-                  {/* Eff. Rate */}
-                  <div className="col-1">
-                    <input
-                      type="text"
-                      className="form-control form-control-sm"
-                      placeholder="Eff. Rate"
-                      name="eff_rate"
-                      value={item.eff_rate || ""}
-                      onChange={(e) => handleChange(e, "items", index)}
-                      disabled
-                    />
-                  </div>
-
-                  {/* Warehouse Dropdown */}
-                  <div className="col-1">
-                    <select
-                      className="form-select form-select-sm"
-                      name="warehouse"
-                      value={item.warehouse || ""}
-                      onChange={(e) => handleChange(e, "items", index)}
-                    >
-                      <option value="">Select Warehouse</option>
-                      {warehouses.map((warehouse) => (
-                        <option key={warehouse.id} value={warehouse.id}>
-                          {warehouse.warehouse_name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Status Dropdown */}
-                  <div className="col-1">
-                    <select
-                      className="form-select form-select-sm"
-                      name="status"
-                      value={item.status || ""}
-                      onChange={(e) => handleChange(e, "items", index)}
-                    >
-                      <option value="">Select Status</option>
-                      <option value="Pending">Pending</option>
-                      <option value="Pending">Planning Given</option>
-                      <option value="Delivered">Ready for dispatch</option>
-                    </select>
-                  </div>
-
-                  {/* Add/Delete Buttons */}
-                  <div className="col-1 d-flex justify-content-center gap-1">
-                    <button
-                      type="button"
-                      className="btn btn-sm item-info-btns"
-                      onClick={() => addItem(index)}
-                    >
-                      <i className="fa fa-plus"></i>
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn-sm item-info-btns"
-                      onClick={() => deleteItem(index)}
-                    >
-                      <i className="fa fa-trash"></i>
-                    </button>
-                  </div>
+                <div className="col-1">
+                  <input
+                    type="text"
+                    className="form-control form-control-sm"
+                    placeholder="Item"
+                  />
                 </div>
-              ))}
+
+                <div className="col-1">
+                  <select className="form-select form-select-sm">
+                    <option value="">Make</option>
+                    {makes.map((make) => (
+                      <option key={make.id} value={make.id}>
+                        {make.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="col-1">
+                  <input
+                    type="text"
+                    className="form-control form-control-sm"
+                    placeholder="Pcs"
+                  />
+                </div>
+
+                <div className="col-1">
+                  <input
+                    type="text"
+                    className="form-control form-control-sm"
+                    placeholder="Qty"
+                  />
+                </div>
+
+                <div className="col-1">
+                  <input
+                    type="text"
+                    className="form-control form-control-sm"
+                    placeholder="Rate"
+                  />
+                </div>
+
+                <div className="col-1">
+                  <input
+                    type="number"
+                    className="form-control form-control-sm"
+                    placeholder="Loading"
+                  />
+                </div>
+
+                <div className="col-1">
+                  <input
+                    type="text"
+                    className="form-control form-control-sm"
+                    placeholder="Eff. Rate"
+                    disabled
+                  />
+                </div>
+
+                <div className="col-1">
+                  <select className="form-select form-select-sm">
+                    <option>Warehouse</option>
+                    {warehouses.map((warehouse) => (
+                      <option key={warehouse.id} value={warehouse.id}>
+                        {warehouse.warehouse_name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="col-1">
+                  <select className="form-select form-select-sm">
+                    <option>Status</option>
+                    <option>Pending</option>
+                    <option>Planning Given</option>
+                    <option>Ready for Dispatch</option>
+                  </select>
+                </div>
+
+                <div className="col-1 d-flex justify-content-center gap-1">
+                  <button className="btn btn-sm item-info-btns">
+                    <i className="fa fa-plus"></i>
+                  </button>
+                  <button className="btn btn-sm item-info-btns">
+                    <i className="fa fa-trash"></i>
+                  </button>
+                </div>
+              </div>
             </div>
 
             <div className="form-section client-info-container client-info-container">
@@ -799,8 +751,7 @@ const ChallanAdd = () => {
                       name="freight"
                       id="freightToPay"
                       value="toPay"
-                      checked={formData.freight === "toPay"}
-                      onChange={handleChange}
+                      onChange={handleFreightChange}
                     />
                     <label
                       className="form-check-label ms-1"
@@ -818,8 +769,7 @@ const ChallanAdd = () => {
                       name="freight"
                       id="freightInclusive"
                       value="inclusive"
-                      checked={formData.freight === "inclusive"}
-                      onChange={handleChange}
+                      onChange={handleFreightChange}
                     />
                     <label
                       className="form-check-label ms-1"
@@ -837,8 +787,7 @@ const ChallanAdd = () => {
                       name="freight"
                       id="freightFix"
                       value="fix"
-                      checked={formData.freight === "fix"}
-                      onChange={handleChange}
+                      onChange={handleFreightChange}
                     />
                     <label
                       className="form-check-label ms-1"
@@ -846,12 +795,11 @@ const ChallanAdd = () => {
                     >
                       Fix
                     </label>
-                    {formData.freight === "fix" && (
+                    {selectedFreight === "fix" && (
                       <input
                         type="text"
-                        name="freight_fix_value"
-                        value={formData.freight_fix_value || ""}
-                        onChange={handleChange}
+                        value={fixValue}
+                        onChange={(e) => setFixValue(e.target.value)}
                         className="form-control ms-2"
                         style={{ width: "100px" }}
                         placeholder="Fix Value"
@@ -867,8 +815,7 @@ const ChallanAdd = () => {
                       name="freight"
                       id="freightPerTon"
                       value="perTon"
-                      checked={formData.freight === "perTon"}
-                      onChange={handleChange}
+                      onChange={handleFreightChange}
                     />
                     <label
                       className="form-check-label ms-1"
@@ -876,12 +823,11 @@ const ChallanAdd = () => {
                     >
                       Per TON
                     </label>
-                    {formData.freight === "perTon" && (
+                    {selectedFreight === "perTon" && (
                       <input
                         type="text"
-                        name="freight_per_ton_value"
-                        value={formData.freight_per_ton_value || ""}
-                        onChange={handleChange}
+                        value={perTonValue}
+                        onChange={(e) => setPerTonValue(e.target.value)}
                         className="form-control ms-2"
                         style={{ width: "100px" }}
                         placeholder="Per Ton Value"
@@ -899,26 +845,19 @@ const ChallanAdd = () => {
                     <input
                       className="form-check-input"
                       type="radio"
-                      name="courier_options"
+                      name="courier"
                       id="courierNR"
-                      value="N / R"
-                      checked={formData.courier_options === "N / R"}
-                      onChange={handleChange}
                     />
                     <label className="form-check-label" htmlFor="courierNR">
                       N / R
                     </label>
                   </div>
-
                   <div className="form-check form-check-inline freight-option">
                     <input
                       className="form-check-input"
                       type="radio"
-                      name="courier_options"
+                      name="courier"
                       id="courierInvoice"
-                      value="Invoice Only"
-                      checked={formData.courier_options === "Invoice Only"}
-                      onChange={handleChange}
                     />
                     <label
                       className="form-check-label"
@@ -927,31 +866,23 @@ const ChallanAdd = () => {
                       Invoice Only
                     </label>
                   </div>
-
                   <div className="form-check form-check-inline freight-option">
                     <input
                       className="form-check-input"
                       type="radio"
-                      name="courier_options"
+                      name="courier"
                       id="courierTCINV"
-                      value="TC+INV"
-                      checked={formData.courier_options === "TC+INV"}
-                      onChange={handleChange}
                     />
                     <label className="form-check-label" htmlFor="courierTCINV">
                       TC+INV
                     </label>
                   </div>
-
                   <div className="form-check form-check-inline freight-option">
                     <input
                       className="form-check-input"
                       type="radio"
-                      name="courier_options"
+                      name="courier"
                       id="courierAll"
-                      value="TC+INV+LR"
-                      checked={formData.courier_options === "TC+INV+LR"}
-                      onChange={handleChange}
                     />
                     <label className="form-check-label" htmlFor="courierAll">
                       TC+INV+LR
@@ -970,9 +901,6 @@ const ChallanAdd = () => {
                       type="radio"
                       name="mtc"
                       id="mtcNR"
-                      value="N / R"
-                      checked={formData.mtc === "N / R"}
-                      onChange={handleChange}
                     />
                     <label className="form-check-label" htmlFor="mtcNR">
                       N / R
@@ -984,9 +912,6 @@ const ChallanAdd = () => {
                       type="radio"
                       name="mtc"
                       id="mtcMatchTC"
-                      value="Only Matching TC"
-                      checked={formData.mtc === "Only Matching TC"}
-                      onChange={handleChange}
                     />
                     <label className="form-check-label" htmlFor="mtcMatchTC">
                       Only Matching TC
@@ -998,9 +923,6 @@ const ChallanAdd = () => {
                       type="radio"
                       name="mtc"
                       id="mtcEndorsement"
-                      value="With Endorsement"
-                      checked={formData.mtc === "With Endorsement"}
-                      onChange={handleChange}
                     />
                     <label
                       className="form-check-label"

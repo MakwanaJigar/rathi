@@ -1,11 +1,15 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { fetchSalesReps, exportRepresentative, deleteRepresentative } from "../../redux/actions/representativeActions";
+import { fetchSalesReps, exportRepresentative, deleteRepresentative , importSalesRepresentatives} from "../../redux/actions/representativeActions";
 
 const SalesRepresentative = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const [showImportModal, setShowImportModal] = useState(false);
+const [selectedFile, setSelectedFile] = useState(null);
+const [importing, setImporting] = useState(false);
 
   /* ── Select representatives from Redux ── */
   const reps = useSelector((state) =>
@@ -76,6 +80,31 @@ const SalesRepresentative = () => {
   };
 
 
+
+  // import
+  const handleSubmitImport = async () => {
+  if (!selectedFile) {
+    alert("Please select a CSV file.");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("csv_file", selectedFile); // match this with your API’s field name
+
+  try {
+    setImporting(true);
+    await dispatch(importSalesRepresentatives(formData)); // update with your correct action
+    await dispatch(fetchSalesReps()); // refetch updated data
+    setShowImportModal(false);
+    setSelectedFile(null);
+  } catch (err) {
+    alert("Import failed. Please try again.");
+  } finally {
+    setImporting(false);
+  }
+};
+
+
   /* ── UI ── */
   return (
     <div className="container-fluid">
@@ -100,7 +129,10 @@ const SalesRepresentative = () => {
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
-              <button className="import-btn">
+          <button
+                className="import-btn"
+                onClick={() => setShowImportModal(true)}
+              >
                 <i className="fa-solid fa-download" /> Import
               </button>
               <button
@@ -214,6 +246,36 @@ const SalesRepresentative = () => {
           </div>
         </div>
       </div>
+
+      {/* Import Modal */}
+      {showImportModal && (
+        <div className="import-modal-container">
+          <div className="import-modal-box">
+            <h5>📦 Import Sales Rep CSV</h5>
+            <input
+              type="file"
+              accept=".csv"
+              onChange={(e) => setSelectedFile(e.target.files[0])}
+            />
+            <div className="import-modal-actions">
+              <button
+                className="import-btn-modal"
+                onClick={handleSubmitImport}
+                disabled={importing}
+              >
+                {importing ? "Uploading..." : "Upload"}
+              </button>
+              <button
+                className="import-btn-modal-cancel"
+                onClick={() => setShowImportModal(false)}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}      
+
     </div>
   );
 };

@@ -1,4 +1,5 @@
 import { saveAs } from "file-saver"; 
+import axios from 'axios';
 
 
 export const FETCH_CLIENT_SUCCESS = 'FETCH_CLIENT_SUCCESS';
@@ -13,6 +14,9 @@ export const DELETE_CLIENT_FAIL = 'DELETE_CLIENT_FAIL';
 export const UPDATE_CLIENT_REQUEST = 'UPDATE_CLIENT_REQUEST';
 export const UPDATE_CLIENT_SUCCESS = 'UPDATE_CLIENT_SUCCESS';
 export const UPDATE_CLIENT_FAILURE = 'UPDATE_CLIENT_FAILURE';
+export const IMPORT_CLIENT_REQUEST = 'IMPORT_CLIENT_REQUEST';
+export const IMPORT_CLIENT_SUCCESS = 'IMPORT_CLIENT_SUCCESS';
+export const IMPORT_CLIENT_FAILURE = 'IMPORT_CLIENT_FAILURE';
 
 export const fetchClients = () => {
   return async (dispatch) => {
@@ -41,7 +45,7 @@ export const fetchClients = () => {
 
 
 
-// GET  export‑items  ➜ download CSV to the user’s machine
+// export‑items  ➜ download CSV to the user’s machine
 export const exportClients = () => async dispatch => {
   dispatch({ type: EXPORT_CLIENT_REQUEST });
 
@@ -135,19 +139,65 @@ export const updateClient = (id, data, onSuccess) => async (dispatch) => {
 
     const result = await res.json();
 
-    if (res.ok && (result.status === 1 || result.status === "success")) {
-      dispatch({ type: UPDATE_CLIENT_SUCCESS, payload: { id, updated: data } });
+    console.log("Update Client Response:", result);
 
-      // Trigger callback
+    // ✅ Adjusted based on your actual response structure
+    if (result.result && result.result.toLowerCase().includes('success')) {
+      dispatch({
+        type: UPDATE_CLIENT_SUCCESS,
+        payload: { id, updated: data },
+      });
+
       onSuccess && onSuccess();
 
-      return { ok: true, message: result.message || "Client updated successfully!" };
+      return { ok: true, message: result.result || "Client updated successfully!" };
     } else {
-      dispatch({ type: UPDATE_CLIENT_FAILURE, payload: result.message || "Failed to update client" });
-      return { ok: false, message: result.message || "Failed to update client" };
+      dispatch({
+        type: UPDATE_CLIENT_FAILURE,
+        payload: result.result || "Failed to update client",
+      });
+      return { ok: false, message: result.result || "Failed to update client" };
     }
   } catch (error) {
-    dispatch({ type: UPDATE_CLIENT_FAILURE, payload: error.message });
-    return { ok: false, message: error.message || "Network error." };
+    dispatch({
+      type: UPDATE_CLIENT_FAILURE,
+      payload: error.message || "Network error",
+    });
+    return { ok: false, message: error.message || "Network error" };
   }
 };
+
+
+
+
+
+// import
+export const importWarehouse = (formData) => async (dispatch) => {
+  dispatch({ type: IMPORT_CLIENT_REQUEST });
+
+  try {
+  const response = await axios.post(
+    "https://replete-software.com/projects/rathi/api/clients/import/csv",
+    formData
+  );
+
+  console.log("✅ Upload response:", response.data);
+
+  if (
+    response.data.message?.includes("0 clients") &&
+    Array.isArray(response.data.errors)
+  ) {
+    console.warn("❌ Import errors:", response.data.errors);
+    alert("CSV imported but no clients added. Check console for details.");
+  } else {
+    alert("Clients imported successfully.");
+    // You can reload data here if needed
+    dispatch(fetchClients()); // if using Redux
+  }
+} catch (err) {
+  console.error("❌ Upload failed:", err.response?.data || err.message);
+  alert(err.response?.data?.error || "Upload failed.");
+}
+};
+
+

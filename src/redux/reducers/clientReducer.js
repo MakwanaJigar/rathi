@@ -11,6 +11,9 @@ import {
   UPDATE_CLIENT_REQUEST,
   UPDATE_CLIENT_SUCCESS,
   UPDATE_CLIENT_FAILURE,
+  IMPORT_CLIENT_REQUEST,
+  IMPORT_CLIENT_SUCCESS,
+  IMPORT_CLIENT_FAILURE,
 } from '../actions/clientActions';
 
 
@@ -26,7 +29,9 @@ const initialState = {
 
   updating: false,
   updateError: null,
-  updateSuccess: false,// 👈 Add this
+  updateSuccess: false,// 
+
+  importResult: null,
 };
 
 const clientReducer = (state = initialState, action) => {
@@ -70,10 +75,26 @@ const clientReducer = (state = initialState, action) => {
     // edit 
     case UPDATE_CLIENT_REQUEST:
       return { ...state, updating: true, updateError: null, updateSuccess: false };
+
     case UPDATE_CLIENT_SUCCESS:
-      return { ...state, updating: false, updateSuccess: true };
+      return { ...state, updating: false, updateSuccess: true, updateError: null };
+
     case UPDATE_CLIENT_FAILURE:
-      return { ...state, updating: false, updateError: action.payload };
+      return { ...state, updating: false, updateError: action.payload, updateSuccess: false };
+
+
+    // import
+    case IMPORT_CLIENT_REQUEST:
+      return { ...state, loading: true, error: null };
+
+    case IMPORT_CLIENT_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+      };
+
+    case IMPORT_CLIENT_FAILURE:
+      return { ...state, loading: false, error: action.payload };
 
     default:
       return state;

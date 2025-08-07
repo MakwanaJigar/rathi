@@ -1,7 +1,30 @@
+import { saveAs } from "file-saver";
+
+
 export const FETCH_CHALLANS_REQUEST = "FETCH_CHALLANS_REQUEST";
 export const FETCH_CHALLANS_SUCCESS = "FETCH_CHALLANS_SUCCESS";
 export const FETCH_CHALLANS_FAIL = "FETCH_CHALLANS_FAIL";
 
+export const DELETE_CHALLAN_REQUEST = 'DELETE_CHALLAN_REQUEST';
+export const DELETE_CHALLAN_SUCCESS = 'DELETE_CHALLAN_SUCCESS';
+export const DELETE_CHALLAN_FAIL = 'DELETE_CHALLAN_FAIL';
+
+export const ADD_DELIVERY_CHALLAN_REQUEST = "ADD_DELIVERY_CHALLAN_REQUEST";
+export const ADD_DELIVERY_CHALLAN_SUCCESS = "ADD_DELIVERY_CHALLAN_SUCCESS";
+export const ADD_DELIVERY_CHALLAN_FAILURE = "ADD_DELIVERY_CHALLAN_FAILURE";
+
+
+
+export const EXPORT_CHALLAN_REQUEST = 'EXPORT_CHALLAN_REQUEST';
+export const EXPORT_CHALLAN_SUCCESS = 'EXPORT_CHALLAN_SUCCESS';
+export const EXPORT_CHALLAN_FAIL = 'EXPORT_CHALLAN_FAIL';
+
+
+
+
+
+
+// get
 export const fetchChallans = () => async (dispatch) => {
   dispatch({ type: FETCH_CHALLANS_REQUEST });
 
@@ -20,3 +43,129 @@ export const fetchChallans = () => async (dispatch) => {
     });
   }
 };
+
+
+// delete
+export const deleteChallan = (id) => async (dispatch) => {
+  dispatch({ type: DELETE_CHALLAN_REQUEST });
+
+  try {
+    const response = await fetch(
+      `https://replete-software.com/projects/rathi/api/delete-delivery-challan/${id}`,
+      {
+        method: 'POST',
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Failed to delete challan: ${errorText}`);
+    }
+
+    const result = await response.json();
+
+    if (result?.result?.toLowerCase().includes('success')) {
+      dispatch({ type: DELETE_CHALLAN_SUCCESS, payload: id });
+    } else {
+      throw new Error(result?.result || 'Unknown error occurred.');
+    }
+  } catch (error) {
+    dispatch({ type: DELETE_CHALLAN_FAIL, payload: error.message });
+  }
+};
+
+
+
+
+
+// add
+
+ // deliveryChallanActions.js
+
+export const addDeliveryChallan = (data) => async (dispatch) => {
+  dispatch({ type: ADD_DELIVERY_CHALLAN_REQUEST });
+
+  try {
+    const response = await fetch(
+      "https://replete-software.com/projects/rathi/api/add-delivery-challan",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Server error: ${errorText}`);
+    }
+
+    const result = await response.json();
+
+    if (result?.result?.toLowerCase().includes("success")) {
+      dispatch({ type: ADD_DELIVERY_CHALLAN_SUCCESS, payload: result });
+    } else {
+      throw new Error(result?.result || "Failed to add delivery challan.");
+    }
+
+    return result;
+  } catch (error) {
+    dispatch({ type: ADD_DELIVERY_CHALLAN_FAILURE, payload: error.message });
+    return { ok: false, message: error.message };
+  }
+};
+
+// ✅ Make sure this is present at the bottom or in your export section:
+
+
+
+
+
+
+
+
+
+// Export Delivery Challan CSV
+export const exportChallans = () => async (dispatch) => {
+  dispatch({ type: EXPORT_CHALLAN_REQUEST });
+
+  try {
+    const response = await fetch(
+      "https://replete-software.com/projects/rathi/api/delivery-challan/export/csv"
+    );
+
+    if (!response.ok) throw new Error("Export failed.");
+
+    const blob = await response.blob();
+    const fileName = `delivery_challans_${new Date().toISOString().slice(0, 10)}.csv`;
+
+    saveAs(blob, fileName);
+
+    dispatch({ type: EXPORT_CHALLAN_SUCCESS });
+  } catch (error) {
+    dispatch({
+      type: EXPORT_CHALLAN_FAIL,
+      payload: error.message || "Export failed.",
+    });
+  }
+};
+
+
+
+
+
+// .....D.O.NUMBER 
+export function getNextDONumber(challans) {
+  if (!challans || !Array.isArray(challans)) return 'RI-01';
+
+  const numbers = challans
+    .map((c) => {
+      const match = c.do_number?.match(/^RI-(\d+)$/); // Assumes challan.do_number format is "RI-01"
+      return match ? parseInt(match[1], 10) : null;
+    })
+    .filter((n) => n !== null);
+
+  const max = numbers.length > 0 ? Math.max(...numbers) : 0;
+  const next = (max + 1).toString().padStart(2, '0');
+  return `RI-${next}`;
+}
