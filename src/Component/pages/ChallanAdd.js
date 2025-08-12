@@ -18,7 +18,9 @@ const ChallanAdd = () => {
   const { adding, addError, addSuccess } = useSelector(
     (state) => state.deliveryChallan
   );
-  const [showAlert, setShowAlert] = useState(false); // ✅ safer name
+
+  const [message, setMessage] = useState(""); // store success or error message
+  const [messageType, setMessageType] = useState(""); // 'success' or 'error'
 
   const [formData, setFormData] = useState({
     party_name: "",
@@ -29,6 +31,7 @@ const ChallanAdd = () => {
     payment_terms: "",
     do_date: "",
     sales_rep: "",
+    sales_rep_id: "",
     do_no: "",
     client_id: "",
     date: "",
@@ -57,13 +60,21 @@ const ChallanAdd = () => {
 
   // Handle field changes
   const handleChange = (e, section, index) => {
-    const { name, value } = e.target;
+    const { name, value, options, selectedIndex } = e.target;
 
     if (section === "items") {
       const updatedItems = [...formData.items];
       updatedItems[index][name] = value;
       setFormData({ ...formData, items: updatedItems });
-    } else {
+    }
+    else if (name === "sales_rep") {
+      setFormData({
+        ...formData,
+        sales_rep: options[selectedIndex].text,  // store name
+        sales_rep_id: value                      // store id
+      });
+    }
+    else {
       setFormData({
         ...formData,
         [name]: value,
@@ -96,60 +107,76 @@ const ChallanAdd = () => {
     }
   };
 
-  // Submit form
- const handleSubmit = async (e) => {
-  e.preventDefault();
 
-  const payload = {
-    party_name: formData.party_name,
-    bill_to_address: formData.bill_to_address,
-    gst_no: formData.gst_no,
-    ship_to_party_name: formData.ship_to_party_name,
-    ship_to_address: formData.ship_to_address,
-    payment_terms: formData.payment_terms,
-    do_date: formData.do_date,
-    do_number: formData.do_no,
-    client_id: Number(formData.client_id),
-    date: formData.date || null,
-    order_notes: formData.order_notes,
-    warehouse_notes: formData.warehouse_notes,
-    transport_notes: formData.transport_notes,
-    freight: formData.freight,
-    courier_options: formData.courier_options,
-    mtc: formData.mtc,
-    party_po_no: formData.party_po_no,
-    party_po_date: formData.party_po_date,
-    sales_rep: representatives.find(rep => rep.id === Number(formData.sales_rep))?.name || "",
-    items: formData.items.map((item) => ({
-      item: item.item || "",
-      make: item.make || "",
-      pcs: Number(item.pcs) || 0,
-      qty_mt: Number(item.qty_mt) || 0,
-      rate_mt: Number(item.rate_mt) || 0,
-      loading: item.loading || "",
-      eff_rate: item.eff_rate || "",
-      warehouse_id: item.warehouse ? Number(item.warehouse) : null,
-      status: item.status || "",
-    })),
+  // DATE FORMAT
+  const formatDate = (date) => {
+    if (!date) return null; // send null if empty
+    const d = new Date(date);
+    if (isNaN(d)) return null; // safeguard invalid date
+    return d.toISOString().split("T")[0]; // YYYY-MM-DD
   };
 
-  console.log("✅ Submitting Delivery Challan Payload:", payload);
 
-  try {
+  // Submit form
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const payload = {
+      party_name: formData.party_name || "",
+      bill_to_address: formData.bill_to_address || "",
+      gst_no: formData.gst_no || "",
+      ship_to_party_name: formData.ship_to_party_name || "",
+      ship_to_address: formData.ship_to_address || "",
+      payment_terms: formData.payment_terms || "",
+      do_date: formatDate(formData.do_date),
+      do_no: formData.do_no || "",
+      client_id: formData.client_id ? Number(formData.client_id) : null,
+      // date: formData.date ? Number (formData.date) : null,
+      // date: formatDate(formData.date),
+      order_notes: formData.order_notes || "",
+      warehouse_notes: formData.warehouse_notes || "",
+      transport_notes: formData.transport_notes || "",
+      freight: formData.freight || "",
+      courier_options: formData.courier_options || "",
+      mtc: formData.mtc || "",
+      party_po_no: formData.party_po_no || "",
+      party_po_date: formatDate(formData.party_po_date),
+      sales_rep: formData.sales_rep || "",
+      items: formData.items.map((item) => ({
+        item: item.item || "",
+        make: item.make || "",
+        pcs: item.pcs ? Number(item.pcs) : null,
+        qty_mt: item.qty_mt ? Number(item.qty_mt) : null,
+        rate_mt: item.rate_mt ? Number(item.rate_mt) : null,
+        loading: item.loading || "",
+        eff_rate: item.eff_rate || "",
+        warehouse: item.warehouse || "",
+        status: item.status || "",
+      })),
+
+    };
+
+    console.log("✅ Submitting Delivery Challan Payload:", payload);
+
     const response = await dispatch(addDeliveryChallan(payload));
     console.log("✅ Delivery Challan API Response:", response);
 
-    if (response?.success) {
-      window.alert("Delivery Challan submitted successfully!");
+    // if (response.success || response.message.includes("created successfully")) {
+    //   window.alert("Delivery Challan submitted successfully!");
+    //   navigate("/delivery-challan");
+    // } else {
+    //   window.alert("Form submission failed.\n" + (response.message || "Unknown error"));
+    // }
+    if (response.success || response.message.includes("created successfully")) {
+      setMessage("Delivery Challan submitted successfully!");
+      setMessageType("success");
+      setTimeout(() => navigate("/delivery-challan"), 1500);
     } else {
-      window.alert("Form submission failed.\n" + (response?.message || 'Unknown error'));
-      console.error("❌ Submission failed. Server response:", response);
+      setMessage(response.message || "Form submission failed");
+      setMessageType("error");
     }
-  } catch (error) {
-    window.alert("Form submission failed. Please check the console.");
-    console.error("❌ Submission error:", error);
-  }
-};
+  };
+
 
 
   // Redirect on success
@@ -292,18 +319,32 @@ const ChallanAdd = () => {
   const [manualEntry, setManualEntry] = useState(false);
 
   // Auto-generate D.O. No (you can replace this with your logic)
+  const getNextDONumber = (challans) => {
+    if (!challans || challans.length === 0) {
+      return "RI-01"; // First challan
+    }
+
+    // Extract numbers from D.O. No like RI-01
+    const lastChallan = challans[challans.length - 1];
+    const lastNumberStr = lastChallan.do_no?.split("-")[1] || "0";
+    const lastNumber = parseInt(lastNumberStr, 10) || 0;
+
+    const nextNumber = (lastNumber + 1).toString().padStart(2, "0");
+    return `RI-${nextNumber}`;
+  };
+
   useEffect(() => {
     if (!manualEntry) {
       const nextDO = getNextDONumber(challans);
-      setDoNumber(nextDO); // for the input
-      setFormData((prev) => ({ ...prev, do_no: nextDO })); // for submission
+      setDoNumber(nextDO);
+      setFormData((prev) => ({ ...prev, do_no: nextDO }));
     }
   }, [challans, manualEntry]);
 
   const handleDoNumberChange = (e) => {
     const value = e.target.value;
-    setDoNumber(value); // for input display
-    setFormData((prev) => ({ ...prev, do_no: value })); // for API
+    setDoNumber(value);
+    setFormData((prev) => ({ ...prev, do_no: value }));
   };
   return (
     <>
@@ -322,6 +363,21 @@ const ChallanAdd = () => {
           </div>
 
           {/* MAIN DATA */}
+          {message && (
+            <div
+              style={{
+                backgroundColor: messageType === "success" ? "#d1e7dd" : "#f8d7da",
+                color: messageType === "success" ? "#0f5132" : "#842029",
+                border: `1px solid ${messageType === "success" ? "#badbcc" : "#f5c2c7"
+                  }`,
+                padding: "10px",
+                borderRadius: "5px",
+                marginBottom: "10px",
+              }}
+            >
+              {message}
+            </div>
+          )}
           <form
             className="challan-add-main-right-container py-5"
             onSubmit={handleSubmit}
@@ -331,27 +387,6 @@ const ChallanAdd = () => {
               <div className="py-3">
                 <div className="row">
                   <div className="col-md-6 ">
-                    {/* <div className="party-name">
-                      <label>Party Name</label>
-                      <select
-                        className="delivery-challan-dropdown-field"
-                        value={partyName}
-                        onChange={handlePartyChange}
-                      >
-                        <option
-                          value="Select Party Name"
-                          onChange={(e) => setPartyName(e.target.value)}
-                          required
-                        >
-                          {partyName ? partyName : "Select Party Name"}
-                        </option>
-                        {clients.map((client) => (
-                          <option key={client.id} value={client.id}>
-                            {client.company_name}
-                          </option>
-                        ))}
-                      </select>
-                    </div> */}
                     <div className="party-name">
                       <label>Party Name</label>
                       <select
@@ -489,7 +524,7 @@ const ChallanAdd = () => {
                         onChange={handleChange}
                       />
                     </div>
-                    <div className="party-name">
+                    {/* <div className="party-name">
                       <label>D.O. No</label>
                       <div className="delivery-chall-payment-check-box">
                         <input
@@ -533,7 +568,47 @@ const ChallanAdd = () => {
                           </label>
                         </div>
                       </div>
+                    </div> */}
+                    <div className="party-name">
+                      <label>D.O. No</label>
+                      <div className="delivery-chall-payment-check-box">
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="D.O. Number"
+                          value={dONumber}
+                          onChange={handleDoNumberChange}
+                          disabled={!manualEntry} // disable typing if not manual
+                        />
+
+                        <div className="form-check d-flex align-items-center">
+                          <input
+                            type="checkbox"
+                            className="form-check-input"
+                            id="manualEntry"
+                            checked={manualEntry}
+                            onChange={(e) => {
+                              const checked = e.target.checked;
+                              setManualEntry(checked);
+                              if (!checked) {
+                                const nextDO = getNextDONumber(challans);
+                                setDoNumber(nextDO);
+                                setFormData((prev) => ({ ...prev, do_no: nextDO }));
+                              }
+                            }}
+                            style={{ width: "18px", height: "18px", cursor: "pointer" }}
+                          />
+                          <label
+                            className="form-check-label ms-2"
+                            htmlFor="manualEntry"
+                            style={{ margin: 0, cursor: "pointer" }}
+                          >
+                            Type
+                          </label>
+                        </div>
+                      </div>
                     </div>
+
 
                     <div className="party-name">
                       <label>Sales Rep.</label>
@@ -1022,7 +1097,7 @@ const ChallanAdd = () => {
               </button>
             </div>
             {adding && <p className="text-info mt-3">Submitting...</p>}
-            {addError && <p className="text-danger mt-3">Error: {addError}</p>}
+            {/* {addError && <p className="text-danger mt-3">Error: {addError}</p>} */}
           </form>
         </div>
       </div>

@@ -79,19 +79,31 @@ export const deleteChallan = (id) => async (dispatch) => {
 
 
 // add
-
- // deliveryChallanActions.js
-
 export const addDeliveryChallan = (data) => async (dispatch) => {
   dispatch({ type: ADD_DELIVERY_CHALLAN_REQUEST });
 
   try {
+    const formData = new FormData();
+
+    // Append top-level fields
+    Object.keys(data).forEach((key) => {
+      if (key !== "items") {
+        formData.append(key, data[key] ?? "");
+      }
+    });
+
+    // Append items in Laravel-friendly format: items[0][field]
+    data.items.forEach((item, index) => {
+      Object.keys(item).forEach((field) => {
+        formData.append(`items[${index}][${field}]`, item[field] ?? "");
+      });
+    });
+
     const response = await fetch(
       "https://replete-software.com/projects/rathi/api/add-delivery-challan",
       {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: formData, // no Content-Type header — browser sets it
       }
     );
 
@@ -102,20 +114,24 @@ export const addDeliveryChallan = (data) => async (dispatch) => {
 
     const result = await response.json();
 
-    if (result?.result?.toLowerCase().includes("success")) {
-      dispatch({ type: ADD_DELIVERY_CHALLAN_SUCCESS, payload: result });
+    const success =
+      result?.success === true ||
+      (typeof result?.result === "string" &&
+        result.result.toLowerCase().includes("success"));
+
+    if (success) {
+      dispatch({ type: ADD_DELIVERY_CHALLAN_SUCCESS, payload: result.data || data });
     } else {
-      throw new Error(result?.result || "Failed to add delivery challan.");
+      throw new Error(result?.message || result?.result || "Failed to add delivery challan.");
     }
 
-    return result;
+    return { success, ...result };
   } catch (error) {
     dispatch({ type: ADD_DELIVERY_CHALLAN_FAILURE, payload: error.message });
-    return { ok: false, message: error.message };
+    return { success: false, message: error.message };
   }
 };
 
-// ✅ Make sure this is present at the bottom or in your export section:
 
 
 

@@ -10,25 +10,16 @@ const Sidebar = () => {
     const isActive = (targetPath) => location.pathname === targetPath;
 
     return (
-        <div className={`col-12 col-md-3 col-lg-2 sidebar ${isSidebarOpen ? 'd-block' : 'd-none'}`}>
+        <div className={`sidebar-container ${isSidebarOpen ? 'open' : ''}`}>
             <nav className="nav flex-column">
 
-                {/* Dashboard */}
-                <Link
-                    className={`nav-link sidebar-links d-flex align-items-center gap-2 ${isActive('/') ? 'active' : ''}`}
-                    to="/"
-                >
+                <Link className={`nav-link sidebar-links d-flex align-items-center gap-2 ${isActive('/') ? 'active' : ''}`} to="/">
                     <i className="fa-solid fa-house"></i>
                     <span>Dashboard</span>
                 </Link>
 
-                {/* Delivery Challan */}
-                <Link
-                    className={`nav-link sidebar-links d-flex align-items-center gap-2 ${isActive('/delivery-challan') ? 'active' : ''}`}
-                    to="/delivery-challan"
-                >
-                    <i className="fa-solid fa-house"></i>
-                    {/* <i class="fa-solid fa-file-invoice-dollar invoiceicon"></i> */}
+                <Link className={`nav-link sidebar-links d-flex align-items-center gap-2 ${isActive('/delivery-challan') ? 'active' : ''}`} to="/delivery-challan">
+                    <i className="fa-solid fa-file-invoice-dollar"></i>
                     <span>Delivery Challan</span>
                 </Link>
 
@@ -38,11 +29,9 @@ const Sidebar = () => {
                     type="button"
                     data-bs-toggle="collapse"
                     data-bs-target="#masterCollapse"
-                    aria-expanded="false"
-                    aria-controls="masterCollapse"
                 >
                     <span className="d-flex align-items-center gap-2">
-                        <i className="fa-solid fa-house"></i>
+                        <i className="fa-solid fa-layer-group"></i>
                         Master
                     </span>
                     <i className="fa-solid fa-angle-down"></i>
@@ -50,25 +39,12 @@ const Sidebar = () => {
 
                 <div className="collapse" id="masterCollapse">
                     <ul className="list-unstyled ps-4">
-                        <li>
-                            <Link className={`nav-link sidebar-links ${isActive('/client') ? 'active' : ''}`} to="/client">Client</Link>
-                        </li>
-                        <li>
-                            <Link className={`nav-link sidebar-links ${isActive('/sales-representative') ? 'active' : ''}`} to="/sales-representative">Sales Representative</Link>
-                        </li>
-                        <li>
-                            <Link className={`nav-link sidebar-links ${isActive('/item') ? 'active' : ''}`} to="/item">Item</Link>
-                        </li>
-                        <li>
-                            <Link className={`nav-link sidebar-links ${isActive('/make') ? 'active' : ''}`} to="/make">Make</Link>
-                        </li>
-                             <li>
-                            <Link className={`nav-link sidebar-links ${isActive('/warehouse') ? 'active' : ''}`} to="/warehouse">Warehouse</Link>
-                        </li>
-                        <li>
-                            <Link className={`nav-link sidebar-links ${isActive('/user') ? 'active' : ''}`} to="/user">User</Link>
-                        </li>
-                    
+                        <li><Link className={`nav-link sidebar-links ${isActive('/client') ? 'active' : ''}`} to="/client">Client</Link></li>
+                        <li><Link className={`nav-link sidebar-links ${isActive('/sales-representative') ? 'active' : ''}`} to="/sales-representative">Sales Representative</Link></li>
+                        <li><Link className={`nav-link sidebar-links ${isActive('/item') ? 'active' : ''}`} to="/item">Item</Link></li>
+                        <li><Link className={`nav-link sidebar-links ${isActive('/make') ? 'active' : ''}`} to="/make">Make</Link></li>
+                        <li><Link className={`nav-link sidebar-links ${isActive('/warehouse') ? 'active' : ''}`} to="/warehouse">Warehouse</Link></li>
+                        <li><Link className={`nav-link sidebar-links ${isActive('/user') ? 'active' : ''}`} to="/user">User</Link></li>
                     </ul>
                 </div>
 
@@ -78,12 +54,9 @@ const Sidebar = () => {
                     type="button"
                     data-bs-toggle="collapse"
                     data-bs-target="#Report"
-                    aria-expanded="false"
-                    aria-controls="Report"
                 >
                     <span className="d-flex align-items-center gap-2">
-                        {/* <i class="fa-solid fa-file" style={{color:" #00662f"}}></i> */}
-                        <i className="fa-solid fa-house"></i>
+                        <i className="fa-solid fa-file"></i>
                         Report
                     </span>
                     <i className="fa-solid fa-angle-down"></i>

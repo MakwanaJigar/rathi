@@ -210,9 +210,15 @@ p.main-container-title {
   margin-right: 0.5rem;
 }
 
-.main-content {
+/* .main-content {
   padding: 2rem;
+} */
+ .main-content {
+  padding: 2rem;
+  min-height: calc(100vh - 72px); /* Full viewport height minus navbar height */
+  box-sizing: border-box; /* Ensures padding doesn't break height */
 }
+
 
 .sidebar-links {
   display: flex;
@@ -416,8 +422,10 @@ textarea.delete-modal-textarea {
 }
 
 .sidebar-links:hover {
-  background-color: #f0f0f0;
+  background-color: #046725;
+  color: #ffffff;
   border-radius: 0.375rem;
+  margin:0px 5px;
 }
 
 .accordion-button {
@@ -731,4 +739,60 @@ button.client-address-dlt-btn i.fas.fa-plus{
   color: #ffffff !important;
   padding: 8px;
   cursor: pointer;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ............SIDEBAR STYLING.......... */
+.sidebar-container {
+    position: fixed;
+    /* top: 0; */
+    bottom: 0;
+    left: 0;
+    height: calc(100% - 72px);
+    width: 240px;
+    background: #fff;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
+    z-index: 1050;
+}
+
+.sidebar-container.open {
+    transform: translateX(0);
+}
+
+.sidebar-links {
+    padding: 12px 16px;
+    color: #333;
+    text-decoration: none;
+    display: block;
+}
+
+.sidebar-links.active {
+    background-color:#046725;
+    color: #ffffff;
+    margin: 5px;
+    border-radius: 10px;
+}
+
+/* Layout shift for main content */
+.main-content {
+    margin-left: 0;
+    transition: margin-left 0.3s ease-in-out;
+}
+
+.main-content.shifted {
+    margin-left: 240px; /* same as sidebar width */
 }
