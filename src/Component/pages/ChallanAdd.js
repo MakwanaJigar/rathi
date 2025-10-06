@@ -684,6 +684,7 @@ const ChallanAdd = () => {
                     <input
                       type="text"
                       name="item"
+                      placeholder="item"
                       value={formData.items[index].item}
                       onChange={(e) => handleChange(e, "items", index)}
                       className="form-control"

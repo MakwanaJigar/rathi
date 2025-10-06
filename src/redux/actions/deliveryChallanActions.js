@@ -13,7 +13,9 @@ export const ADD_DELIVERY_CHALLAN_REQUEST = "ADD_DELIVERY_CHALLAN_REQUEST";
 export const ADD_DELIVERY_CHALLAN_SUCCESS = "ADD_DELIVERY_CHALLAN_SUCCESS";
 export const ADD_DELIVERY_CHALLAN_FAILURE = "ADD_DELIVERY_CHALLAN_FAILURE";
 
-
+export const UPDATE_DELIVERY_CHALLAN_REQUEST = "UPDATE_DELIVERY_CHALLAN_REQUEST";
+export const UPDATE_DELIVERY_CHALLAN_SUCCESS = "UPDATE_DELIVERY_CHALLAN_SUCCESS";
+export const UPDATE_DELIVERY_CHALLAN_FAILURE = "UPDATE_DELIVERY_CHALLAN_FAILURE";
 
 export const EXPORT_CHALLAN_REQUEST = 'EXPORT_CHALLAN_REQUEST';
 export const EXPORT_CHALLAN_SUCCESS = 'EXPORT_CHALLAN_SUCCESS';
@@ -133,14 +135,6 @@ export const addDeliveryChallan = (data) => async (dispatch) => {
 };
 
 
-
-
-
-
-
-
-
-
 // Export Delivery Challan CSV
 export const exportChallans = () => async (dispatch) => {
   dispatch({ type: EXPORT_CHALLAN_REQUEST });
@@ -167,16 +161,13 @@ export const exportChallans = () => async (dispatch) => {
 };
 
 
-
-
-
 // .....D.O.NUMBER 
 export function getNextDONumber(challans) {
   if (!challans || !Array.isArray(challans)) return 'RI-01';
 
   const numbers = challans
     .map((c) => {
-      const match = c.do_number?.match(/^RI-(\d+)$/); // Assumes challan.do_number format is "RI-01"
+      const match = c.do_number?.match(/^RI-(\d+)$/); 
       return match ? parseInt(match[1], 10) : null;
     })
     .filter((n) => n !== null);
@@ -185,3 +176,64 @@ export function getNextDONumber(challans) {
   const next = (max + 1).toString().padStart(2, '0');
   return `RI-${next}`;
 }
+
+
+
+
+// EDIT
+
+export const updateDeliveryChallan = (id, data) => async (dispatch) => {
+  dispatch({ type: UPDATE_DELIVERY_CHALLAN_REQUEST });
+
+  try {
+    const formData = new FormData();
+
+    // Append top-level fields except items
+    Object.keys(data).forEach((key) => {
+      if (key !== "items") {
+        formData.append(key, data[key] ?? "");
+      }
+    });
+
+    // Append items in Laravel-friendly format
+    data.items.forEach((item, index) => {
+      Object.keys(item).forEach((field) => {
+        formData.append(`items[${index}][${field}]`, item[field] ?? "");
+      });
+    });
+
+    const response = await fetch(
+      `https://replete-software.com/projects/rathi/api/update-delivery-challan/${id}`,
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Server error: ${errorText}`);
+    }
+
+    const result = await response.json();
+
+    const success =
+      result?.success === true ||
+      (typeof result?.result === "string" &&
+        result.result.toLowerCase().includes("success"));
+
+    if (success) {
+      dispatch({
+        type: UPDATE_DELIVERY_CHALLAN_SUCCESS,
+        payload: { id, updatedData: result.data || data },
+      });
+    } else {
+      throw new Error(result?.message || "Failed to update challan.");
+    }
+
+    return { success, ...result };
+  } catch (error) {
+    dispatch({ type: UPDATE_DELIVERY_CHALLAN_FAILURE, payload: error.message });
+    return { success: false, message: error.message };
+  }
+};

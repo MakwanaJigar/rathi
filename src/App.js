@@ -49,6 +49,8 @@ import ItemEdit from './Component/pages/ItemEdit';
 import SalesRepresentativeEdit from './Component/pages/SalesRepresentativeEdit';
 import ClientEdit from './Component/pages/ClientEdit';
 import { useSelector } from 'react-redux';
+import ChallanEdit from './Component/pages/ChallanEdit';
+// import ChallanEdit from './Component/pages/ChallanEdit';
 
 // Layout Wrapper to handle Sidebar shift
 const Layout = ({ hideUI, children }) => {
@@ -90,13 +92,14 @@ const App = () => {
           <Route path="/dashboard" element={token ? <Home /> : <Navigate to="/login" />} />
           <Route path="/delivery-challan" element={<DeliveryChallan />} />
           <Route path="/challan-add" element={<ChallanAdd />} />
+          <Route path="/challan-edit/:id" element={<ChallanEdit />} />
           <Route path="/client" element={<Client />} />
+          <Route path="/client-add" element={<ClientAdd />} />
+          <Route path="/client/edit/:id" element={<ClientEdit />} />
           <Route path="/sales-representative" element={<SalesRepresentative />} />
           <Route path="/make" element={<Make />} />
           <Route path="/user" element={<User />} />
           <Route path="/user-add" element={<UserAdd />} />
-          <Route path="/client-add" element={<ClientAdd />} />
-          <Route path="/client/edit/:id" element={<ClientEdit />} />
           <Route path="/item" element={<Item />} />
           <Route path="/logistics" element={<Logistics />} />
           <Route path="/pending-logistics" element={<PendingLogistics />} />

@@ -574,7 +574,7 @@ button.clear-btn {
 ul.pagination {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: end;
     gap: 20px;
 }
 button.page-link{
