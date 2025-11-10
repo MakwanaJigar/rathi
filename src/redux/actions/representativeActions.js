@@ -1,6 +1,5 @@
-import axios from 'axios';
+import axios from "axios";
 import { saveAs } from "file-saver";
-
 
 export const FETCH_SALES_REPS_SUCCESS = "FETCH_SALES_REPS_SUCCESS";
 export const ADD_SALES_REP_REQUEST = "ADD_SALES_REP_REQUEST";
@@ -14,38 +13,38 @@ export const DELETE_REP_FAIL = "DELETE_REP_FAIL";
 export const UPDATE_SALES_REP_REQUEST = "UPDATE_SALES_REP_REQUEST";
 export const UPDATE_SALES_REP_SUCCESS = "UPDATE_SALES_REP_SUCCESS";
 export const UPDATE_SALES_REP_FAIL = "UPDATE_SALES_REP_FAIL";
-export const IMPORT_SALES_REP_REQUEST = 'IMPORT_SALES_REP_REQUEST';
-export const IMPORT_SALES_REP_SUCCESS = 'IMPORT_SALES_REP_SUCCESS';
-export const IMPORT_SALES_REP_FAILURE = 'IMPORT_SALES_REP_FAILURE';
-
-
+export const IMPORT_SALES_REP_REQUEST = "IMPORT_SALES_REP_REQUEST";
+export const IMPORT_SALES_REP_SUCCESS = "IMPORT_SALES_REP_SUCCESS";
+export const IMPORT_SALES_REP_FAILURE = "IMPORT_SALES_REP_FAILURE";
 
 export const fetchSalesReps = () => {
   return async (dispatch) => {
-    const res = await fetch("https://replete-software.com/projects/rathi/api/representative-list");
+    const res = await fetch(
+      "https://replete-software.com/projects/rathi/api/representative-list"
+    );
     const data = await res.json();
 
     let reps = [];
     if (Array.isArray(data)) reps = data;
     else if (Array.isArray(data.data)) reps = data.data;
     else if (Array.isArray(data.representatives)) reps = data.representatives;
-
     dispatch({ type: FETCH_SALES_REPS_SUCCESS, payload: reps });
   };
 };
 
-
-
-/* ── add representative (POST) ─────────────────────────────────────── */
+/* ── add representative (POST) ── */
 export const addSalesRep = (payload) => async (dispatch) => {
   dispatch({ type: ADD_SALES_REP_REQUEST });
 
   try {
-    const res = await fetch("https://replete-software.com/projects/rathi/api/add_representative", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+    const res = await fetch(
+      "https://replete-software.com/projects/rathi/api/add_representative",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      }
+    );
 
     const data = await res.json();
 
@@ -57,7 +56,10 @@ export const addSalesRep = (payload) => async (dispatch) => {
 
     if (isSuccess) {
       dispatch({ type: ADD_SALES_REP_SUCCESS });
-      return { ok: true, message: data?.message || "Sales representative added successfully!" };
+      return {
+        ok: true,
+        message: data?.message || "Sales representative added successfully!",
+      };
     } else {
       const errorMsg = data?.message || "Failed to add sales representative.";
       dispatch({ type: ADD_SALES_REP_FAIL, payload: errorMsg });
@@ -69,15 +71,8 @@ export const addSalesRep = (payload) => async (dispatch) => {
   }
 };
 
-
-
-
-
-
-
-
-// GET  export‑items  ➜ download CSV to the user’s machine
-export const exportRepresentative = () => async dispatch => {
+  // GET  export‑items  ➜ download CSV to the user’s machine
+export const exportRepresentative = () => async (dispatch) => {
   dispatch({ type: EXPORT_SALES_REP_REQUEST });
 
   try {
@@ -86,19 +81,22 @@ export const exportRepresentative = () => async dispatch => {
     );
     if (!res.ok) throw new Error("Export failed.");
 
-    const blob = await res.blob();               // CSV as binary
+    const blob = await res.blob(); // CSV as binary
 
     // Use file‑saver for the download (handles all browsers incl. Edge)
-    const fileName = `representative_${new Date().toISOString().slice(0, 10)}.csv`;
+    const fileName = `representative_${new Date()
+      .toISOString()
+      .slice(0, 10)}.csv`;
     saveAs(blob, fileName);
 
     dispatch({ type: EXPORT_SALES_REP_SUCCESS });
   } catch (err) {
-    dispatch({ type: EXPORT_SALES_REP_FAIL, payload: err.message || "Export failed" });
+    dispatch({
+      type: EXPORT_SALES_REP_FAIL,
+      payload: err.message || "Export failed",
+    });
   }
 };
-
-
 
 // delete
 
@@ -118,10 +116,6 @@ export const deleteRepresentative = (id) => async (dispatch) => {
     dispatch({ type: DELETE_REP_FAIL, payload: err.message });
   }
 };
-
-
-
-
 
 // edit
 
@@ -146,7 +140,8 @@ export const updateSalesRep = (id, payload) => async (dispatch) => {
 
     return {
       ok: isSuccess,
-      message: data?.message || (isSuccess ? "Updated successfully" : "Update failed"),
+      message:
+        data?.message || (isSuccess ? "Updated successfully" : "Update failed"),
     };
   } catch (err) {
     return {
@@ -156,20 +151,17 @@ export const updateSalesRep = (id, payload) => async (dispatch) => {
   }
 };
 
-
-
-
 // import
 export const importSalesRepresentatives = (formData) => async (dispatch) => {
   dispatch({ type: IMPORT_SALES_REP_REQUEST });
 
   try {
     const response = await axios.post(
-      'https://replete-software.com/projects/rathi/api/import-representatives',
+      "https://replete-software.com/projects/rathi/api/import-representatives",
       formData,
       {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
       }
     );

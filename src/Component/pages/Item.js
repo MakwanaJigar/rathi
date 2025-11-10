@@ -8,6 +8,60 @@ import {
   deleteItem,
 } from "../../redux/actions/itemActions";
 
+
+// =================================================================
+// 1. DELETE CONFIRMATION MODAL COMPONENT (Re-used/Modified with unique class)
+// =================================================================
+const DeleteConfirmationModal = ({ show, onClose, onConfirm }) => {
+  // Return null if modal is not active
+  if (!show) return null;
+
+  // Uses 'show' and 'd-block' to force the Bootstrap modal to display
+  // Unique class: delete-item-modal-backdrop
+  return (
+    <div className="modal fade show d-block delete-item-modal-backdrop" tabIndex="-1" style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+      {/* Unique class: delete-item-modal-custom */}
+      <div className="modal-dialog modal-dialog-centered delete-item-modal-custom">
+        <div className="modal-content">
+          
+          <div className="modal-header">
+            <h5 className="modal-title">Delete Item</h5>
+            <button 
+              type="button" 
+              className="btn-close" 
+              aria-label="Close" 
+              onClick={onClose}
+            ></button>
+          </div>
+
+          <div className="modal-body">
+            <p>Are you sure you want to delete this item?</p>
+          </div>
+
+          <div className="modal-footer justify-content-start border-top-0 pt-0">
+            <button 
+              type="button" 
+              className="btn btn-danger" 
+              onClick={onConfirm}
+            >
+              Delete
+            </button>
+            <button 
+              type="button" 
+              className="btn btn-secondary ms-2" 
+              onClick={onClose}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+// =================================================================
+
+
 const Item = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -34,6 +88,11 @@ const Item = () => {
   const [showImportModal, setShowImportModal] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [importing, setImporting] = useState(false);
+
+  // --- NEW STATE FOR DELETE MODAL ---
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [itemIdToDelete, setItemIdToDelete] = useState(null);
+  // ----------------------------------
 
   useEffect(() => {
     (async () => {
@@ -69,11 +128,23 @@ const Item = () => {
     setCurrentPage(page);
   };
 
+  // --- UPDATED handleDelete to OPEN MODAL ---
   const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this item?")) {
-      dispatch(deleteItem(id));
-    }
+    setItemIdToDelete(id); // Set the ID
+    setShowDeleteModal(true); // Open the modal
+    // Note: Removed the window.confirm
   };
+
+  // --- NEW FUNCTION to CONFIRM DELETION ---
+  const confirmDelete = () => {
+    if (itemIdToDelete) {
+      dispatch(deleteItem(itemIdToDelete)); // Dispatch the delete action
+    }
+    // Reset state and close modal
+    setShowDeleteModal(false);
+    setItemIdToDelete(null);
+  };
+  // ------------------------------------------
 
   const handleSubmitImport = async () => {
     if (!selectedFile) {
@@ -199,6 +270,7 @@ const Item = () => {
                             </button>
                             <button
                               className="btn btn-sm"
+                              // Call the new handleDelete to open the modal
                               onClick={() => handleDelete(item.id)}
                             >
                               <i className="fas fa-trash" />
@@ -289,6 +361,13 @@ const Item = () => {
           </div>
         </div>
       )}
+
+      {/* RENDER NEW DELETE MODAL */}
+      <DeleteConfirmationModal
+        show={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={confirmDelete}
+      />
     </div>
   );
 };

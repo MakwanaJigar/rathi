@@ -8,6 +8,58 @@ import {
   importMakes,
 } from "../../redux/actions/makeActions";
 
+
+// =================================================================
+// 1. DELETE CONFIRMATION MODAL COMPONENT (Re-used/Modified with unique class)
+// =================================================================
+const DeleteConfirmationModal = ({ show, onClose, onConfirm }) => {
+  if (!show) return null;
+
+  // Unique class: delete-make-modal-backdrop
+  return (
+    <div className="modal fade show d-block delete-make-modal-backdrop" tabIndex="-1" style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+      {/* Unique class: delete-make-modal-custom */}
+      <div className="modal-dialog modal-dialog-centered delete-make-modal-custom">
+        <div className="modal-content">
+          
+          <div className="modal-header">
+            <h5 className="modal-title">Delete Make</h5>
+            <button 
+              type="button" 
+              className="btn-close" 
+              aria-label="Close" 
+              onClick={onClose}
+            ></button>
+          </div>
+
+          <div className="modal-body">
+            <p>Are you sure you want to delete this make?</p>
+          </div>
+
+          <div className="modal-footer justify-content-start border-top-0 pt-0">
+            <button 
+              type="button" 
+              className="btn btn-danger" 
+              onClick={onConfirm}
+            >
+              Delete
+            </button>
+            <button 
+              type="button" 
+              className="btn btn-secondary ms-2" 
+              onClick={onClose}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+// =================================================================
+
+
 const Make = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -18,8 +70,15 @@ const Make = () => {
   const [filteredMakes, setFilteredMakes] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  
+  // Import modal states
   const [showImportModal, setShowImportModal] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
+
+  // --- NEW STATE FOR DELETE MODAL ---
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [makeIdToDelete, setMakeIdToDelete] = useState(null);
+  // ----------------------------------
 
   const itemsPerPage = 10;
 
@@ -41,8 +100,10 @@ const Make = () => {
     return filteredMakes.slice(start, start + itemsPerPage);
   }, [filteredMakes, currentPage]);
 
+  const totalPages = Math.ceil(filteredMakes.length / itemsPerPage);
+
   const changePage = (page) => {
-    if (page < 1 || page > Math.ceil(filteredMakes.length / itemsPerPage))
+    if (page < 1 || page > totalPages)
       return;
     setCurrentPage(page);
   };
@@ -51,11 +112,23 @@ const Make = () => {
     dispatch(exportMakes());
   };
 
+  // --- UPDATED handleDelete to OPEN MODAL ---
   const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this make?")) {
-      dispatch(deleteMake(id));
-    }
+    setMakeIdToDelete(id);
+    setShowDeleteModal(true);
+    // Removed window.confirm
   };
+
+  // --- NEW FUNCTION to CONFIRM DELETION ---
+  const confirmDelete = () => {
+    if (makeIdToDelete) {
+      dispatch(deleteMake(makeIdToDelete));
+    }
+    // Close modal and reset ID
+    setShowDeleteModal(false);
+    setMakeIdToDelete(null);
+  };
+  // ------------------------------------------
 
   const handleSubmitImport = async () => {
     if (!selectedFile) {
@@ -160,6 +233,7 @@ const Make = () => {
                             </button>
                             <button
                               className="btn btn-sm"
+                              // Use the new handleDelete
                               onClick={() => handleDelete(item.id)}
                             >
                               <i className="fas fa-trash" />
@@ -194,7 +268,7 @@ const Make = () => {
                       </li>
                       {Array.from(
                         {
-                          length: Math.ceil(filteredMakes.length / itemsPerPage),
+                          length: totalPages,
                         },
                         (_, i) => i + 1
                       ).map((page) => (
@@ -212,8 +286,7 @@ const Make = () => {
                         </li>
                       ))}
                       <li
-                        className={`page-item ${currentPage ===
-                          Math.ceil(filteredMakes.length / itemsPerPage)
+                        className={`page-item ${currentPage === totalPages
                           ? "disabled"
                           : ""
                           }`}
@@ -234,11 +307,11 @@ const Make = () => {
         </div>
       </div>
 
-      {/* Modal */}
+      {/* Import Modal */}
       {showImportModal && (
         <div className="import-modal-container">
           <div className="import-modal-box">
-            <h5>📁 Upload CSV File</h5>
+            <h5>📦 Import Client CSV</h5>
             <input
               type="file"
               accept=".csv"
@@ -258,7 +331,13 @@ const Make = () => {
           </div>
         </div>
       )}
-
+      
+      {/* RENDER NEW DELETE MODAL */}
+      <DeleteConfirmationModal
+        show={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={confirmDelete}
+      />
     </div>
   );
 };

@@ -1,14 +1,64 @@
 import React, { useEffect, useState, useMemo } from "react";
-import axios from 'axios';
-
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import {
   fetchClients,
   exportClients,
   deleteClient,
-  importWarehouse
+  importWarehouse,
 } from "../../redux/actions/clientActions";
+
+// =================================================================
+// 1. DELETE CONFIRMATION MODAL COMPONENT WITH UNIQUE BOOTSTRAP CLASSES
+// =================================================================
+const DeleteConfirmationModal = ({ show, onClose, onConfirm }) => {
+  // Return null if modal is not active
+  if (!show) return null;
+
+  // Uses 'show' and 'd-block' to force the Bootstrap modal to display
+  return (
+    // The main modal container (backdrop) with a unique class
+    <div className="modal fade show d-block delete-client-modal-backdrop" tabIndex="-1" style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+      {/* Unique class for the dialog structure */}
+      <div className="modal-dialog modal-dialog-centered delete-client-modal-custom">
+        <div className="modal-content">
+          
+          <div className="modal-header">
+            <h5 className="modal-title">Delete Client</h5>
+            <button 
+              type="button" 
+              className="btn-close" 
+              aria-label="Close" 
+              onClick={onClose}
+            ></button>
+          </div>
+
+          <div className="modal-body">
+            <p>Are you sure you want to delete this client?</p>
+          </div>
+
+          <div className="modal-footer">
+            <button 
+              type="button" 
+              className="btn btn-danger" 
+              onClick={onConfirm}
+            >
+              Delete
+            </button>
+            <button 
+              type="button" 
+              className="btn btn-secondary" 
+              onClick={onClose}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+// =================================================================
 
 const Client = () => {
   const { importResult } = useSelector((state) => state.client);
@@ -18,6 +68,11 @@ const Client = () => {
   const [showImportModal, setShowImportModal] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [importing, setImporting] = useState(false);
+
+  // --- NEW STATE FOR DELETE MODAL ---
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [clientIdToDelete, setClientIdToDelete] = useState(null);
+  // ----------------------------------
 
   const clients = useSelector((state) =>
     Array.isArray(state.client.clients) ? state.client.clients : []
@@ -73,59 +128,57 @@ const Client = () => {
     dispatch(exportClients());
   };
 
+  // --- FUNCTION to OPEN MODAL ---
   const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this client?")) {
-      dispatch(deleteClient(id));
+    setClientIdToDelete(id); // Set the ID
+    setShowDeleteModal(true); // Open the modal
+  };
+
+  // --- FUNCTION to CONFIRM DELETION ---
+  const confirmDelete = () => {
+    if (clientIdToDelete) {
+      dispatch(deleteClient(clientIdToDelete)); // Dispatch the delete action
+    }
+    // Close modal and reset state
+    setShowDeleteModal(false);
+    setClientIdToDelete(null);
+  };
+  // ------------------------------------------
+
+  const handleSubmitImport = async () => {
+    if (!selectedFile) {
+      alert("Please select a CSV file.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+
+    try {
+      await dispatch(importWarehouse(formData));
+      setShowImportModal(false);
+      setSelectedFile(null);
+    } catch (err) {
+      alert("❌ Import failed. See console.");
+      console.error(err);
     }
   };
 
-
-
-
-
-const handleSubmitImport = async () => {
-  if (!selectedFile) {
-    alert("Please select a CSV file.");
-    return;
-  }
-
-  const formData = new FormData();
-  formData.append("file", selectedFile); // ✅ Use correct field name
-
-  try {
-    await dispatch(importWarehouse(formData));
-    setShowImportModal(false);
-    setSelectedFile(null);
-  } catch (err) {
-    alert("❌ Import failed. See console.");
-    console.error(err);
-  }
-};
-
-
-useEffect(() => {
-  if (importResult?.message) {
-    alert(importResult.message);
-
-    if (importResult.errors?.length > 0) {
-      console.log(" Import errors:", importResult.errors);
-      importResult.errors.forEach((err) => {
-        console.warn(` Row ${err.row}: ${err.error}`);
-      });
+  useEffect(() => {
+    if (importResult?.message) {
+      alert(importResult.message);
+      if (importResult.errors?.length > 0) {
+        console.log(" Import errors:", importResult.errors);
+        importResult.errors.forEach((err) => {
+          console.warn(` Row ${err.row}: ${err.error}`);
+        });
+      }
     }
-  }
 
-  if (error) {
-    alert(` Error: ${error}`);
-  }
-}, [importResult, error]);
-
-
-
-
-
-
-
+    if (error) {
+      alert(` Error: ${error}`);
+    }
+  }, [importResult, error]);
 
   return (
     <div className="container-fluid">
@@ -211,7 +264,11 @@ useEffect(() => {
                             >
                               <i className="fas fa-pen" />
                             </button>
-                            <button className="btn btn-sm" onClick={() => handleDelete(item.id)}>
+                            <button 
+                                className="btn btn-sm" 
+                                // Call the new handler
+                                onClick={() => handleDelete(item.id)}
+                            >
                               <i className="fas fa-trash" />
                             </button>
                           </td>
@@ -269,30 +326,37 @@ useEffect(() => {
         </div>
       </div>
 
-      {/* Import Modal */}
+      {/* Import Modal - Keeping original for context */}
       {showImportModal && (
-  <div className="import-modal-container">
-    <div className="import-modal-box">
-      <h5>📦 Import Client CSV</h5>
-      <input
-        type="file"
-        accept=".csv"
-        onChange={(e) => setSelectedFile(e.target.files[0])}
+        <div className="import-modal-container">
+          <div className="import-modal-box">
+            <h5>📦 Import Client CSV</h5>
+            <input
+              type="file"
+              accept=".csv"
+              onChange={(e) => setSelectedFile(e.target.files[0])}
+            />
+            <div className="import-modal-actions">
+              <button className="import-btn-modal" onClick={handleSubmitImport}>
+                Submit
+              </button>
+              <button
+                className="import-btn-modal-cancel"
+                onClick={() => setShowImportModal(false)}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* RENDER NEW DELETE MODAL */}
+      <DeleteConfirmationModal
+        show={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={confirmDelete}
       />
-      <div className="import-modal-actions">
-        <button className="import-btn-modal" onClick={handleSubmitImport}>
-          Submit
-        </button>
-        <button
-          className="import-btn-modal-cancel"
-          onClick={() => setShowImportModal(false)}
-        >
-          Cancel
-        </button>
-      </div>
-    </div>
-  </div>
-)}
     </div>
   );
 };

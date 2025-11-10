@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import { useReactToPrint } from "react-to-print";
 import {
   fetchChallans,
   deleteChallan,
@@ -8,6 +9,14 @@ import {
 } from "../../redux/actions/deliveryChallanActions";
 
 const DeliveryChallan = () => {
+  const printRef = useRef();
+
+  const handlePrint = useReactToPrint({
+    content: () => printRef.current, // ✅ MUST return the element reference
+    documentTitle: "Delivery Challan",
+    onAfterPrint: () => console.log("Print success"),
+  });
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -50,7 +59,10 @@ const DeliveryChallan = () => {
   // CALCULATING WEIGHT
   const calculateTotalWeight = (items) => {
     if (!items || items.length === 0) return 0;
-    return items.reduce((total, item) => total + (parseFloat(item.qty_mt) || 0), 0);
+    return items.reduce(
+      (total, item) => total + (parseFloat(item.qty_mt) || 0),
+      0
+    );
   };
 
   // Pagination Logic
@@ -62,7 +74,8 @@ const DeliveryChallan = () => {
     <div className="container-fluid">
       <div className="main-content">
         <p className="main-container-title">
-          Dashboard <i className="fa-solid fa-angles-right"></i> Delivery Challan
+          Dashboard <i className="fa-solid fa-angles-right"></i> Delivery
+          Challan
         </p>
 
         <div className="delivery-challan-top-title-container">
@@ -86,7 +99,7 @@ const DeliveryChallan = () => {
             <p>No data found.</p>
           ) : (
             <>
-              <table className="table align-middle table-bordered">
+              <table className="table align-middle table-bordered" ref={printRef}>
                 <thead className="table-light">
                   <tr>
                     <th className="fw-300">D.O. Date</th>
@@ -116,12 +129,21 @@ const DeliveryChallan = () => {
                         <button className="btn btn-sm me-1">
                           <i className="fas fa-eye"></i>
                         </button>
-                        <button className="btn btn-sm me-1">
-                          <i class="fa-solid fa-print"></i>
+                        <button className="btn btn-sm me-1" onClick={handlePrint}>
+                          <i className="fa-solid fa-print"></i>
                         </button>
+
+                        {/* 🧾 Section to print */}
+                        {/* <div ref={printRef}>
+                          <h3>Invoice #123</h3>
+                          <p>Date: 6 Oct 2025</p>
+                          <p>Total: ₹4500</p>
+                        </div> */}
                         <button
                           className="btn btn-sm me-1"
-                          onClick={() => navigate(`/challan-edit/${challan.id}`)}
+                          onClick={() =>
+                            navigate(`/challan-edit/${challan.id}`)
+                          }
                         >
                           <i className="fas fa-pen"></i>
                         </button>
@@ -143,7 +165,10 @@ const DeliveryChallan = () => {
               {totalPages > 1 && (
                 <nav>
                   <ul className="pagination">
-                    <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+                    <li
+                      className={`page-item ${currentPage === 1 ? "disabled" : ""
+                        }`}
+                    >
                       <button
                         className="page-link"
                         onClick={() => setCurrentPage(currentPage - 1)}
@@ -154,7 +179,8 @@ const DeliveryChallan = () => {
                     {Array.from({ length: totalPages }, (_, index) => (
                       <li
                         key={index + 1}
-                        className={`page-item ${currentPage === index + 1 ? "active" : ""}`}
+                        className={`page-item ${currentPage === index + 1 ? "active" : ""
+                          }`}
                       >
                         <button
                           className="page-link"
@@ -164,7 +190,10 @@ const DeliveryChallan = () => {
                         </button>
                       </li>
                     ))}
-                    <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
+                    <li
+                      className={`page-item ${currentPage === totalPages ? "disabled" : ""
+                        }`}
+                    >
                       <button
                         className="page-link"
                         onClick={() => setCurrentPage(currentPage + 1)}
@@ -212,7 +241,7 @@ const DeliveryChallan = () => {
           </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 

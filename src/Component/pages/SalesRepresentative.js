@@ -1,15 +1,74 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { fetchSalesReps, exportRepresentative, deleteRepresentative , importSalesRepresentatives} from "../../redux/actions/representativeActions";
+import { fetchSalesReps, exportRepresentative, deleteRepresentative, importSalesRepresentatives} from "../../redux/actions/representativeActions";
+
+
+// =================================================================
+// 1. DELETE CONFIRMATION MODAL COMPONENT (Re-used/Modified with unique class)
+// =================================================================
+const DeleteConfirmationModal = ({ show, onClose, onConfirm }) => {
+  // Return null if modal is not active
+  if (!show) return null;
+
+  // Uses 'show' and 'd-block' to force the Bootstrap modal to display
+  // Unique class: delete-rep-modal-backdrop
+  return (
+    <div className="modal fade show d-block delete-rep-modal-backdrop" tabIndex="-1" style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+      {/* Unique class: delete-rep-modal-custom */}
+      <div className="modal-dialog modal-dialog-centered delete-rep-modal-custom">
+        <div className="modal-content">
+          
+          <div className="modal-header">
+            <h5 className="modal-title">Delete Sales Representative</h5>
+            <button 
+              type="button" 
+              className="btn-close" 
+              aria-label="Close" 
+              onClick={onClose}
+            ></button>
+          </div>
+
+          <div className="modal-body">
+            <p>Are you sure you want to delete this sales representative?</p>
+          </div>
+
+          <div className="modal-footer justify-content-start border-top-0 pt-0">
+            <button 
+              type="button" 
+              className="btn btn-danger" 
+              onClick={onConfirm}
+            >
+              Delete
+            </button>
+            <button 
+              type="button" 
+              className="btn btn-secondary ms-2" 
+              onClick={onClose}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+// =================================================================
+
 
 const SalesRepresentative = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [showImportModal, setShowImportModal] = useState(false);
-const [selectedFile, setSelectedFile] = useState(null);
-const [importing, setImporting] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [importing, setImporting] = useState(false);
+
+  // --- NEW STATE FOR DELETE MODAL ---
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [repIdToDelete, setRepIdToDelete] = useState(null);
+  // ----------------------------------
 
   /* ── Select representatives from Redux ── */
   const reps = useSelector((state) =>
@@ -72,37 +131,46 @@ const [importing, setImporting] = useState(false);
     dispatch(exportRepresentative());
   };
 
-  // delete
+  // --- UPDATED handleDelete to OPEN MODAL ---
   const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this make?")) {
-      dispatch(deleteRepresentative(id));
-    }
+    setRepIdToDelete(id); // Set the ID of the rep to delete
+    setShowDeleteModal(true); // Open the custom modal
+    // Note: Removed the window.confirm
   };
 
-
+  // --- NEW FUNCTION to CONFIRM DELETION ---
+  const confirmDelete = () => {
+    if (repIdToDelete) {
+      dispatch(deleteRepresentative(repIdToDelete)); // Dispatch the delete action
+    }
+    // Reset state and close modal
+    setShowDeleteModal(false);
+    setRepIdToDelete(null);
+  };
+  // ------------------------------------------
 
   // import
   const handleSubmitImport = async () => {
-  if (!selectedFile) {
-    alert("Please select a CSV file.");
-    return;
-  }
+    if (!selectedFile) {
+      alert("Please select a CSV file.");
+      return;
+    }
 
-  const formData = new FormData();
-  formData.append("csv_file", selectedFile); // match this with your API’s field name
+    const formData = new FormData();
+    formData.append("csv_file", selectedFile); // match this with your API’s field name
 
-  try {
-    setImporting(true);
-    await dispatch(importSalesRepresentatives(formData)); // update with your correct action
-    await dispatch(fetchSalesReps()); // refetch updated data
-    setShowImportModal(false);
-    setSelectedFile(null);
-  } catch (err) {
-    alert("Import failed. Please try again.");
-  } finally {
-    setImporting(false);
-  }
-};
+    try {
+      setImporting(true);
+      await dispatch(importSalesRepresentatives(formData)); // update with your correct action
+      await dispatch(fetchSalesReps()); // refetch updated data
+      setShowImportModal(false);
+      setSelectedFile(null);
+    } catch (err) {
+      alert("Import failed. Please try again.");
+    } finally {
+      setImporting(false);
+    }
+  };
 
 
   /* ── UI ── */
@@ -129,33 +197,33 @@ const [importing, setImporting] = useState(false);
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
-          <button
-                className="import-btn"
-                onClick={() => setShowImportModal(true)}
-              >
-                <i className="fa-solid fa-download" /> Import
-              </button>
-              <button
-                className="export-btn"
-                onClick={handleExportClick}
-                disabled={exporting}
-              >
-                {exporting ? (
-                  <>
-                    <i className="fa-solid fa-spinner fa-spin" /> Exporting…
-                  </>
-                ) : (
-                  <>
-                    <i className="fa-solid fa-upload" /> Export
-                  </>
-                )}
-              </button>
-              <button
-                className="add-btn"
-                onClick={() => navigate("/sales-representative-add")}
-              >
-                <i className="fa-solid fa-plus" /> Add
-              </button>
+            <button
+                  className="import-btn"
+                  onClick={() => setShowImportModal(true)}
+                >
+                  <i className="fa-solid fa-download" /> Import
+                </button>
+                <button
+                  className="export-btn"
+                  onClick={handleExportClick}
+                  disabled={exporting}
+                >
+                  {exporting ? (
+                    <>
+                      <i className="fa-solid fa-spinner fa-spin" /> Exporting…
+                    </>
+                  ) : (
+                    <>
+                      <i className="fa-solid fa-upload" /> Export
+                    </>
+                  )}
+                </button>
+                <button
+                  className="add-btn"
+                  onClick={() => navigate("/sales-representative-add")}
+                >
+                  <i className="fa-solid fa-plus" /> Add
+                </button>
             </div>
           </div>
 
@@ -197,6 +265,7 @@ const [importing, setImporting] = useState(false);
 
                             <button
                               className="btn btn-sm"
+                              // Use the updated handleDelete to open the modal
                               onClick={() => handleDelete(r.id)}
                             >
                               <i className="fas fa-trash" />
@@ -274,8 +343,14 @@ const [importing, setImporting] = useState(false);
             </div>
           </div>
         </div>
-      )}      
+      )}      
 
+      {/* RENDER NEW DELETE MODAL */}
+      <DeleteConfirmationModal
+        show={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={confirmDelete}
+      />
     </div>
   );
 };

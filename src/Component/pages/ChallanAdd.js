@@ -30,8 +30,8 @@ const ChallanAdd = () => {
     ship_to_address: "",
     payment_terms: "",
     do_date: "",
-    sales_rep: "",
-    sales_rep_id: "",
+    sales_rep: "", // Stores the NAME of the sales rep
+    sales_rep_id: "", // Stores the ID of the sales rep (used as the select value)
     do_no: "",
     client_id: "",
     date: "",
@@ -58,6 +58,15 @@ const ChallanAdd = () => {
     party_po_date: "",
   });
 
+  // Selectors
+  const makes = useSelector((state) => state.make?.makes || []);
+  const warehouses = useSelector((state) => state.warehouse?.warehouses || []);
+  const clients = useSelector((state) => state.client.clients);
+  const representatives = useSelector(
+    (state) => state.salesRep.representatives
+  );
+  const challans = useSelector((state) => state.deliveryChallan.challans);
+
   // Handle field changes
   const handleChange = (e, section, index) => {
     const { name, value, options, selectedIndex } = e.target;
@@ -66,15 +75,20 @@ const ChallanAdd = () => {
       const updatedItems = [...formData.items];
       updatedItems[index][name] = value;
       setFormData({ ...formData, items: updatedItems });
-    }
-    else if (name === "sales_rep") {
+    } else if (name === "sales_rep") {
+      // ⭐ START: CORRECTED LOGIC FOR SALES REP DROPDOWN ⭐
+      const selectedRepId = value; // The 'value' from the option is the ID
+      const selectedRep = representatives.find(
+        (rep) => rep.id.toString() === selectedRepId
+      );
+
       setFormData({
         ...formData,
-        sales_rep: options[selectedIndex].text,  // store name
-        sales_rep_id: value                      // store id
+        sales_rep: selectedRep ? selectedRep.name : "", // Store the name
+        sales_rep_id: selectedRepId, // Store the ID
       });
-    }
-    else {
+      // ⭐ END: CORRECTED LOGIC FOR SALES REP DROPDOWN ⭐
+    } else {
       setFormData({
         ...formData,
         [name]: value,
@@ -107,7 +121,6 @@ const ChallanAdd = () => {
     }
   };
 
-
   // DATE FORMAT
   const formatDate = (date) => {
     if (!date) return null; // send null if empty
@@ -115,7 +128,6 @@ const ChallanAdd = () => {
     if (isNaN(d)) return null; // safeguard invalid date
     return d.toISOString().split("T")[0]; // YYYY-MM-DD
   };
-
 
   // Submit form
   const handleSubmit = async (e) => {
@@ -131,8 +143,6 @@ const ChallanAdd = () => {
       do_date: formatDate(formData.do_date),
       do_no: formData.do_no || "",
       client_id: formData.client_id ? Number(formData.client_id) : null,
-      // date: formData.date ? Number (formData.date) : null,
-      // date: formatDate(formData.date),
       order_notes: formData.order_notes || "",
       warehouse_notes: formData.warehouse_notes || "",
       transport_notes: formData.transport_notes || "",
@@ -141,7 +151,9 @@ const ChallanAdd = () => {
       mtc: formData.mtc || "",
       party_po_no: formData.party_po_no || "",
       party_po_date: formatDate(formData.party_po_date),
-      sales_rep: formData.sales_rep || "",
+      sales_rep: formData.sales_rep || "", // The name is used here
+      // Consider sending sales_rep_id if the API requires the ID instead of the name
+      // sales_rep_id: formData.sales_rep_id ? Number(formData.sales_rep_id) : null,
       items: formData.items.map((item) => ({
         item: item.item || "",
         make: item.make || "",
@@ -153,7 +165,6 @@ const ChallanAdd = () => {
         warehouse: item.warehouse || "",
         status: item.status || "",
       })),
-
     };
 
     console.log("✅ Submitting Delivery Challan Payload:", payload);
@@ -161,12 +172,6 @@ const ChallanAdd = () => {
     const response = await dispatch(addDeliveryChallan(payload));
     console.log("✅ Delivery Challan API Response:", response);
 
-    // if (response.success || response.message.includes("created successfully")) {
-    //   window.alert("Delivery Challan submitted successfully!");
-    //   navigate("/delivery-challan");
-    // } else {
-    //   window.alert("Form submission failed.\n" + (response.message || "Unknown error"));
-    // }
     if (response.success || response.message.includes("created successfully")) {
       setMessage("Delivery Challan submitted successfully!");
       setMessageType("success");
@@ -177,8 +182,6 @@ const ChallanAdd = () => {
     }
   };
 
-
-
   // Redirect on success
   useEffect(() => {
     if (addSuccess) {
@@ -186,32 +189,12 @@ const ChallanAdd = () => {
       navigate("/delivery-challan");
     }
   }, [addSuccess, navigate]);
-  // .............ADD LOGIN ENDED
 
-  const makes = useSelector((state) => state.make?.makes || []);
-
-  const warehouses = useSelector((state) => state.warehouse?.warehouses || []);
-
-  const clients = useSelector((state) => state.client.clients);
-  // console.log(clients);
-
-  const representatives = useSelector(
-    (state) => state.salesRep.representatives
-  );
-
+  // Fetch initial data
   useEffect(() => {
     dispatch(fetchWarehouses());
-  }, [dispatch]);
-
-  useEffect(() => {
     dispatch(fetchMakes());
-  }, [dispatch]);
-
-  useEffect(() => {
     dispatch(fetchSalesReps());
-  }, [dispatch]);
-
-  useEffect(() => {
     dispatch(fetchClients());
   }, [dispatch]);
 
@@ -315,11 +298,10 @@ const ChallanAdd = () => {
   };
 
   // D.O.NUMBER
-  const challans = useSelector((state) => state.deliveryChallan.challans);
   const [manualEntry, setManualEntry] = useState(false);
 
   // Auto-generate D.O. No (you can replace this with your logic)
-  const getNextDONumber = (challans) => {
+  const getNextDONumberLogic = (challans) => {
     if (!challans || challans.length === 0) {
       return "RI-01"; // First challan
     }
@@ -335,7 +317,7 @@ const ChallanAdd = () => {
 
   useEffect(() => {
     if (!manualEntry) {
-      const nextDO = getNextDONumber(challans);
+      const nextDO = getNextDONumberLogic(challans); // Use local logic or Redux logic
       setDoNumber(nextDO);
       setFormData((prev) => ({ ...prev, do_no: nextDO }));
     }
@@ -346,6 +328,7 @@ const ChallanAdd = () => {
     setDoNumber(value);
     setFormData((prev) => ({ ...prev, do_no: value }));
   };
+
   return (
     <>
       <div className="container-fluid">
@@ -366,10 +349,12 @@ const ChallanAdd = () => {
           {message && (
             <div
               style={{
-                backgroundColor: messageType === "success" ? "#d1e7dd" : "#f8d7da",
+                backgroundColor:
+                  messageType === "success" ? "#d1e7dd" : "#f8d7da",
                 color: messageType === "success" ? "#0f5132" : "#842029",
-                border: `1px solid ${messageType === "success" ? "#badbcc" : "#f5c2c7"
-                  }`,
+                border: `1px solid ${
+                  messageType === "success" ? "#badbcc" : "#f5c2c7"
+                }`,
                 padding: "10px",
                 borderRadius: "5px",
                 marginBottom: "10px",
@@ -524,51 +509,6 @@ const ChallanAdd = () => {
                         onChange={handleChange}
                       />
                     </div>
-                    {/* <div className="party-name">
-                      <label>D.O. No</label>
-                      <div className="delivery-chall-payment-check-box">
-                        <input
-                          type="text"
-                          className="form-control"
-                          placeholder="D.O. Number"
-                          value={dONumber}
-                          onChange={handleDoNumberChange}
-                        />
-
-                        <div className="form-check d-flex align-items-center">
-                          <input
-                            type="checkbox"
-                            className="form-check-input"
-                            id="manualEntry"
-                            checked={manualEntry}
-                            onChange={(e) => {
-                              const checked = e.target.checked;
-                              setManualEntry(checked);
-                              if (!checked) {
-                                const nextDO = getNextDONumber(challans);
-                                setDoNumber(nextDO);
-                                setFormData((prev) => ({
-                                  ...prev,
-                                  do_no: nextDO,
-                                }));
-                              }
-                            }}
-                            style={{
-                              width: "18px",
-                              height: "18px",
-                              cursor: "pointer",
-                            }}
-                          />
-                          <label
-                            className="form-check-label ms-2"
-                            htmlFor="manualEntry"
-                            style={{ margin: 0, cursor: "pointer" }}
-                          >
-                            Type
-                          </label>
-                        </div>
-                      </div>
-                    </div> */}
                     <div className="party-name">
                       <label>D.O. No</label>
                       <div className="delivery-chall-payment-check-box">
@@ -591,12 +531,19 @@ const ChallanAdd = () => {
                               const checked = e.target.checked;
                               setManualEntry(checked);
                               if (!checked) {
-                                const nextDO = getNextDONumber(challans);
+                                const nextDO = getNextDONumberLogic(challans);
                                 setDoNumber(nextDO);
-                                setFormData((prev) => ({ ...prev, do_no: nextDO }));
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  do_no: nextDO,
+                                }));
                               }
                             }}
-                            style={{ width: "18px", height: "18px", cursor: "pointer" }}
+                            style={{
+                              width: "18px",
+                              height: "18px",
+                              cursor: "pointer",
+                            }}
                           />
                           <label
                             className="form-check-label ms-2"
@@ -614,7 +561,10 @@ const ChallanAdd = () => {
                       <label>Sales Rep.</label>
                       <select
                         name="sales_rep"
-                        value={formData.sales_rep}
+                        // ⭐ START: BINDING CHANGE ⭐
+                        // Bind the select value to the ID field in formData
+                        value={formData.sales_rep_id} 
+                        // ⭐ END: BINDING CHANGE ⭐
                         onChange={handleChange}
                         className="form-control"
                       >
@@ -642,7 +592,7 @@ const ChallanAdd = () => {
                       <input
                         type="date"
                         name="party_po_date"
-                        value={formData.party_po_date || ""} // ✅ Always string
+                        value={formData.party_po_date || ""}
                         onChange={handleChange}
                       />
                     </div>
@@ -796,8 +746,8 @@ const ChallanAdd = () => {
                     >
                       <option value="">Select Status</option>
                       <option value="Pending">Pending</option>
-                      <option value="Pending">Planning Given</option>
-                      <option value="Delivered">Ready for dispatch</option>
+                      <option value="Planning Given">Planning Given</option>
+                      <option value="Ready for dispatch">Ready for dispatch</option>
                     </select>
                   </div>
 
@@ -967,7 +917,7 @@ const ChallanAdd = () => {
                 </div>
               </div>
 
-              {/* <!-- Courier Options --> */}
+              {/* */}
               <div className="row mb-3 align-items-center border-top pt-3">
                 <div className="col-sm-2 fw-semibold">Courier Options</div>
                 <div className="col-sm freight-main-container">
@@ -1036,7 +986,7 @@ const ChallanAdd = () => {
                 </div>
               </div>
 
-              {/* <!-- MTC --> */}
+              {/* */}
               <div className="row mb-3 align-items-center border-top pt-3">
                 <div className="col-sm-2 fw-semibold">MTC</div>
                 <div className="col-sm freight-main-container">
@@ -1091,7 +1041,7 @@ const ChallanAdd = () => {
 
             <div className="chllan-page-form-btn-container">
               <button type="submit" className="submit-btn" disabled={loading}>
-                {loading ? "Submitting…" : "Submit"}
+                {loading || adding ? "Submitting…" : "Submit"}
               </button>
               <button type="reset" className="clear-btn">
                 Clear

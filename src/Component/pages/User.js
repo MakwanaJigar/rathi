@@ -3,6 +3,58 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { fetchUsers, deleteUser } from "../../redux/actions/userActions";
 
+
+// =================================================================
+// 1. DELETE CONFIRMATION MODAL COMPONENT (Re-used/Modified with unique class)
+// =================================================================
+const DeleteConfirmationModal = ({ show, onClose, onConfirm }) => {
+  if (!show) return null;
+
+  // Unique class: delete-user-modal-backdrop
+  return (
+    <div className="modal fade show d-block delete-user-modal-backdrop" tabIndex="-1" style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+      {/* Unique class: delete-user-modal-custom */}
+      <div className="modal-dialog modal-dialog-centered delete-user-modal-custom">
+        <div className="modal-content">
+          
+          <div className="modal-header">
+            <h5 className="modal-title">Delete User</h5>
+            <button 
+              type="button" 
+              className="btn-close" 
+              aria-label="Close" 
+              onClick={onClose}
+            ></button>
+          </div>
+
+          <div className="modal-body">
+            <p>Are you sure you want to delete this user?</p>
+          </div>
+
+          <div className="modal-footer justify-content-start border-top-0 pt-0">
+            <button 
+              type="button" 
+              className="btn btn-danger" 
+              onClick={onConfirm}
+            >
+              Delete
+            </button>
+            <button 
+              type="button" 
+              className="btn btn-secondary ms-2" 
+              onClick={onClose}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+// =================================================================
+
+
 const User = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -20,6 +72,12 @@ const User = () => {
   const [error, setError] = useState(null);
   const itemsPerPage = 10;
   const [currentPage, setCurrentPage] = useState(1);
+
+  // --- NEW STATE FOR DELETE MODAL ---
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [userIdToDelete, setUserIdToDelete] = useState(null);
+  // ----------------------------------
+
 
   /* ---------- Fetch users ---------- */
   useEffect(() => {
@@ -59,12 +117,23 @@ const User = () => {
     setCurrentPage(page);
   };
 
-  /* ---------- Delete handler ---------- */
+  /* ---------- Delete handler - UPDATED ---------- */
   const handleDelete = (id) => {
-    if (window.confirm("Delete this user?")) {
-      dispatch(deleteUser(id));
-    }
+    setUserIdToDelete(id); // Set the ID to be deleted
+    setShowDeleteModal(true); // Show the custom modal
+    // Removed window.confirm
   };
+
+  /* ---------- Confirm Delete function - NEW ---------- */
+  const confirmDelete = () => {
+    if (userIdToDelete) {
+      dispatch(deleteUser(userIdToDelete)); // Dispatch the Redux action
+    }
+    // Close modal and reset ID
+    setShowDeleteModal(false);
+    setUserIdToDelete(null);
+  };
+  // ----------------------------------------------------
   
 
   /* ---------- UI ---------- */
@@ -92,12 +161,7 @@ const User = () => {
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
-              {/* <button className="import-btn">
-                <i className="fa-solid fa-upload" /> Import
-              </button>
-              <button className="export-btn">
-                <i className="fa-solid fa-download" /> Export
-              </button> */}
+              
               <button className="add-btn" onClick={() => navigate("/user-add")}>
                 <i className="fa-solid fa-plus" /> Add
               </button>
@@ -144,6 +208,7 @@ const User = () => {
                             <button
                               className="btn btn-sm"
                               disabled={deletingId === u.id}
+                              // Use the updated handleDelete to open the modal
                               onClick={() => handleDelete(u.id)}
                             >
                               {deletingId === u.id ? (
@@ -210,6 +275,13 @@ const User = () => {
           </div>
         </div>
       </div>
+
+      {/* RENDER NEW DELETE MODAL */}
+      <DeleteConfirmationModal
+        show={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={confirmDelete}
+      />
     </div>
   );
 };

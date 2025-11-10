@@ -4,6 +4,57 @@ import { useNavigate } from "react-router-dom";
 import { fetchWarehouses, exportWarehouse, deleteWarehouse, importWarehouse } from "../../redux/actions/warehouseActions";
 
 
+// =================================================================
+// 1. DELETE CONFIRMATION MODAL COMPONENT (Re-used/Modified with unique class)
+// =================================================================
+const DeleteConfirmationModal = ({ show, onClose, onConfirm }) => {
+  if (!show) return null;
+
+  // Unique class: delete-warehouse-modal-backdrop
+  return (
+    <div className="modal fade show d-block delete-warehouse-modal-backdrop" tabIndex="-1" style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+      {/* Unique class: delete-warehouse-modal-custom */}
+      <div className="modal-dialog modal-dialog-centered delete-warehouse-modal-custom">
+        <div className="modal-content">
+          
+          <div className="modal-header">
+            <h5 className="modal-title">Delete Warehouse</h5>
+            <button 
+              type="button" 
+              className="btn-close" 
+              aria-label="Close" 
+              onClick={onClose}
+            ></button>
+          </div>
+
+          <div className="modal-body">
+            <p>Are you sure you want to delete this warehouse?</p>
+          </div>
+
+          <div className="modal-footer justify-content-start border-top-0 pt-0">
+            <button 
+              type="button" 
+              className="btn btn-danger" 
+              onClick={onConfirm}
+            >
+              Delete
+            </button>
+            <button 
+              type="button" 
+              className="btn btn-secondary ms-2" 
+              onClick={onClose}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+// =================================================================
+
+
 const Warehouse = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -12,11 +63,14 @@ const Warehouse = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [importing, setImporting] = useState(false);
 
+  // --- NEW STATE FOR DELETE MODAL ---
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [warehouseIdToDelete, setWarehouseIdToDelete] = useState(null);
+  // ----------------------------------
+
 
   const warehouses = useSelector((state) => state.warehouse.warehouses);
-
   const exporting = useSelector((state) => state.warehouse.exporting);
-
 
   const [filteredWarehouses, setFilteredWarehouses] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -73,14 +127,23 @@ const Warehouse = () => {
     dispatch(exportWarehouse());
   };
 
-  // delete
+  // --- UPDATED handleDelete to OPEN MODAL ---
   const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this warehouse?")) {
-      dispatch(deleteWarehouse(id));
-    }
+    setWarehouseIdToDelete(id);
+    setShowDeleteModal(true);
+    // Removed window.confirm
   };
 
-
+  // --- NEW FUNCTION to CONFIRM DELETION ---
+  const confirmDelete = () => {
+    if (warehouseIdToDelete) {
+      dispatch(deleteWarehouse(warehouseIdToDelete));
+    }
+    // Close modal and reset ID
+    setShowDeleteModal(false);
+    setWarehouseIdToDelete(null);
+  };
+  // ------------------------------------------
 
 
   // import
@@ -230,11 +293,12 @@ const Warehouse = () => {
           </div>
         </div>
       </div>
+      
       {/* Import Modal */}
       {showImportModal && (
         <div className="import-modal-container">
           <div className="import-modal-box">
-           <h5>📦 Import Sales Rep CSV</h5>
+            <h5>📦 Import Sales Rep CSV</h5>
             <input
               type="file"
               accept=".csv"
@@ -258,6 +322,13 @@ const Warehouse = () => {
           </div>
         </div>
       )}
+
+      {/* RENDER NEW DELETE MODAL */}
+      <DeleteConfirmationModal
+        show={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={confirmDelete}
+      />
 
     </div>
   );

@@ -796,3 +796,70 @@ button.client-address-dlt-btn i.fas.fa-plus{
 .main-content.shifted {
     margin-left: 240px; /* same as sidebar width */
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ....DELETE MODAL.... */
+/* Custom CSS for the Delete Modal */
+
+/* Optional: To ensure the backdrop is correctly positioned (Bootstrap's 'modal fade show d-block' handles most of this) */
+.delete-client-modal-backdrop {
+    /* If you need a stronger custom background/overlay */
+    z-index: 1060; /* Higher than default */
+}
+
+/* Custom styles for the dialog container */
+.delete-client-modal-custom .modal-content {
+    /* Example: Tighter padding or custom shadow if needed */
+    padding: 10px;
+}
+
+/* To match the 'Delete Delivery Challan' text style */
+.delete-client-modal-custom .modal-header {
+    border: none; /* Remove default border-bottom if you want a cleaner look */
+    padding-bottom: 0;
+    font-weight: 600; /* Bolder title */
+}
+
+/* To match the 'Delete' button style (large red button directly in the body) */
+.delete-client-modal-custom .modal-body {
+    padding-top: 10px;
+    padding-bottom: 30px; /* Space for the button */
+}
+
+/* Positioning the large red delete button to match the image's appearance */
+.delete-client-modal-custom .modal-footer {
+    border-top: none; /* Remove default footer border */
+    padding-top: 0;
+    justify-content: flex-start; /* Align actions to the left */
+}
+
+/* Style the red button to be large and prominent like in the image */
+.delete-client-modal-custom .btn-danger {
+    padding: 8px 25px;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+/* Hide the Cancel button if you want the exact layout from the image (where only 'Delete' is prominent) */
+.delete-client-modal-custom .btn-secondary {
+    display: none; /* If you only want the red button visible */
+}
+
+/* If you keep the cancel button, you can adjust its style */
+/* .delete-client-modal-custom .btn-secondary { ... } */
