@@ -5,6 +5,8 @@ import {
   updateDeliveryChallan,
   fetchChallans,
 } from "../../redux/actions/deliveryChallanActions";
+import { fetchMakes } from "../../redux/actions/makeActions";
+import { fetchWarehouses } from "../../redux/actions/warehouseActions";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { UPDATE_DELIVERY_CHALLAN_REQUEST } from "../../redux/actions/deliveryChallanActions";
 
@@ -76,6 +78,12 @@ const DeliveryChallanEdit = () => {
     }
   }, [id, challans.length, dispatch]);
 
+  // Fetch makes & warehouses for dropdowns
+  useEffect(() => {
+    dispatch(fetchWarehouses());
+    dispatch(fetchMakes());
+  }, [dispatch]);
+
   // Pre-fill form on edit
   useEffect(() => {
     if (id && challans.length > 0) {
@@ -135,6 +143,10 @@ const DeliveryChallanEdit = () => {
       [name]: value,
     }));
   };
+
+  // selectors for dropdown data
+  const makes = useSelector((state) => state.make?.makes || []);
+  const warehouses = useSelector((state) => state.warehouse?.warehouses || []);
 
   // Handle item changes
   const handleItemChange = (index, e) => {
@@ -306,59 +318,90 @@ const DeliveryChallanEdit = () => {
                 key={index}
               >
                 {itemFields.map((field, idx) => {
-                  if (field.type === "status") {
-                    return (
-                      <div className="col-2" key={idx}>
-                        <select
-                          name={field.key}
-                          value={item[field.key]}
-                          onChange={(e) => handleItemChange(index, e)}
-                          className="form-select form-select-sm"
-                        >
-                          <option value="">Select {field.label}</option>
-                          {/* <option value="">Select Status</option>
-                          <option value="Pending">Pending</option>
-                          <option value="Planning Given">Planning Given</option>
-                          <option value="Ready for dispatch">
-                            Ready for dispatch
-                          </option> */}
-                        </select>
-                      </div>
-                    );
-                  } else if (field.type === "select") {
-                    return (
-                      <div className="col-1" key={idx}>
-                        <select
-                          name={field.key}
-                          value={item[field.key]}
-                          onChange={(e) => handleItemChange(index, e)}
-                          className="form-select form-select-sm"
-                        >
-                          <option value="">Select Status</option>
-                          <option value="Pending">Pending</option>
-                          <option value="Planning Given">Planning Given</option>
-                          <option value="Ready for dispatch">
-                            Ready for dispatch
-                          </option>
-                          {/* <option value="">Select {field.label}</option> */}
-                        </select>
-                      </div>
-                    );
-                  } else {
-                    return (
-                      <div className="col-1" key={idx}>
-                        <input
-                          type="text"
-                          name={field.key}
-                          value={item[field.key]}
-                          onChange={(e) => handleItemChange(index, e)}
-                          className="form-control form-control-sm"
-                          placeholder={field.label}
-                        />
-                      </div>
-                    );
-                  }
-                })}
+                      // Status dropdown — explicit options
+                      if (field.type === "status") {
+                        const statuses = [
+                          "Pending",
+                          "Planning Given",
+                          "Ready for dispatch",
+                        ];
+
+                        return (
+                          <div className="col-1" key={idx}>
+                            <select
+                              name={field.key}
+                              value={item[field.key] || ""}
+                              onChange={(e) => handleItemChange(index, e)}
+                              className="form-select form-select-sm"
+                            >
+                              <option value="">Select {field.label}</option>
+                              {statuses.map((s) => (
+                                <option key={s} value={s}>
+                                  {s}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        );
+                      }
+
+                      // Make / Warehouse selects — use redux lists
+                      if (field.type === "select") {
+                        if (field.key === "make") {
+                          return (
+                            <div className="col-1" key={idx}>
+                              <select
+                                name={field.key}
+                                value={item[field.key] || ""}
+                                onChange={(e) => handleItemChange(index, e)}
+                                className="form-select form-select-sm"
+                              >
+                                <option value="">Select {field.label}</option>
+                                {makes.map((m) => (
+                                  <option key={m.id} value={m.id}>
+                                    {m.name}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                          );
+                        }
+
+                        if (field.key === "warehouse") {
+                          return (
+                            <div className="col-1" key={idx}>
+                              <select
+                                name={field.key}
+                                value={item[field.key] || ""}
+                                onChange={(e) => handleItemChange(index, e)}
+                                className="form-select form-select-sm"
+                              >
+                                <option value="">Select {field.label}</option>
+                                {warehouses.map((w) => (
+                                  <option key={w.id ?? w.warehouse_id} value={w.id ?? w.warehouse_id}>
+                                    {w.warehouse_name || w.name || "Unnamed"}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                          );
+                        }
+                      }
+
+                      // Default text input
+                      return (
+                        <div className="col-1" key={idx}>
+                          <input
+                            type="text"
+                            name={field.key}
+                            value={item[field.key] || ""}
+                            onChange={(e) => handleItemChange(index, e)}
+                            className="form-control form-control-sm"
+                            placeholder={field.label}
+                          />
+                        </div>
+                      );
+                    })}
 
                 <div className="col-1 d-flex justify-content-center gap-1">
                   <button
