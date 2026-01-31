@@ -228,9 +228,9 @@ const ChallanAdd = () => {
         ? client.shipping_addresses
         : [];
 
-      setShipToAddressList(shippingAddresses); // <-- dropdown ke liye list update
+      setShipToAddressList(shippingAddresses); // <-- dropdown  list update
 
-      // Default Ship To Address (pehla)
+      // Default Ship To Address
       let firstShipTo = "";
       if (shippingAddresses.length > 0) {
         const first = shippingAddresses[0];
@@ -335,7 +335,7 @@ const ChallanAdd = () => {
         <div className=" main-content">
           <p className="main-container-title">
             Dashboard <i className="fa-solid fa-angles-right"></i> Delivery
-            Challan <i className="fa-solid fa-angles-right"></i> Edit
+            Challan <i className="fa-solid fa-angles-right"></i> Add
           </p>
           <div className="delivery-challan-top-title-container ">
             <h3 className="main-container-title">Delivery Challan</h3>

@@ -11,15 +11,31 @@ const dispatch = useDispatch();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('');
 
+const { token, isAuthenticated } = useSelector((state) => state.auth);
+
+const navigate = useNavigate();
+
+useEffect(() => {
+  if (isAuthenticated && token) {
+    navigate("/");
+  }
+}, [isAuthenticated, token, navigate]);
+
+
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   dispatch(loginUser({ username, password }));
+  // };
   const handleSubmit = (e) => {
-    e.preventDefault();
-    dispatch(loginUser({ email, password }));
-  };
+  e.preventDefault();
+  dispatch(loginUser({ email, password }));
+};
+
 
 
   const [showPassword, setShowPassword] = useState(false);
-  const [username, setUsername] = useState('');
   // const [password, setPassword] = useState('');
   const [modalMessage, setModalMessage] = useState('');
   const [showModal, setShowModal] = useState(false);
@@ -27,7 +43,6 @@ const dispatch = useDispatch();
   const [isLocked, setIsLocked] = useState(false);
   const [lockTimeLeft, setLockTimeLeft] = useState(0);
 
-  const navigate = useNavigate();
 
   useEffect(() => {
     let timer;
@@ -112,14 +127,23 @@ const dispatch = useDispatch();
                 <label htmlFor="username" className="form-label">
                   User Name
                 </label>
-                <input
+                {/* <input
                   type="text"
                   className="form-control"
                   id="username"
                   placeholder="Enter Your User Name"
-                  value={email} onChange={(e) => setEmail(e.target.value)} 
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   disabled={isLocked}
+                /> */}
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Enter Your Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
+
               </div>
 
               <div className="mb-3 text-start position-relative">
@@ -161,15 +185,21 @@ const dispatch = useDispatch();
                   Forgot Password ?
                 </a>
               </div>
-
               <button
+                type="submit"
+                className="btn btn-success w-100"
+                disabled={loading || isLocked}
+              >
+                {loading ? 'Signing In...' : 'Sign In'}
+              </button>
+        
+              {/* <button
                 type="submit"
                 className="btn btn-success w-100"
                 disabled={isLocked}
               >
                 {isLocked ? `Try again in ${lockTimeLeft}s` : 'Sign In'}
-                {/* {loading ? 'Logging in...' : 'Login'} */}
-              </button>
+              </button> */}
             </form>
           </div>
         </div>

@@ -8,6 +8,8 @@ import userReducer from '../redux/reducers/userReducer';
 import salesRepReducer from "../redux/reducers/representativeReducer";
 import deliveryChallanReducer from "../redux/reducers/deliveryChallanReducer"
 import loginReducer from "../redux/reducers/loginReducer"
+import profileReducer from "../redux/reducers/profileReducer"; 
+import wkuhaReducer from "../redux/reducers/kuhaReducer";
 
 const rootReducer = combineReducers({
   // warehouse: warehouseReducer,
@@ -20,6 +22,8 @@ const rootReducer = combineReducers({
   user: userReducer,
   deliveryChallan: deliveryChallanReducer, 
   auth: loginReducer,
+  profile: profileReducer,
+  wkuha: wkuhaReducer, 
 });
 
 export default rootReducer;

@@ -94,6 +94,12 @@ export const addClient = (data) => async (dispatch) => {
     dispatch({ type: ADD_CLIENT_FAILURE, payload: error.message });
   }
 };
+// RESET add client state
+export const RESET_ADD_CLIENT = "RESET_ADD_CLIENT";
+
+export const resetAddClient = () => ({
+  type: RESET_ADD_CLIENT,
+});
 
 
 

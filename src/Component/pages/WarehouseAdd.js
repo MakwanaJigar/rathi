@@ -21,25 +21,27 @@ const WarehouseAdd = () => {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setSubmitting(true);
-  setAlert(null);
+    e.preventDefault();
+    setSubmitting(true);
+    setAlert(null);
 
-  const payload = {
-    warehouse_name: formData.name,
-    warehouse_address: formData.address,
+    // ✅ backend expects these keys
+    const payload = {
+      warehouse_name: formData.name,
+      warehouse_address: formData.address,
+    };
+
+    const result = await dispatch(addWarehouse(payload));
+
+    if (result.ok) {
+      setAlert({ type: 'success', text: result.message });
+      setTimeout(() => navigate('/warehouse'), 1500);
+    } else {
+      setAlert({ type: 'danger', text: result.message });
+    }
+
+    setSubmitting(false);
   };
-
-  const result = await dispatch(addWarehouse(payload));
-  console.log('result', result);
-  if (result.ok) {
-    setAlert({ type: 'success', text: result.message });
-    setTimeout(() => navigate('/warehouse'), 2000);
-  } else {
-    setAlert({ type: 'danger', text: result.message });
-  }
-  setSubmitting(false);
-};
 
   const handleReset = () => {
     setFormData({ name: '', address: '' });
@@ -71,34 +73,30 @@ const WarehouseAdd = () => {
             )}
 
             <form className="py-3" onSubmit={handleSubmit} onReset={handleReset}>
-              <div className="row">
-                <div className="col-md-12">
-                  <div className="party-name mb-3">
-                    <label>Warehouse Name</label>
-                    <input
-                      type="text"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      className="form-control"
-                      placeholder="Enter Warehouse Name"
-                      required
-                    />
-                  </div>
+              <div className="mb-3 warehouse-add-input">
+                <label>Warehouse Name</label>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  className="form-control"
+                  placeholder="Enter Warehouse Name"
+                  required
+                />
+              </div>
 
-                  <div className="party-name mb-3">
-                    <label>Warehouse Address</label>
-                    <textarea
-                      name="address"
-                      value={formData.address}
-                      onChange={handleChange}
-                      className="form-control"
-                      placeholder="Enter Warehouse Address"
-                      rows={3}
-                      required
-                    />
-                  </div>
-                </div>
+              <div className="mb-3 warehouse-add-input">
+                <label>Warehouse Address</label>
+                <textarea
+                  name="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                  className="form-control"
+                  placeholder="Enter Warehouse Address"
+                  rows={3}
+                  required
+                />
               </div>
 
               <div className="d-flex gap-3 mt-4">
@@ -110,6 +108,7 @@ const WarehouseAdd = () => {
                 </button>
               </div>
             </form>
+
           </div>
         </div>
       </div>

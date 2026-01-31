@@ -34,12 +34,12 @@ const DeliveryChallanEdit = () => {
     items: [
       {
         item: "",
-        make: "",
         pcs: "",
         qty: "",
         rate: "",
         loading: "",
         eff_rate: "",
+        make: "",
         warehouse: "",
         status: "",
       },
@@ -57,13 +57,15 @@ const DeliveryChallanEdit = () => {
   // Fields for items (fixed order)
   const itemFields = [
     { label: "Item", key: "item", type: "text" },
-    { label: "Make", key: "make", type: "select" },
     { label: "Pcs", key: "pcs", type: "text" },
     { label: "Qty (MT)", key: "qty_mt", type: "text" },
     { label: "Rate / MT", key: "rate", type: "text" },
     { label: "Loading", key: "loading", type: "text" },
     { label: "Eff. Rate", key: "eff_rate", type: "text" },
+    { label: "Make", key: "make", type: "select" },
     { label: "Warehouse", key: "warehouse", type: "select" },
+    // { label: "Make", key: "make_id", type: "select" },
+    // { label: "Warehouse", key: "warehouse_id", type: "select" },
     { label: "Status", key: "status", type: "status" },
   ];
 
@@ -95,13 +97,19 @@ const DeliveryChallanEdit = () => {
           items:
             challanToEdit.items?.map((item) => ({
               item: sanitize(item.item),
-              make: sanitize(item.make),
               pcs: sanitize(item.pcs),
               qty_mt: sanitize(item.qty_mt),
               rate: sanitize(item.rate),
               loading: sanitize(item.loading),
               eff_rate: sanitize(item.eff_rate),
-              warehouse: sanitize(item.warehouse),
+              // ✅ FIXED
+              make: sanitize(item.make ?? ""),
+              warehouse: sanitize(item.warehouse ?? ""),
+
+              // make: sanitize(item.make_id ?? item.make ?? ""),
+              // warehouse: sanitize(item.warehouse_id ?? item.warehouse ?? ""),
+              // make: sanitize(item.make),
+              // warehouse: sanitize(item.warehouse),
               status: sanitize(item.status),
             })) || formData.items,
           order_notes: sanitize(challanToEdit.order_notes),
@@ -115,6 +123,8 @@ const DeliveryChallanEdit = () => {
         });
       }
     }
+    console.log("warehouse:", formData.items?.warehouse_id);
+    console.log("make:", formData.items?.make_id);
   }, [id, challans]);
 
   // Handle text inputs
@@ -176,7 +186,7 @@ const DeliveryChallanEdit = () => {
         updateDeliveryChallan(id, formData, () => {
           alert("Delivery Challan updated successfully!");
           navigate("/delivery-challan");
-        })
+        }),
       );
     } else {
       dispatch(addDeliveryChallan(formData));
@@ -305,12 +315,13 @@ const DeliveryChallanEdit = () => {
                           onChange={(e) => handleItemChange(index, e)}
                           className="form-select form-select-sm"
                         >
-                          <option value="">Select Status</option>
+                          <option value="">Select {field.label}</option>
+                          {/* <option value="">Select Status</option>
                           <option value="Pending">Pending</option>
                           <option value="Planning Given">Planning Given</option>
                           <option value="Ready for dispatch">
                             Ready for dispatch
-                          </option>
+                          </option> */}
                         </select>
                       </div>
                     );
@@ -323,7 +334,13 @@ const DeliveryChallanEdit = () => {
                           onChange={(e) => handleItemChange(index, e)}
                           className="form-select form-select-sm"
                         >
-                          <option value="">Select {field.label}</option>
+                          <option value="">Select Status</option>
+                          <option value="Pending">Pending</option>
+                          <option value="Planning Given">Planning Given</option>
+                          <option value="Ready for dispatch">
+                            Ready for dispatch
+                          </option>
+                          {/* <option value="">Select {field.label}</option> */}
                         </select>
                       </div>
                     );
@@ -443,7 +460,7 @@ const DeliveryChallanEdit = () => {
                       />
                       <label className="form-check-label">{opt}</label>
                     </div>
-                  )
+                  ),
                 )}
               </div>
             </div>
@@ -468,7 +485,7 @@ const DeliveryChallanEdit = () => {
                       />
                       <label className="form-check-label">{opt}</label>
                     </div>
-                  )
+                  ),
                 )}
               </div>
             </div>

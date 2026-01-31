@@ -863,3 +863,178 @@ button.client-address-dlt-btn i.fas.fa-plus{
 
 /* If you keep the cancel button, you can adjust its style */
 /* .delete-client-modal-custom .btn-secondary { ... } */
+
+
+
+.logout-down-arrow{
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+}
+
+
+.navbar-dropdown-menu-section-wrapper {
+  position: relative;
+}
+
+.navbar-dropdown-menu-section-trigger {
+  cursor: pointer;
+}
+
+.navbar-dropdown-menu-section-arrow {
+  width: 18px;
+  height: 18px;
+}
+
+.navbar-dropdown-menu-section-menu {
+  position: absolute;
+  top: 130%;
+  right: 0;
+  background: #ffffff;
+  min-width: 160px;
+  border-radius: 8px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  display: none;
+  flex-direction: column;
+  z-index: 999;
+  overflow: hidden;
+}
+
+.navbar-dropdown-menu-section-menu.active {
+  display: flex;
+}
+
+.navbar-dropdown-menu-section-item {
+  padding: 10px 15px;
+  font-size: 14px;
+  color: #333;
+  text-decoration: none;
+  background: #fff;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.navbar-dropdown-menu-section-item:hover {
+  background: #f5f5f5;
+}
+
+.navbar-dropdown-menu-section-item.logout {
+  color: #e63946;
+  font-weight: 600;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ===== PAGE WRAPPER ===== */
+.my-profile-page-main-section-card-wrapper {
+  /* min-height: 100vh; */
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  padding: 20px;
+}
+
+/* ===== CARD ===== */
+.my-profile-page-main-section-card {
+  width: 100%;
+  max-width: 600px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  text-align: center;
+  transition: transform 0.3s ease;
+  display: flex;
+}
+
+.my-profile-page-main-section-card:hover {
+  transform: translateY(-6px);
+}
+
+/* ===== IMAGE ===== */
+.my-profile-page-main-section-card-image {
+  width: 30%;
+  height: 220px;
+  background: linear-gradient(135deg, #000000, #444444);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.my-profile-page-main-section-card-image img {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #ffffff;
+}
+
+/* ===== CONTENT ===== */
+.my-profile-page-main-section-card-content {
+  padding: 24px;
+      display: flex;
+    flex-direction: column;
+    align-items: start;
+}
+
+.my-profile-page-main-section-card-name {
+ font-size: 42px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #000;
+    padding-bottom: 20px;
+}
+
+.my-profile-page-main-section-card-username {
+  font-size: 14px;
+  color: #777;
+  margin-bottom: 10px;
+}
+
+.my-profile-page-main-section-card-email {
+  font-size: 14px;
+  color: #333;
+  word-break: break-all;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 480px) {
+  .my-profile-page-main-section-card {
+    max-width: 100%;
+  }
+
+  .my-profile-page-main-section-card-image {
+    height: 180px;
+  }
+
+  .my-profile-page-main-section-card-name {
+    font-size: 20px;
+  }
+}
+
+
+
+
+
+
+.mb-3.warehouse-add-input {
+    display: flex;
+}
+.mb-3.warehouse-add-input label {
+    width: 20%;
+}
+.mb-3.warehouse-add-input textarea {
+    width: 100%;
+}

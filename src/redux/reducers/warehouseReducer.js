@@ -18,18 +18,14 @@ import {
 
 const initialState = {
   warehouses: [],
-
-  /* add */
   adding: false,
   addError: null,
-
-  // export‑client state
   exporting: false,
   exportError: null,
-
-  // edit 
   updating: false,
   updateError: null,
+  loading: false,
+  error: null,
 };
 
 const warehouseReducer = (state = initialState, action) => {
@@ -37,7 +33,6 @@ const warehouseReducer = (state = initialState, action) => {
     case FETCH_WAREHOUSE_SUCCESS:
       return { ...state, warehouses: action.payload };
 
-    /* ---------- ADD ---------- */
     case ADD_WAREHOUSE_REQUEST:
       return { ...state, adding: true, addError: null };
 
@@ -47,7 +42,6 @@ const warehouseReducer = (state = initialState, action) => {
     case ADD_WAREHOUSE_FAIL:
       return { ...state, adding: false, addError: action.payload };
 
-    // -------- export‑items ----------
     case EXPORT_WAREHOUSE_REQUEST:
       return { ...state, exporting: true, exportError: null };
 
@@ -57,27 +51,22 @@ const warehouseReducer = (state = initialState, action) => {
     case EXPORT_WAREHOUSE_FAIL:
       return { ...state, exporting: false, exportError: action.payload };
 
-
-    // delete
-
     case DELETE_WAREHOUSE_SUCCESS:
       return {
         ...state,
         warehouses: state.warehouses.filter((w) => w.id !== action.payload),
       };
 
-
     case DELETE_WAREHOUSE_FAIL:
-      return {
-        ...state,
-        // Optionally handle error UI
-      };
+      return state;
 
+    case UPDATE_WAREHOUSE_REQUEST:
+      return { ...state, updating: true, updateError: null };
 
-    // edit 
     case UPDATE_WAREHOUSE_SUCCESS:
       return {
         ...state,
+        updating: false,
         warehouses: state.warehouses.map((w) =>
           w.id === parseInt(action.payload.id)
             ? { ...w, ...action.payload.updated }
@@ -86,25 +75,22 @@ const warehouseReducer = (state = initialState, action) => {
       };
 
     case UPDATE_WAREHOUSE_FAIL:
+      return { ...state, updating: false, updateError: action.payload };
+
+    case IMPORT_WAREHOUSE_REQUEST:
+      return { ...state, loading: true, error: null };
+
+    case IMPORT_WAREHOUSE_SUCCESS:
       return {
         ...state,
-        // optionally store error
+        loading: false,
+        warehouses: Array.isArray(action.payload)
+          ? action.payload
+          : state.warehouses,
       };
 
-
-      // import
-                case IMPORT_WAREHOUSE_REQUEST:
-              return { ...state, loading: true, error: null };
-            
-            case IMPORT_WAREHOUSE_SUCCESS:
-              return {
-                ...state,
-                loading: false,
-                makes: Array.isArray(action.payload) ? action.payload : state.makes,
-              };
-            
-            case IMPORT_WAREHOUSE_FAILURE:
-              return { ...state, loading: false, error: action.payload };
+    case IMPORT_WAREHOUSE_FAILURE:
+      return { ...state, loading: false, error: action.payload };
 
     default:
       return state;

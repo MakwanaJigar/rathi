@@ -14,8 +14,7 @@ import {
   IMPORT_CLIENT_REQUEST,
   IMPORT_CLIENT_SUCCESS,
   IMPORT_CLIENT_FAILURE,
-} from '../actions/clientActions';
-
+} from "../actions/clientActions";
 
 const initialState = {
   clients: [],
@@ -29,7 +28,7 @@ const initialState = {
 
   updating: false,
   updateError: null,
-  updateSuccess: false,// 
+  updateSuccess: false, //
 
   importResult: null,
 };
@@ -44,10 +43,30 @@ const clientReducer = (state = initialState, action) => {
       return { ...state, adding: true, addError: null, addSuccess: false };
 
     case ADD_CLIENT_SUCCESS:
-      return { ...state, adding: false, addSuccess: true };
+      return {
+        ...state,
+        adding: false,
+        addSuccess: true,
+        clients: [...state.clients], // avoid old success sticking
+      };
+
+    case "RESET_ADD_CLIENT":
+      return {
+        ...state,
+        addSuccess: false,
+        addError: null,
+      };
+
+    // case ADD_CLIENT_SUCCESS:
+    //   return { ...state, adding: false, addSuccess: true };
 
     case ADD_CLIENT_FAILURE:
-      return { ...state, adding: false, addError: action.payload, addSuccess: false };
+      return {
+        ...state,
+        adding: false,
+        addError: action.payload,
+        addSuccess: false,
+      };
 
     // -------- export‑items ----------
     case EXPORT_CLIENT_REQUEST:
@@ -71,17 +90,30 @@ const clientReducer = (state = initialState, action) => {
         // You can add error UI logic here if needed
       };
 
-
-    // edit 
+    // edit
     case UPDATE_CLIENT_REQUEST:
-      return { ...state, updating: true, updateError: null, updateSuccess: false };
+      return {
+        ...state,
+        updating: true,
+        updateError: null,
+        updateSuccess: false,
+      };
 
     case UPDATE_CLIENT_SUCCESS:
-      return { ...state, updating: false, updateSuccess: true, updateError: null };
+      return {
+        ...state,
+        updating: false,
+        updateSuccess: true,
+        updateError: null,
+      };
 
     case UPDATE_CLIENT_FAILURE:
-      return { ...state, updating: false, updateError: action.payload, updateSuccess: false };
-
+      return {
+        ...state,
+        updating: false,
+        updateError: action.payload,
+        updateSuccess: false,
+      };
 
     // import
     case IMPORT_CLIENT_REQUEST:
@@ -102,5 +134,3 @@ const clientReducer = (state = initialState, action) => {
 };
 
 export default clientReducer;
-
-

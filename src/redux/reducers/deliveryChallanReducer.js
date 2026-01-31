@@ -10,7 +10,7 @@ import {
   EXPORT_CHALLAN_FAIL,
   EXPORT_CHALLAN_SUCCESS,
   EXPORT_CHALLAN_REQUEST,
-   UPDATE_DELIVERY_CHALLAN_REQUEST,
+  UPDATE_DELIVERY_CHALLAN_REQUEST,
   UPDATE_DELIVERY_CHALLAN_SUCCESS,
   UPDATE_DELIVERY_CHALLAN_FAILURE,
 } from "../actions/deliveryChallanActions";
@@ -51,7 +51,12 @@ const deliveryChallanReducer = (state = initialState, action) => {
       };
 
     case ADD_DELIVERY_CHALLAN_FAILURE:
-      return { ...state, adding: false, addError: action.payload, addSuccess: false };
+      return {
+        ...state,
+        adding: false,
+        addError: action.payload,
+        addSuccess: false,
+      };
 
     // delete
     case DELETE_CHALLAN_SUCCESS:
@@ -77,11 +82,15 @@ const deliveryChallanReducer = (state = initialState, action) => {
     case EXPORT_CHALLAN_FAIL:
       return { ...state, exporting: false, exportError: action.payload };
 
+    // edit
 
-      // edit
-
-       case UPDATE_DELIVERY_CHALLAN_REQUEST:
-      return { ...state, updating: true, updateError: null, updateSuccess: false };
+    case UPDATE_DELIVERY_CHALLAN_REQUEST:
+      return {
+        ...state,
+        updating: true,
+        updateError: null,
+        updateSuccess: false,
+      };
 
     case UPDATE_DELIVERY_CHALLAN_SUCCESS:
       return {
@@ -96,7 +105,12 @@ const deliveryChallanReducer = (state = initialState, action) => {
       };
 
     case UPDATE_DELIVERY_CHALLAN_FAILURE:
-      return { ...state, updating: false, updateError: action.payload, updateSuccess: false };
+      return {
+        ...state,
+        updating: false,
+        updateError: action.payload,
+        updateSuccess: false,
+      };
 
     default:
       return state;

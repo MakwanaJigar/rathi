@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { createUser, resetCreateUser } from '../../redux/actions/userActions';
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { createUser, resetCreateUser } from "../../redux/actions/userActions";
+
 
 const UserAdd = () => {
   const dispatch = useDispatch();
@@ -10,11 +11,11 @@ const UserAdd = () => {
   const { creating, error, createSuccess } = useSelector((state) => state.user);
 
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    username: '',
-    password: '',
-    access_control: '',
+    name: "",
+    email: "",
+    username: "",
+    password: "",
+    access_control: "",
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -22,39 +23,54 @@ const UserAdd = () => {
 
   useEffect(() => {
     if (createSuccess) {
-      setAlert({ type: 'success', text: 'User added successfully!' });
+      setAlert({ type: "success", text: "User added successfully!" });
 
       setTimeout(() => {
         dispatch(resetCreateUser());
-        navigate('/user');
+        navigate("/user");
       }, 2000);
     }
   }, [createSuccess, navigate, dispatch]);
 
   useEffect(() => {
     if (error) {
-      setAlert({ type: 'danger', text: error });
+      setAlert({ type: "danger", text: error });
     }
   }, [error]);
 
-  const handleChange = e => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = e => {
-    e.preventDefault();
-    setAlert(null);
-    dispatch(createUser(formData));
+  const handleSubmit = (e) => {
+  e.preventDefault();
+
+  const payload = {
+    name: formData.name,
+    email: formData.email,
+    username: formData.username,
+    password: formData.password,
+    access_control: formData.access_control,
   };
+
+ dispatch(createUser(formData));
+};
+
+
+  // const handleSubmit = e => {
+  //   e.preventDefault();
+  //   setAlert(null);
+  //   dispatch(createUser(formData));
+  // };
 
   const handleReset = () => {
     setFormData({
-      name: '',
-      email: '',
-      username: '',
-      password: '',
-      access_control: '',
+      name: "",
+      email: "",
+      username: "",
+      password: "",
+      access_control: "",
     });
     setAlert(null);
   };
@@ -63,7 +79,7 @@ const UserAdd = () => {
     <div className="container-fluid">
       <div className="main-content">
         <p className="main-container-title">
-          Dashboard <i className="fa-solid fa-angles-right" /> Master{' '}
+          Dashboard <i className="fa-solid fa-angles-right" /> Master{" "}
           <i className="fa-solid fa-angles-right" /> User Add
         </p>
 
@@ -84,7 +100,11 @@ const UserAdd = () => {
               </div>
             )}
 
-            <form className="py-3" onSubmit={handleSubmit} onReset={handleReset}>
+            <form
+              className="py-3"
+              onSubmit={handleSubmit}
+              onReset={handleReset}
+            >
               <div className="row">
                 <div className="col-md-12">
                   <div className="party-name mb-3">
@@ -92,7 +112,7 @@ const UserAdd = () => {
                     <input
                       type="text"
                       name="name"
-                      placeholder='Enter Your Name'
+                      placeholder="Enter Your Name"
                       value={formData.name}
                       onChange={handleChange}
                       className="form-control"
@@ -104,7 +124,7 @@ const UserAdd = () => {
                     <input
                       type="email"
                       name="email"
-                      placeholder='Enter Your Email'
+                      placeholder="Enter Your Email"
                       value={formData.email}
                       onChange={handleChange}
                       className="form-control"
@@ -115,7 +135,7 @@ const UserAdd = () => {
                     <label>Username</label>
                     <input
                       type="text"
-                      placeholder='Enter Your User Name'
+                      placeholder="Enter Your User Name"
                       name="username"
                       value={formData.username}
                       onChange={handleChange}
@@ -126,9 +146,9 @@ const UserAdd = () => {
                   <div className="party-name mb-3 position-relative">
                     <label>Password</label>
                     <input
-                      type={showPassword ? 'text' : 'password'}
+                      type={showPassword ? "text" : "password"}
                       name="password"
-                      placeholder='Enter Your Password...'
+                      placeholder="Enter Your Password..."
                       value={formData.password}
                       onChange={handleChange}
                       className="form-control"
@@ -137,12 +157,12 @@ const UserAdd = () => {
                     <span
                       onClick={() => setShowPassword(!showPassword)}
                       style={{
-                        position: 'absolute',
-                        right: '15px',
-                        top: '50%',
-                        transform: 'translateY(-50%)',
-                        cursor: 'pointer',
-                        color: '#888',
+                        position: "absolute",
+                        right: "15px",
+                        top: "50%",
+                        transform: "translateY(-50%)",
+                        cursor: "pointer",
+                        color: "#888",
                       }}
                     >
                       {showPassword ? (
@@ -164,7 +184,9 @@ const UserAdd = () => {
                       <option value="">None</option>
                       <option value="view">View</option>
                       <option value="view / add">View / Add</option>
-                      <option value="view / add / edit">View / Add / Edit</option>
+                      <option value="view / add / edit">
+                        View / Add / Edit
+                      </option>
                       <option value="view / add / edit / delete">
                         View / Add / Edit / Delete
                       </option>
@@ -174,10 +196,18 @@ const UserAdd = () => {
               </div>
 
               <div className="d-flex gap-3 mt-4">
-                <button type="submit" className="btn btn-submit px-4" disabled={creating}>
-                  {creating ? 'Submitting...' : 'Submit'}
+                <button
+                  type="submit"
+                  className="btn btn-submit px-4"
+                  disabled={creating}
+                >
+                  {creating ? "Submitting..." : "Submit"}
                 </button>
-                <button type="reset" className="btn btn-clear px-4" disabled={creating}>
+                <button
+                  type="reset"
+                  className="btn btn-clear px-4"
+                  disabled={creating}
+                >
                   Clear
                 </button>
               </div>

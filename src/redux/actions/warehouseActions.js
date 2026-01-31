@@ -99,6 +99,40 @@ export const addWarehouse = (payload) => async (dispatch) => {
     return { ok: false, message: err.message || "Network error." };
   }
 };
+// export const addWarehouse = (payload) => async (dispatch) => {
+//   dispatch({ type: ADD_WAREHOUSE_REQUEST });
+
+//   try {
+//     const res = await fetch(
+//       "https://replete-software.com/projects/rathi/api/add-warehouse",
+//       {
+//         method: "POST",
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify(payload),
+//       }
+//     );
+
+//     const data = await res.json();
+
+//     const isSuccess =
+//       res.ok ||
+//       data?.status === 1 ||
+//       data?.status === "success" ||
+//       data?.message?.toLowerCase()?.includes("success");
+
+//     if (isSuccess) {
+//       dispatch({ type: ADD_WAREHOUSE_SUCCESS });
+//       return { ok: true, message: data?.message || "Warehouse added successfully!" };
+//     } else {
+//       const errMsg = data?.message || "Failed to add warehouse.";
+//       dispatch({ type: ADD_WAREHOUSE_FAIL, payload: errMsg });
+//       return { ok: false, message: errMsg };
+//     }
+//   } catch (err) {
+//     dispatch({ type: ADD_WAREHOUSE_FAIL, payload: err.message });
+//     return { ok: false, message: err.message || "Network error." };
+//   }
+// };
 
 
 
@@ -123,50 +157,83 @@ export const deleteWarehouse = (id) => async (dispatch) => {
 
 
 // edit
-
 export const updateWarehouse = (id, payload) => async (dispatch) => {
   dispatch({ type: UPDATE_WAREHOUSE_REQUEST });
 
   try {
-    console.log('Dispatching update for ID:', id);
-    console.log('Payload:', payload);
-
     const res = await fetch(
       `https://replete-software.com/projects/rathi/api/updatewarehouse/${id}`,
       {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       }
     );
 
     const data = await res.json();
 
-    console.log('Fetch response status:', res.status);
-    console.log('Update response:', data);
+    const isSuccess =
+      res.ok ||
+      data?.status === 1 ||
+      data?.status === "success" ||
+      data?.message?.toLowerCase()?.includes("success");
 
-    if (res.ok) {
+    if (isSuccess) {
       dispatch({ type: UPDATE_WAREHOUSE_SUCCESS, payload: { id, updated: payload } });
       return { ok: true, message: data?.message || "Warehouse updated successfully!" };
     } else {
-      if (data && typeof data === 'object') {
-        // Concatenate all error messages from all fields
-        const errorMessages = Object.values(data)
-          .map(arr => (Array.isArray(arr) ? arr.join(' ') : arr))
-          .join(' ');
-        dispatch({ type: UPDATE_WAREHOUSE_FAIL, payload: errorMessages });
-        return { ok: false, message: errorMessages };
-      }
-      dispatch({ type: UPDATE_WAREHOUSE_FAIL, payload: data?.message || "Failed to update warehouse." });
-      return { ok: false, message: data?.message || "Failed to update warehouse." };
+      const errMsg = data?.message || "Failed to update warehouse.";
+      dispatch({ type: UPDATE_WAREHOUSE_FAIL, payload: errMsg });
+      return { ok: false, message: errMsg };
     }
   } catch (err) {
     dispatch({ type: UPDATE_WAREHOUSE_FAIL, payload: err.message });
     return { ok: false, message: err.message || "Network error." };
   }
 };
+
+// export const updateWarehouse = (id, payload) => async (dispatch) => {
+//   dispatch({ type: UPDATE_WAREHOUSE_REQUEST });
+
+//   try {
+//     console.log('Dispatching update for ID:', id);
+//     console.log('Payload:', payload);
+
+//     const res = await fetch(
+//       `https://replete-software.com/projects/rathi/api/updatewarehouse/${id}`,
+//       {
+//         method: "POST",
+//         headers: {
+//           "Content-Type": "application/json",
+//         },
+//         body: JSON.stringify(payload),
+//       }
+//     );
+
+//     const data = await res.json();
+
+//     console.log('Fetch response status:', res.status);
+//     console.log('Update response:', data);
+
+//     if (res.ok) {
+//       dispatch({ type: UPDATE_WAREHOUSE_SUCCESS, payload: { id, updated: payload } });
+//       return { ok: true, message: data?.message || "Warehouse updated successfully!" };
+//     } else {
+//       if (data && typeof data === 'object') {
+//         const errorMessages = Object.values(data)
+//           .map(arr => (Array.isArray(arr) ? arr.join(' ') : arr))
+//           .join(' ');
+//         dispatch({ type: UPDATE_WAREHOUSE_FAIL, payload: errorMessages });
+//         return { ok: false, message: errorMessages };
+//       }
+//       dispatch({ type: UPDATE_WAREHOUSE_FAIL, payload: data?.message || "Failed to update warehouse." });
+//       return { ok: false, message: data?.message || "Failed to update warehouse." };
+//     }
+//   } catch (err) {
+//     dispatch({ type: UPDATE_WAREHOUSE_FAIL, payload: err.message });
+//     return { ok: false, message: err.message || "Network error." };
+//   }
+// };
 
 
 
