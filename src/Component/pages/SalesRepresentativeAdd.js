@@ -16,8 +16,28 @@ const SalesRepresentativeAdd = () => {
   const adding   = useSelector((s) => s.salesRep.adding);
   const addError = useSelector((s) => s.salesRep.addError);
 
-  /* success alert */
-  const [successMsg, setSuccessMsg] = useState("");
+  /* notification state */
+  const [notification, setNotification] = useState({
+    show: false,
+    type: "", // 'success' or 'error'
+    message: "",
+  });
+
+  // Show notification utility
+  const showNotification = (type, message, duration = 0) => {
+    setNotification({
+      show: true,
+      type,
+      message,
+    });
+
+    // Auto-hide after duration (if duration > 0)
+    if (duration > 0) {
+      setTimeout(() => {
+        setNotification((prev) => ({ ...prev, show: false }));
+      }, duration);
+    }
+  };
 
   /* dispatch on submit */
   const handleSubmit = async (e) => {
@@ -26,8 +46,12 @@ const SalesRepresentativeAdd = () => {
 
     const { ok, message } = await dispatch(addSalesRep({ name, phone, email }));
     if (ok) {
-      setSuccessMsg(message);
-      setTimeout(() => navigate("/sales-representative"), 1500);
+      showNotification("success", "Sales Representative added successfully!");
+      setTimeout(() => {
+        navigate("/sales-representative");
+      }, 2000);
+    } else {
+      showNotification("error", message || "Failed to add representative", 0);
     }
   };
 
@@ -36,7 +60,6 @@ const SalesRepresentativeAdd = () => {
     setName("");
     setPhone("");
     setEmail("");
-    setSuccessMsg("");
   };
 
   return (
@@ -62,9 +85,59 @@ const SalesRepresentativeAdd = () => {
           <div className="form-section client-info-container">
             <h3>Add Representative</h3>
 
-            {addError && <div className="alert alert-danger">Error: {addError}</div>}
-
-           {!successMsg && addError && <div className="alert alert-danger">Error: {addError}</div>}
+            {/* Modal Notification */}
+            {notification.show && (
+              <div
+                className="modal d-block"
+                style={{
+                  backgroundColor: "rgba(0, 0, 0, 0.5)",
+                  zIndex: 1050,
+                }}
+              >
+                <div
+                  className="modal-dialog modal-dialog-centered"
+                  style={{ maxWidth: "450px" }}
+                >
+                  <div className="modal-content border-0">
+                    <div
+                      className={`modal-header border-0 ${"bg-" + (notification.type === "success" ? "success" : "danger")} text-white`}
+                      style={{ padding: "20px" }}
+                    >
+                      <h5 className="modal-title fw-bold" style={{ fontSize: "18px" }}>
+                        {notification.type === "success"
+                          ? "✓ Success!"
+                          : "✗ Error!"}
+                      </h5>
+                      <button
+                        type="button"
+                        className="btn-close btn-close-white"
+                        onClick={() =>
+                          setNotification((prev) => ({ ...prev, show: false }))
+                        }
+                      ></button>
+                    </div>
+                    <div className="modal-body" style={{ padding: "25px" }}>
+                      <p className="mb-0" style={{ fontSize: "16px", lineHeight: "1.6" }}>
+                        {notification.message}
+                      </p>
+                    </div>
+                    <div className="modal-footer border-0" style={{ justifyContent: "center", padding: "15px" }}>
+                      <button
+                        type="button"
+                        className={`btn btn-${
+                          notification.type === "success" ? "success" : "danger"
+                        } px-4`}
+                        onClick={() =>
+                          setNotification((prev) => ({ ...prev, show: false }))
+                        }
+                      >
+                        OK
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
 
 
             <form onSubmit={handleSubmit} onReset={handleReset}>

@@ -77,11 +77,12 @@ const Warehouse = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch from Redux store
+  // Fetch from Redux store - Once on component mount
   useEffect(() => {
     const loadData = async () => {
       try {
         setLoading(true);
+        console.log('Warehouse - Fetching warehouse data');
         await dispatch(fetchWarehouses());
         setError(null);
       } catch (err) {

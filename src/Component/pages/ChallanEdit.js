@@ -4,6 +4,10 @@ import {
   addDeliveryChallan,
   updateDeliveryChallan,
   fetchChallans,
+  clearUpdateSuccess,
+  clearUpdateError,
+  clearAddSuccess,
+  clearAddError,
 } from "../../redux/actions/deliveryChallanActions";
 import { fetchMakes } from "../../redux/actions/makeActions";
 import { fetchWarehouses } from "../../redux/actions/warehouseActions";
@@ -15,8 +19,125 @@ const DeliveryChallanEdit = () => {
   const navigate = useNavigate();
   const { id } = useParams();
 
-  const { challans, adding, addError, updating, updateError, updateSuccess } =
+  const { challans, adding, addError, addSuccess, updating, updateError, updateSuccess } =
     useSelector((state) => state.deliveryChallan);
+
+  // State for managing notifications
+  const [notification, setNotification] = useState({
+    show: false,
+    type: "", // 'success', 'error', 'info'
+    message: "",
+  });
+
+  // Show notification utility
+  const showNotification = (type, message, duration = 5000) => {
+    setNotification({
+      show: true,
+      type,
+      message,
+    });
+
+    // Auto-hide after duration (if duration > 0)
+    if (duration > 0) {
+      setTimeout(() => {
+        setNotification((prev) => ({ ...prev, show: false }));
+      }, duration);
+    }
+  };
+
+  // Clear notification state on component mount to prevent persistence
+  useEffect(() => {
+    // Reset local notification state
+    setNotification({ show: false, type: "", message: "" });
+    
+    // Clear Redux states when component mounts or id changes
+    dispatch(clearUpdateSuccess());
+    dispatch(clearUpdateError());
+    dispatch(clearAddSuccess());
+    dispatch(clearAddError());
+
+    // Cleanup on unmount
+    return () => {
+      setNotification({ show: false, type: "", message: "" });
+    };
+  }, [id, dispatch]); // Re-run when id changes (different challan being edited)
+
+  // Handle success/error notifications and redirect
+  useEffect(() => {
+    if (updateSuccess && !updating) {
+      // Immediately clear error to prevent error message from showing
+      dispatch(clearUpdateError());
+      showNotification("success", "Delivery Challan updated successfully!");
+      // Redirect after showing success message
+      const redirectTimer = setTimeout(() => {
+        dispatch(clearUpdateSuccess()); // Clear success state before navigating
+        navigate("/delivery-challan");
+      }, 2000);
+      return () => clearTimeout(redirectTimer);
+    }
+  }, [updateSuccess, updating, navigate, dispatch]);
+
+  useEffect(() => {
+    if (updateError && !updating && !updateSuccess) {
+      showNotification("error", `Error: ${updateError}`, 0); // Don't auto-hide error
+    }
+  }, [updateError, updating, updateSuccess]);
+
+  // Handle add success/error notifications
+  useEffect(() => {
+    if (addSuccess && !adding) {
+      // Immediately clear error to prevent error message from showing
+      dispatch(clearAddError());
+      showNotification("success", "Delivery Challan added successfully!");
+      // Reset form after success
+      const resetTimer = setTimeout(() => {
+        setFormData({
+          party_name: "",
+          client_id: "",
+          bill_to_address: "",
+          gst_no: "",
+          ship_to_party_name: "",
+          ship_to_address: "",
+          payment_terms: "",
+          do_date: "",
+          do_no: "",
+          sales_rep: "",
+          party_po_no: "",
+          party_po_date: "",
+          items: [
+            {
+              item: "",
+              pcs: "",
+              qty_mt: "",
+              rate: "",
+              loading: "",
+              eff_rate: "",
+              make: "",
+              warehouse: "",
+              status: "",
+            },
+          ],
+          order_notes: "",
+          warehouse_notes: "",
+          transport_notes: "",
+          freight: "",
+          freight_fix_value: "",
+          freight_per_ton_value: "",
+          courier_options: "",
+          mtc: "",
+        });
+        dispatch(clearAddSuccess()); // Clear success state before navigating
+        navigate("/delivery-challan");
+      }, 2000);
+      return () => clearTimeout(resetTimer);
+    }
+  }, [addSuccess, adding, navigate, dispatch]);
+
+  useEffect(() => {
+    if (addError && !adding && !addSuccess) {
+      showNotification("error", `Error adding challan: ${addError}`, 0); // Don't auto-hide error
+    }
+  }, [addError, adding, addSuccess]);
 
   const sanitize = (value) => value ?? "";
 
@@ -37,7 +158,7 @@ const DeliveryChallanEdit = () => {
       {
         item: "",
         pcs: "",
-        qty: "",
+        qty_mt: "",
         rate: "",
         loading: "",
         eff_rate: "",
@@ -167,12 +288,12 @@ const DeliveryChallanEdit = () => {
         ...prev.items,
         {
           item: "",
-          make: "",
           pcs: "",
           qty_mt: "",
           rate: "",
           loading: "",
           eff_rate: "",
+          make: "",
           warehouse: "",
           status: "",
         },
@@ -195,13 +316,31 @@ const DeliveryChallanEdit = () => {
     if (id) {
       dispatch({ type: UPDATE_DELIVERY_CHALLAN_REQUEST });
       dispatch(
-        updateDeliveryChallan(id, formData, () => {
-          alert("Delivery Challan updated successfully!");
-          navigate("/delivery-challan");
-        }),
+        updateDeliveryChallan(
+          id,
+          formData,
+          () => {
+            // Success callback - notification will be shown via useEffect
+          },
+          (errorMsg) => {
+            // Error callback - notification will be shown via useEffect
+            console.error("Update failed:", errorMsg);
+          }
+        )
       );
     } else {
-      dispatch(addDeliveryChallan(formData));
+      dispatch(
+        addDeliveryChallan(
+          formData,
+          () => {
+            // Success callback - notification will be shown via useEffect
+          },
+          (errorMsg) => {
+            // Error callback - notification will be shown via useEffect
+            console.error("Add failed:", errorMsg);
+          }
+        )
+      );
     }
   };
 
@@ -220,6 +359,66 @@ const DeliveryChallanEdit = () => {
             </Link>
           </div>
         </div>
+
+        {/* Modal Notification for Success/Error */}
+        {notification.show && (
+          <div
+            className="modal d-block"
+            style={{
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+              zIndex: 1050,
+            }}
+          >
+            <div
+              className="modal-dialog modal-dialog-centered"
+              style={{ maxWidth: "450px" }}
+            >
+              <div className="modal-content border-0">
+                <div
+                  className={`modal-header border-0 ${"bg-" + (notification.type === "success" ? "success" : notification.type === "error" ? "danger" : "info")} text-white`}
+                  style={{ padding: "20px" }}
+                >
+                  <h5 className="modal-title fw-bold" style={{ fontSize: "18px" }}>
+                    {notification.type === "success"
+                      ? "✓ Success!"
+                      : notification.type === "error"
+                        ? "✗ Error!"
+                        : "ℹ Info"}
+                  </h5>
+                  <button
+                    type="button"
+                    className="btn-close btn-close-white"
+                    onClick={() =>
+                      setNotification((prev) => ({ ...prev, show: false }))
+                    }
+                  ></button>
+                </div>
+                <div className="modal-body" style={{ padding: "25px" }}>
+                  <p className="mb-0" style={{ fontSize: "16px", lineHeight: "1.6" }}>
+                    {notification.message}
+                  </p>
+                </div>
+                <div className="modal-footer border-0" style={{ justifyContent: "center", padding: "15px" }}>
+                  <button
+                    type="button"
+                    className={`btn btn-${
+                      notification.type === "success"
+                        ? "success"
+                        : notification.type === "error"
+                          ? "danger"
+                          : "info"
+                    } px-4`}
+                    onClick={() =>
+                      setNotification((prev) => ({ ...prev, show: false }))
+                    }
+                  >
+                    OK
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         <form
           className="challan-add-main-right-container py-5"
@@ -541,20 +740,12 @@ const DeliveryChallanEdit = () => {
               className="submit-btn"
               disabled={adding || updating}
             >
-              {id ? "Update" : "Submit"}
+              {updating ? "Updating..." : adding ? "Submitting..." : id ? "Update" : "Submit"}
             </button>
             <button type="reset" className="clear-btn">
               Clear
             </button>
           </div>
-
-          {updateError && !updateSuccess && (
-            <p className="text-danger mt-3">Error: {updateError}</p>
-          )}
-
-          {(adding || updating) && (
-            <p className="text-info mt-3">Submitting...</p>
-          )}
         </form>
       </div>
     </div>

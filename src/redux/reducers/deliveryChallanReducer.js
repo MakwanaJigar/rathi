@@ -13,6 +13,11 @@ import {
   UPDATE_DELIVERY_CHALLAN_REQUEST,
   UPDATE_DELIVERY_CHALLAN_SUCCESS,
   UPDATE_DELIVERY_CHALLAN_FAILURE,
+  RESET_DELIVERY_CHALLAN_STATE,
+  CLEAR_UPDATE_SUCCESS,
+  CLEAR_UPDATE_ERROR,
+  CLEAR_ADD_SUCCESS,
+  CLEAR_ADD_ERROR,
 } from "../actions/deliveryChallanActions";
 
 const initialState = {
@@ -25,6 +30,10 @@ const initialState = {
   adding: false,
   addSuccess: false,
   addError: null,
+  // update
+  updating: false,
+  updateSuccess: false,
+  updateError: null,
 };
 
 const deliveryChallanReducer = (state = initialState, action) => {
@@ -47,6 +56,7 @@ const deliveryChallanReducer = (state = initialState, action) => {
         ...state,
         adding: false,
         addSuccess: true,
+        addError: null, // Clear any previous error
         challans: [...state.challans, action.payload], // append new challan
       };
 
@@ -97,6 +107,7 @@ const deliveryChallanReducer = (state = initialState, action) => {
         ...state,
         updating: false,
         updateSuccess: true,
+        updateError: null, // Clear any previous error
         challans: state.challans.map((challan) =>
           challan.id === action.payload.id
             ? { ...challan, ...action.payload.updatedData }
@@ -110,6 +121,41 @@ const deliveryChallanReducer = (state = initialState, action) => {
         updating: false,
         updateError: action.payload,
         updateSuccess: false,
+      };
+
+    case CLEAR_UPDATE_SUCCESS:
+      return {
+        ...state,
+        updateSuccess: false,
+      };
+
+    case CLEAR_UPDATE_ERROR:
+      return {
+        ...state,
+        updateError: null,
+      };
+
+    case CLEAR_ADD_SUCCESS:
+      return {
+        ...state,
+        addSuccess: false,
+      };
+
+    case CLEAR_ADD_ERROR:
+      return {
+        ...state,
+        addError: null,
+      };
+
+    case RESET_DELIVERY_CHALLAN_STATE:
+      return {
+        ...state,
+        updating: false,
+        updateSuccess: false,
+        updateError: null,
+        adding: false,
+        addSuccess: false,
+        addError: null,
       };
 
     default:

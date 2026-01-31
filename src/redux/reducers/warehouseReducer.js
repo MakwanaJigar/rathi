@@ -31,6 +31,7 @@ const initialState = {
 const warehouseReducer = (state = initialState, action) => {
   switch (action.type) {
     case FETCH_WAREHOUSE_SUCCESS:
+      console.log('✓ Reducer: FETCH_WAREHOUSE_SUCCESS - Received warehouses:', action.payload);
       return { ...state, warehouses: action.payload };
 
     case ADD_WAREHOUSE_REQUEST:
@@ -61,17 +62,25 @@ const warehouseReducer = (state = initialState, action) => {
       return state;
 
     case UPDATE_WAREHOUSE_REQUEST:
+      console.log('Reducer: UPDATE_WAREHOUSE_REQUEST');
       return { ...state, updating: true, updateError: null };
 
     case UPDATE_WAREHOUSE_SUCCESS:
+      console.log('✓ Reducer: UPDATE_WAREHOUSE_SUCCESS');
+      console.log('Current warehouses:', state.warehouses);
+      console.log('Payload:', action.payload);
+      const updated = state.warehouses.map((w) => {
+        if (w.id === action.payload.id) {
+          console.log('Found warehouse to update. Merging:', { ...w, ...action.payload.updated });
+          return { ...w, ...action.payload.updated };
+        }
+        return w;
+      });
+      console.log('Updated warehouses list:', updated);
       return {
         ...state,
         updating: false,
-        warehouses: state.warehouses.map((w) =>
-          w.id === parseInt(action.payload.id)
-            ? { ...w, ...action.payload.updated }
-            : w
-        ),
+        warehouses: updated,
       };
 
     case UPDATE_WAREHOUSE_FAIL:

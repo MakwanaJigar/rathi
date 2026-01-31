@@ -14,8 +14,30 @@ const ItemEdit = () => {
   const [name, setName] = useState("");
   const [weight, setWeight] = useState("");
   const [hsn, setHsn] = useState("");
-  const [alert, setAlert] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  /* notification state */
+  const [notification, setNotification] = useState({
+    show: false,
+    type: "", // 'success' or 'error'
+    message: "",
+  });
+
+  // Show notification utility
+  const showNotification = (type, message, duration = 0) => {
+    setNotification({
+      show: true,
+      type,
+      message,
+    });
+
+    // Auto-hide after duration (if duration > 0)
+    if (duration > 0) {
+      setTimeout(() => {
+        setNotification((prev) => ({ ...prev, show: false }));
+      }, duration);
+    }
+  };
 
   useEffect(() => {
     if (existingItem) {
@@ -27,10 +49,9 @@ const ItemEdit = () => {
 
   const submit = async (e) => {
     e.preventDefault();
-    setAlert(null);
 
     if (!name.trim() || !weight.trim() || !hsn.trim()) {
-      setAlert({ type: "danger", text: "All fields are required." });
+      showNotification("error", "All fields are required.", 0);
       return;
     }
 
@@ -44,10 +65,10 @@ const ItemEdit = () => {
     setLoading(false);
 
     if (ok) {
-      setAlert({ type: "success", text: message });
-      setTimeout(() => navigate("/item"), 1000);
+      showNotification("success", message || (id ? "Item updated successfully!" : "Item added successfully!"));
+      setTimeout(() => navigate("/item"), 2000);
     } else {
-      setAlert({ type: "danger", text: message });
+      showNotification("error", message || "Failed to process item", 0);
     }
   };
 
@@ -72,8 +93,58 @@ const ItemEdit = () => {
           <div className="form-section client-info-container">
             <h3>{id ? "Edit" : "Add"} Item</h3>
 
-            {alert && (
-              <div className={`alert alert-${alert.type}`}>{alert.text}</div>
+            {/* Modal Notification */}
+            {notification.show && (
+              <div
+                className="modal d-block"
+                style={{
+                  backgroundColor: "rgba(0, 0, 0, 0.5)",
+                  zIndex: 1050,
+                }}
+              >
+                <div
+                  className="modal-dialog modal-dialog-centered"
+                  style={{ maxWidth: "450px" }}
+                >
+                  <div className="modal-content border-0">
+                    <div
+                      className={`modal-header border-0 ${"bg-" + (notification.type === "success" ? "success" : "danger")} text-white`}
+                      style={{ padding: "20px" }}
+                    >
+                      <h5 className="modal-title fw-bold" style={{ fontSize: "18px" }}>
+                        {notification.type === "success"
+                          ? "✓ Success!"
+                          : "✗ Error!"}
+                      </h5>
+                      <button
+                        type="button"
+                        className="btn-close btn-close-white"
+                        onClick={() =>
+                          setNotification((prev) => ({ ...prev, show: false }))
+                        }
+                      ></button>
+                    </div>
+                    <div className="modal-body" style={{ padding: "25px" }}>
+                      <p className="mb-0" style={{ fontSize: "16px", lineHeight: "1.6" }}>
+                        {notification.message}
+                      </p>
+                    </div>
+                    <div className="modal-footer border-0" style={{ justifyContent: "center", padding: "15px" }}>
+                      <button
+                        type="button"
+                        className={`btn btn-${
+                          notification.type === "success" ? "success" : "danger"
+                        } px-4`}
+                        onClick={() =>
+                          setNotification((prev) => ({ ...prev, show: false }))
+                        }
+                      >
+                        OK
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
             )}
 
             <form onSubmit={submit}>

@@ -18,18 +18,37 @@ const SalesRepresentativeEdit = () => {
   const [name, setName] = useState(repData.name || "");
   const [phone, setPhone] = useState(repData.phone || "");
   const [email, setEmail] = useState(repData.email || "");
-  const [successMsg, setSuccessMsg] = useState("");
-  const [errorMsg, setErrorMsg] = useState("");
 
   const adding = useSelector((s) => s.salesRep.adding);
 
+  /* notification state */
+  const [notification, setNotification] = useState({
+    show: false,
+    type: "", // 'success' or 'error'
+    message: "",
+  });
+
+  // Show notification utility
+  const showNotification = (type, message, duration = 0) => {
+    setNotification({
+      show: true,
+      type,
+      message,
+    });
+
+    // Auto-hide after duration (if duration > 0)
+    if (duration > 0) {
+      setTimeout(() => {
+        setNotification((prev) => ({ ...prev, show: false }));
+      }, duration);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setSuccessMsg("");
-    setErrorMsg("");
 
     if (!name.trim() || !phone.trim() || !email.trim()) {
-      setErrorMsg("All fields are required.");
+      showNotification("error", "All fields are required.", 0);
       return;
     }
 
@@ -45,10 +64,10 @@ const SalesRepresentativeEdit = () => {
     }
 
     if (result.ok) {
-      setSuccessMsg(result.message);
-      setTimeout(() => navigate("/sales-representative"), 1500);
+      showNotification("success", result.message || "Representative updated successfully!");
+      setTimeout(() => navigate("/sales-representative"), 2000);
     } else {
-      setErrorMsg(result.message);
+      showNotification("error", result.message || "Failed to update representative", 0);
     }
   };
 
@@ -56,8 +75,6 @@ const SalesRepresentativeEdit = () => {
     setName("");
     setPhone("");
     setEmail("");
-    setSuccessMsg("");
-    setErrorMsg("");
   };
 
   return (
@@ -86,10 +103,59 @@ const SalesRepresentativeEdit = () => {
           <div className="form-section client-info-container">
             <h3>{id ? "Edit" : "Add"} Representative</h3>
 
-            {successMsg && (
-              <div className="alert alert-success">{successMsg}</div>
+            {/* Modal Notification */}
+            {notification.show && (
+              <div
+                className="modal d-block"
+                style={{
+                  backgroundColor: "rgba(0, 0, 0, 0.5)",
+                  zIndex: 1050,
+                }}
+              >
+                <div
+                  className="modal-dialog modal-dialog-centered"
+                  style={{ maxWidth: "450px" }}
+                >
+                  <div className="modal-content border-0">
+                    <div
+                      className={`modal-header border-0 ${"bg-" + (notification.type === "success" ? "success" : "danger")} text-white`}
+                      style={{ padding: "20px" }}
+                    >
+                      <h5 className="modal-title fw-bold" style={{ fontSize: "18px" }}>
+                        {notification.type === "success"
+                          ? "✓ Success!"
+                          : "✗ Error!"}
+                      </h5>
+                      <button
+                        type="button"
+                        className="btn-close btn-close-white"
+                        onClick={() =>
+                          setNotification((prev) => ({ ...prev, show: false }))
+                        }
+                      ></button>
+                    </div>
+                    <div className="modal-body" style={{ padding: "25px" }}>
+                      <p className="mb-0" style={{ fontSize: "16px", lineHeight: "1.6" }}>
+                        {notification.message}
+                      </p>
+                    </div>
+                    <div className="modal-footer border-0" style={{ justifyContent: "center", padding: "15px" }}>
+                      <button
+                        type="button"
+                        className={`btn btn-${
+                          notification.type === "success" ? "success" : "danger"
+                        } px-4`}
+                        onClick={() =>
+                          setNotification((prev) => ({ ...prev, show: false }))
+                        }
+                      >
+                        OK
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
             )}
-            {errorMsg && <div className="alert alert-danger">{errorMsg}</div>}
 
             <form onSubmit={handleSubmit} onReset={handleReset}>
               <div className="mb-3 row">

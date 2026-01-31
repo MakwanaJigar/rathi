@@ -79,18 +79,30 @@ export const addMake = (payload, /** optional */ onSuccess) => async dispatch =>
       }
     );
 
-    if (!res.ok)
-      throw new Error((await res.json())?.message || "Failed to add make");
+    const data = await res.json();
 
-    const created = await res.json();           // API echoes back whole row
+    // Flexible success detection: if response.ok and no error indicators
+    const isError =
+      data?.error === true ||
+      data?.error === "true" ||
+      (typeof data?.message === "string" && data.message.toLowerCase().includes("error")) ||
+      data?.status === 0 ||
+      data?.status === "error";
 
-    // Add the new record to the list *optimistically* so UI updates instantly.
-    dispatch({ type: ADD_MAKE_SUCCESS, payload: created });
+    if (res.ok && !isError) {
+      // Add the new record to the list *optimistically* so UI updates instantly.
+      dispatch({ type: ADD_MAKE_SUCCESS, payload: data });
 
-    // Allow component to redirect / reset if it needs to
-    onSuccess && onSuccess();
+      // Allow component to redirect / reset if it needs to
+      onSuccess && onSuccess();
+      return { ok: true, message: data.message || "Make added successfully!" };
+    } else {
+      dispatch({ type: ADD_MAKE_FAIL, payload: data.message || "Failed to add make" });
+      return { ok: false, message: data.message || "Failed to add make" };
+    }
   } catch (err) {
     dispatch({ type: ADD_MAKE_FAIL, payload: err.message });
+    return { ok: false, message: err.message || "Network error." };
   }
 };
 
@@ -131,7 +143,16 @@ export const updateMake = (id, payload) => async (dispatch) => {
 
     const data = await res.json();
 
-    if (res.ok && (data.status === 1 || data.status === "success")) {
+    // More flexible success detection:
+    // If response.ok is true and no explicit error indicators, treat as success
+    const isError =
+      data?.error === true ||
+      data?.error === "true" ||
+      (typeof data?.message === "string" && data.message.toLowerCase().includes("error")) ||
+      data?.status === 0 ||
+      data?.status === "error";
+
+    if (res.ok && !isError) {
       dispatch({ type: UPDATE_MAKE_SUCCESS, payload: { id, updated: payload } });
       return { ok: true, message: data.message || "Make updated successfully!" };
     } else {

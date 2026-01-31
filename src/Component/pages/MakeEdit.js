@@ -11,26 +11,44 @@ const MakeEdit = () => {
 
   const makeData = location.state?.makeData;
   const [name, setName] = useState(makeData?.name || "");
-  const [alert, setAlert] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+
+  /* notification state */
+  const [notification, setNotification] = useState({
+    show: false,
+    type: "", // 'success' or 'error'
+    message: "",
+  });
+
+  // Show notification utility
+  const showNotification = (type, message, duration = 0) => {
+    setNotification({
+      show: true,
+      type,
+      message,
+    });
+
+    // Auto-hide after duration (if duration > 0)
+    if (duration > 0) {
+      setTimeout(() => {
+        setNotification((prev) => ({ ...prev, show: false }));
+      }, duration);
+    }
+  };
 
   // Show alert if no makeData found in state
   useEffect(() => {
     if (!makeData) {
-      setAlert({
-        type: "danger",
-        text: "No make data found. Please navigate from the list page.",
-      });
+      showNotification("error", "No make data found. Please navigate from the list page.", 0);
     }
   }, [makeData]);
 
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setAlert(null);
 
     if (name.trim() === "") {
-      setAlert({ type: "danger", text: "Make name is required." });
+      showNotification("error", "Make name is required.", 0);
       return;
     }
 
@@ -40,13 +58,13 @@ const MakeEdit = () => {
       const result = await dispatch(updateMake(id, { name: name.trim() }));
 
       if (result.ok) {
-        setAlert({ type: "success", text: result.message });
-        setTimeout(() => navigate("/make", { state: { refresh: true } }), 1200);
+        showNotification("success", result.message || "Make updated successfully!");
+        setTimeout(() => navigate("/make", { state: { refresh: true } }), 2000);
       } else {
-        setAlert({ type: "danger", text: result.message });
+        showNotification("error", result.message || "Failed to update make", 0);
       }
     } catch (err) {
-      setAlert({ type: "danger", text: err.message || "Network error." });
+      showNotification("error", err.message || "Network error.", 0);
     } finally {
       setSubmitting(false);
     }
@@ -55,7 +73,6 @@ const MakeEdit = () => {
   // Reset form to original data
   const handleReset = () => {
     setName(makeData?.name || "");
-    setAlert(null);
   };
 
   return (
@@ -81,9 +98,57 @@ const MakeEdit = () => {
           <div className="form-section client-info-container">
             <h3>Edit Make</h3>
 
-            {alert && (
-              <div className={`alert alert-${alert.type}`} role="alert">
-                {alert.text}
+            {/* Modal Notification */}
+            {notification.show && (
+              <div
+                className="modal d-block"
+                style={{
+                  backgroundColor: "rgba(0, 0, 0, 0.5)",
+                  zIndex: 1050,
+                }}
+              >
+                <div
+                  className="modal-dialog modal-dialog-centered"
+                  style={{ maxWidth: "450px" }}
+                >
+                  <div className="modal-content border-0">
+                    <div
+                      className={`modal-header border-0 ${"bg-" + (notification.type === "success" ? "success" : "danger")} text-white`}
+                      style={{ padding: "20px" }}
+                    >
+                      <h5 className="modal-title fw-bold" style={{ fontSize: "18px" }}>
+                        {notification.type === "success"
+                          ? "✓ Success!"
+                          : "✗ Error!"}
+                      </h5>
+                      <button
+                        type="button"
+                        className="btn-close btn-close-white"
+                        onClick={() =>
+                          setNotification((prev) => ({ ...prev, show: false }))
+                        }
+                      ></button>
+                    </div>
+                    <div className="modal-body" style={{ padding: "25px" }}>
+                      <p className="mb-0" style={{ fontSize: "16px", lineHeight: "1.6" }}>
+                        {notification.message}
+                      </p>
+                    </div>
+                    <div className="modal-footer border-0" style={{ justifyContent: "center", padding: "15px" }}>
+                      <button
+                        type="button"
+                        className={`btn btn-${
+                          notification.type === "success" ? "success" : "danger"
+                        } px-4`}
+                        onClick={() =>
+                          setNotification((prev) => ({ ...prev, show: false }))
+                        }
+                      >
+                        OK
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
 

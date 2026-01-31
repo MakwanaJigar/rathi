@@ -9,11 +9,20 @@ const WarehouseEdit = () => {
   const dispatch = useDispatch();
 
   const warehouses = useSelector((state) => state.warehouse.warehouses);
-  const warehouse = warehouses.find((w) => w.id === parseInt(id));
+  const warehouse = warehouses.find((w) => w.id === parseInt(id) || String(w.id) === id);
 
   const [formData, setFormData] = useState({ name: '', address: '' });
-  const [alert, setAlert] = useState(null);
+  const [notification, setNotification] = useState({ show: false, type: 'success', message: '' });
   const [submitting, setSubmitting] = useState(false);
+
+  const showNotification = (type, message, duration = 0) => {
+    setNotification({ show: true, type, message });
+    if (duration > 0) {
+      setTimeout(() => {
+        setNotification({ show: false, type: '', message: '' });
+      }, duration);
+    }
+  };
 
   // Fetch warehouses if not loaded
   useEffect(() => {
@@ -35,26 +44,40 @@ const WarehouseEdit = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    console.log('✎ FORM CHANGE:', name, '=>', value);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
-    setAlert(null);
 
-  const payload = {
-  warehouse_name: formData.name.trim(),
-  warehouse_address: formData.address.trim(),
-};
+    const payload = {
+      warehouse_name: formData.name.trim(),
+      warehouse_address: formData.address.trim(),
+    };
 
-
+    // console.log('=== WAREHOUSE EDIT SUBMIT START ===');
+    // console.log('ID from URL:', id);
+    // console.log('Current warehouse:', warehouse);
+    // console.log('Submitting payload:', payload);
+    
     const result = await dispatch(updateWarehouse(id, payload));
 
+    // console.log('=== UPDATE RESULT ===');
+    // console.log('Result:', result);
+    // console.log('Result.ok:', result.ok);
+    // console.log('Result.message:', result.message);
+
     if (result.ok) {
-      setAlert({ type: 'success', text: result.message });
-      setTimeout(() => navigate('/warehouse'), 1500);
+      console.log('✓ SUCCESS - Showing success notification');
+      showNotification('success', result.message, 2000);
+      setTimeout(() => {
+        console.log('✓ NAVIGATING BACK TO WAREHOUSE LIST');
+        navigate('/warehouse');
+      }, 2500);
     } else {
-      setAlert({ type: 'danger', text: result.message });
+      console.log('✗ ERROR - Showing error notification');
+      showNotification('error', result.message, 0);
     }
 
     setSubmitting(false);
@@ -69,7 +92,6 @@ const WarehouseEdit = () => {
     } else {
       setFormData({ name: '', address: '' });
     }
-    setAlert(null);
   };
 
   return (
@@ -89,12 +111,6 @@ const WarehouseEdit = () => {
         <div className="challan-add-main-right-container py-5">
           <div className="form-section client-info-container">
             <h3>Edit Warehouse</h3>
-
-            {alert && (
-              <div className={`alert alert-${alert.type}`} role="alert">
-                {alert.text}
-              </div>
-            )}
 
             {warehouse ? (
               <form className="py-3" onSubmit={handleSubmit} onReset={handleReset}>
@@ -143,6 +159,60 @@ const WarehouseEdit = () => {
           </div>
         </div>
       </div>
+
+      {/* Modal Notification */}
+      {notification.show && (
+        <div
+          className="modal d-block"
+          style={{
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            zIndex: 1050,
+          }}
+        >
+          <div
+            className="modal-dialog modal-dialog-centered"
+            style={{ maxWidth: "450px" }}
+          >
+            <div className="modal-content border-0">
+              <div
+                className={`modal-header border-0 ${"bg-" + (notification.type === "success" ? "success" : "danger")} text-white`}
+                style={{ padding: "20px" }}
+              >
+                <h5 className="modal-title fw-bold" style={{ fontSize: "18px" }}>
+                  {notification.type === "success"
+                    ? "✓ Success!"
+                    : "✗ Error!"}
+                </h5>
+                <button
+                  type="button"
+                  className="btn-close btn-close-white"
+                  onClick={() =>
+                    setNotification({ show: false, type: '', message: '' })
+                  }
+                ></button>
+              </div>
+              <div className="modal-body" style={{ padding: "25px" }}>
+                <p className="mb-0" style={{ fontSize: "16px", lineHeight: "1.6" }}>
+                  {notification.message}
+                </p>
+              </div>
+              <div className="modal-footer border-0" style={{ justifyContent: "center", padding: "15px" }}>
+                <button
+                  type="button"
+                  className={`btn btn-${
+                    notification.type === "success" ? "success" : "danger"
+                  } px-4`}
+                  onClick={() =>
+                    setNotification({ show: false, type: '', message: '' })
+                  }
+                >
+                  OK
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

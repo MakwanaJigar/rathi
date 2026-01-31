@@ -23,6 +23,12 @@ export const EXPORT_CHALLAN_REQUEST = "EXPORT_CHALLAN_REQUEST";
 export const EXPORT_CHALLAN_SUCCESS = "EXPORT_CHALLAN_SUCCESS";
 export const EXPORT_CHALLAN_FAIL = "EXPORT_CHALLAN_FAIL";
 
+export const RESET_DELIVERY_CHALLAN_STATE = "RESET_DELIVERY_CHALLAN_STATE";
+export const CLEAR_UPDATE_SUCCESS = "CLEAR_UPDATE_SUCCESS";
+export const CLEAR_UPDATE_ERROR = "CLEAR_UPDATE_ERROR";
+export const CLEAR_ADD_SUCCESS = "CLEAR_ADD_SUCCESS";
+export const CLEAR_ADD_ERROR = "CLEAR_ADD_ERROR";
+
 // get
 export const fetchChallans = () => async (dispatch) => {
   dispatch({ type: FETCH_CHALLANS_REQUEST });
@@ -75,7 +81,7 @@ export const deleteChallan = (id) => async (dispatch) => {
 };
 
 // add
-export const addDeliveryChallan = (data) => async (dispatch) => {
+export const addDeliveryChallan = (data, onSuccess, onError) => async (dispatch) => {
   dispatch({ type: ADD_DELIVERY_CHALLAN_REQUEST });
 
   try {
@@ -110,25 +116,37 @@ export const addDeliveryChallan = (data) => async (dispatch) => {
 
     const result = await response.json();
 
-    const success =
-      result?.success === true ||
-      (typeof result?.result === "string" &&
-        result.result.toLowerCase().includes("success"));
+    // Simple and reliable success detection:
+    // If response.ok is true and we got here without error, assume success
+    // Only treat as error if we explicitly see error indicators
+    const isError =
+      result?.error === true ||
+      result?.success === false ||
+      (typeof result?.message === "string" && result.message.toLowerCase().includes("error")) ||
+      (typeof result?.result === "string" && result.result.toLowerCase().includes("error"));
 
-    if (success) {
+    if (!isError) {
+      // If not explicitly an error, treat as success
       dispatch({
         type: ADD_DELIVERY_CHALLAN_SUCCESS,
         payload: result.data || data,
       });
+      // Call the success callback if provided
+      if (typeof onSuccess === "function") {
+        onSuccess(result);
+      }
+      return { success: true, ...result };
     } else {
       throw new Error(
         result?.message || result?.result || "Failed to add delivery challan.",
       );
     }
-
-    return { success, ...result };
   } catch (error) {
     dispatch({ type: ADD_DELIVERY_CHALLAN_FAILURE, payload: error.message });
+    // Call the error callback if provided
+    if (typeof onError === "function") {
+      onError(error.message);
+    }
     return { success: false, message: error.message };
   }
 };
@@ -178,7 +196,7 @@ export function getNextDONumber(challans) {
 
 // EDIT
 
-export const updateDeliveryChallan = (id, data) => async (dispatch) => {
+export const updateDeliveryChallan = (id, data, onSuccess, onError) => async (dispatch) => {
   dispatch({ type: UPDATE_DELIVERY_CHALLAN_REQUEST });
 
   try {
@@ -213,23 +231,56 @@ export const updateDeliveryChallan = (id, data) => async (dispatch) => {
 
     const result = await response.json();
 
-    const success =
-      result?.success === true ||
-      (typeof result?.result === "string" &&
-        result.result.toLowerCase().includes("success"));
+    // Simple and reliable success detection:
+    // If response.ok is true and we got here without error, assume success
+    // Only treat as error if we explicitly see error indicators
+    const isError =
+      result?.error === true ||
+      result?.success === false ||
+      (typeof result?.message === "string" && result.message.toLowerCase().includes("error")) ||
+      (typeof result?.result === "string" && result.result.toLowerCase().includes("error"));
 
-    if (success) {
+    if (!isError) {
+      // If not explicitly an error, treat as success
       dispatch({
         type: UPDATE_DELIVERY_CHALLAN_SUCCESS,
         payload: { id, updatedData: result.data || data },
       });
+      // Call the success callback if provided
+      if (typeof onSuccess === "function") {
+        onSuccess(result);
+      }
+      return { success: true, ...result };
     } else {
-      throw new Error(result?.message || "Failed to update challan.");
+      throw new Error(result?.message || result?.result || "Failed to update challan.");
     }
-
-    return { success, ...result };
   } catch (error) {
     dispatch({ type: UPDATE_DELIVERY_CHALLAN_FAILURE, payload: error.message });
+    // Call the error callback if provided
+    if (typeof onError === "function") {
+      onError(error.message);
+    }
     return { success: false, message: error.message };
   }
 };
+
+// Clear success/error states
+export const clearUpdateSuccess = () => ({
+  type: CLEAR_UPDATE_SUCCESS,
+});
+
+export const clearUpdateError = () => ({
+  type: CLEAR_UPDATE_ERROR,
+});
+
+export const clearAddSuccess = () => ({
+  type: CLEAR_ADD_SUCCESS,
+});
+
+export const clearAddError = () => ({
+  type: CLEAR_ADD_ERROR,
+});
+
+export const resetDeliveryChallanState = () => ({
+  type: RESET_DELIVERY_CHALLAN_STATE,
+});
