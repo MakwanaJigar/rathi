@@ -14,7 +14,7 @@ import {
   IMPORT_WAREHOUSE_REQUEST,
   IMPORT_WAREHOUSE_SUCCESS,
   IMPORT_WAREHOUSE_FAILURE,
-} from '../actions/warehouseActions';
+} from "../actions/warehouseActions";
 
 const initialState = {
   warehouses: [],
@@ -30,12 +30,12 @@ const initialState = {
 
 const warehouseReducer = (state = initialState, action) => {
   switch (action.type) {
+
     case FETCH_WAREHOUSE_SUCCESS:
-      console.log('✓ Reducer: FETCH_WAREHOUSE_SUCCESS - Received warehouses:', action.payload);
       return { ...state, warehouses: action.payload };
 
     case ADD_WAREHOUSE_REQUEST:
-      return { ...state, adding: true, addError: null };
+      return { ...state, adding: true };
 
     case ADD_WAREHOUSE_SUCCESS:
       return { ...state, adding: false };
@@ -44,7 +44,7 @@ const warehouseReducer = (state = initialState, action) => {
       return { ...state, adding: false, addError: action.payload };
 
     case EXPORT_WAREHOUSE_REQUEST:
-      return { ...state, exporting: true, exportError: null };
+      return { ...state, exporting: true };
 
     case EXPORT_WAREHOUSE_SUCCESS:
       return { ...state, exporting: false };
@@ -55,39 +55,34 @@ const warehouseReducer = (state = initialState, action) => {
     case DELETE_WAREHOUSE_SUCCESS:
       return {
         ...state,
-        warehouses: state.warehouses.filter((w) => w.id !== action.payload),
+        warehouses: state.warehouses.filter(
+          (w) => String(w.id ?? w.warehouse_id) !== String(action.payload)
+        ),
       };
 
-    case DELETE_WAREHOUSE_FAIL:
-      return state;
-
     case UPDATE_WAREHOUSE_REQUEST:
-      console.log('Reducer: UPDATE_WAREHOUSE_REQUEST');
-      return { ...state, updating: true, updateError: null };
+      return { ...state, updating: true };
 
+    // ⭐⭐⭐ FIXED SAFE MATCH
     case UPDATE_WAREHOUSE_SUCCESS:
-      console.log('✓ Reducer: UPDATE_WAREHOUSE_SUCCESS');
-      console.log('Current warehouses:', state.warehouses);
-      console.log('Payload:', action.payload);
-      const updated = state.warehouses.map((w) => {
-        if (w.id === action.payload.id) {
-          console.log('Found warehouse to update. Merging:', { ...w, ...action.payload.updated });
-          return { ...w, ...action.payload.updated };
-        }
-        return w;
-      });
-      console.log('Updated warehouses list:', updated);
       return {
         ...state,
         updating: false,
-        warehouses: updated,
+        warehouses: state.warehouses.map((w) => {
+          const wid = w.id ?? w.warehouse_id;
+
+          if (String(wid) === String(action.payload.id)) {
+            return { ...w, ...action.payload.updated };
+          }
+          return w;
+        }),
       };
 
     case UPDATE_WAREHOUSE_FAIL:
       return { ...state, updating: false, updateError: action.payload };
 
     case IMPORT_WAREHOUSE_REQUEST:
-      return { ...state, loading: true, error: null };
+      return { ...state, loading: true };
 
     case IMPORT_WAREHOUSE_SUCCESS:
       return {

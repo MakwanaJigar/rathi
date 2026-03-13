@@ -9,7 +9,10 @@ const WarehouseEdit = () => {
   const dispatch = useDispatch();
 
   const warehouses = useSelector((state) => state.warehouse.warehouses);
-  const warehouse = warehouses.find((w) => w.id === parseInt(id) || String(w.id) === id);
+  const warehouse = warehouses.find((w) => {
+    const wid = w.id ?? w.warehouse_id;
+    return wid === parseInt(id) || String(wid) === String(id);
+  });
 
   const [formData, setFormData] = useState({ name: '', address: '' });
   const [notification, setNotification] = useState({ show: false, type: 'success', message: '' });

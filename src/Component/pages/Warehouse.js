@@ -240,7 +240,10 @@ const Warehouse = () => {
                           <td>{w.warehouse_name || "N/A"}</td>
                           <td>{w.warehouse_address || "N/A"}</td>
                           <td className="text-center">
-                            <button className="btn btn-sm me-1" onClick={() => navigate(`/warehouse/edit/${w.id}`)}>
+                            <button
+                              className="btn btn-sm me-1"
+                              onClick={() => navigate(`/warehouse/edit/${w.id ?? w.warehouse_id}`)}
+                            >
                               <i className="fas fa-pen" />
                             </button>
                             <button className="btn btn-sm" onClick={() => handleDelete(w.id ?? w.warehouse_id)}>

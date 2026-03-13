@@ -98,40 +98,6 @@ export const addWarehouse = (payload) => async (dispatch) => {
     return { ok: false, message: err.message || "Network error." };
   }
 };
-// export const addWarehouse = (payload) => async (dispatch) => {
-//   dispatch({ type: ADD_WAREHOUSE_REQUEST });
-
-//   try {
-//     const res = await fetch(
-//       "https://replete-software.com/projects/rathi/api/add-warehouse",
-//       {
-//         method: "POST",
-//         headers: { "Content-Type": "application/json" },
-//         body: JSON.stringify(payload),
-//       }
-//     );
-
-//     const data = await res.json();
-
-//     const isSuccess =
-//       res.ok ||
-//       data?.status === 1 ||
-//       data?.status === "success" ||
-//       data?.message?.toLowerCase()?.includes("success");
-
-//     if (isSuccess) {
-//       dispatch({ type: ADD_WAREHOUSE_SUCCESS });
-//       return { ok: true, message: data?.message || "Warehouse added successfully!" };
-//     } else {
-//       const errMsg = data?.message || "Failed to add warehouse.";
-//       dispatch({ type: ADD_WAREHOUSE_FAIL, payload: errMsg });
-//       return { ok: false, message: errMsg };
-//     }
-//   } catch (err) {
-//     dispatch({ type: ADD_WAREHOUSE_FAIL, payload: err.message });
-//     return { ok: false, message: err.message || "Network error." };
-//   }
-// };
 
 // delete
 
@@ -153,100 +119,108 @@ export const deleteWarehouse = (id) => async (dispatch) => {
 };
 
 // edit
+// export const updateWarehouse = (id, payload) => async (dispatch) => {
+//   dispatch({ type: UPDATE_WAREHOUSE_REQUEST });
+
+//   try {
+//     console.log('=== WAREHOUSE UPDATE START ===');
+//     console.log('Warehouse ID:', id);
+//     console.log('Sending Payload:', payload);
+    
+//     const res = await fetch(
+//       `https://replete-software.com/projects/rathi/api/updatewarehouse/${id}`,
+//       {
+//         method: "POST",
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify({
+//           ...payload,
+//           id: parseInt(id),
+//           warehouse_id: parseInt(id),
+//         }),
+//       }
+//     );
+
+//     console.log('HTTP Status:', res.status);
+//     const data = await res.json();
+//     console.log('Full API Response:', data);
+    
+//     const isError =
+//       data?.error === true ||
+//       data?.error === "true" ||
+//       (typeof data?.message === "string" &&
+//         data.message.toLowerCase().includes("error")) ||
+//       data?.status === 0 ||
+//       data?.status === "error";
+
+//     if (res.ok && !isError) {
+//       console.log('✓ UPDATE SUCCESS - HTTP 200');
+//       dispatch({
+//         type: UPDATE_WAREHOUSE_SUCCESS,
+//         payload: {
+//           id: parseInt(id),
+//           updated: {
+//             warehouse_name: payload.warehouse_name,
+//             warehouse_address: payload.warehouse_address,
+//           },
+//         },
+//       });
+
+//       return { ok: true, message: data?.message || "Warehouse updated successfully!" };
+//     }
+
+//     console.log('✗ UPDATE FAILED');
+//     const errorMsg =
+//       data?.message ||
+//       (typeof data === 'string' ? data : JSON.stringify(data));
+//     dispatch({ type: UPDATE_WAREHOUSE_FAIL, payload: errorMsg });
+//     return { ok: false, message: errorMsg };
+
+//   } catch (err) {
+//     console.error('CATCH ERROR:', err.message);
+//     dispatch({ type: UPDATE_WAREHOUSE_FAIL, payload: err.message });
+//     return { ok: false, message: err.message };
+//   }
+// };
+
+// ✅ UPDATE (FIXED)
 export const updateWarehouse = (id, payload) => async (dispatch) => {
   dispatch({ type: UPDATE_WAREHOUSE_REQUEST });
 
   try {
-    console.log('=== WAREHOUSE UPDATE START ===');
-    console.log('Warehouse ID:', id);
-    console.log('Sending Payload:', payload);
-    
     const res = await fetch(
       `https://replete-software.com/projects/rathi/api/updatewarehouse/${id}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),  // Send original payload with warehouse_name
+        body: JSON.stringify({
+          name: payload.warehouse_name,              // ⭐ IMPORTANT FIX
+          warehouse_address: payload.warehouse_address,
+          id: id,
+        }),
       }
     );
 
-    console.log('HTTP Status:', res.status);
     const data = await res.json();
-    console.log('Full API Response:', data);
-    
-    // Just check if HTTP 200 - API returns success even without message
+    console.log("UPDATE RESPONSE:", data);
+
     if (res.ok) {
-      console.log('✓ UPDATE SUCCESS - HTTP 200');
       dispatch({
         type: UPDATE_WAREHOUSE_SUCCESS,
-        payload: {
-          id: parseInt(id),
-          updated: {
-            warehouse_name: payload.warehouse_name,
-            warehouse_address: payload.warehouse_address,
-          },
-        },
+        payload: { id: id, updated: payload },
       });
 
-      return { ok: true, message: "Warehouse updated successfully!" };
+      return { ok: true, message: data.message || "Updated successfully" };
+    } else {
+      dispatch({ type: UPDATE_WAREHOUSE_FAIL, payload: data.message });
+      return { ok: false, message: data.message };
     }
-
-    // If not 200, treat as error
-    console.log('✗ UPDATE FAILED - Not HTTP 200');
-    const errorMsg = typeof data === 'string' ? data : JSON.stringify(data);
-    dispatch({ type: UPDATE_WAREHOUSE_FAIL, payload: errorMsg });
-    return { ok: false, message: errorMsg };
-
   } catch (err) {
-    console.error('CATCH ERROR:', err.message);
     dispatch({ type: UPDATE_WAREHOUSE_FAIL, payload: err.message });
     return { ok: false, message: err.message };
   }
 };
 
 
-// export const updateWarehouse = (id, payload) => async (dispatch) => {
-//   dispatch({ type: UPDATE_WAREHOUSE_REQUEST });
-
-//   try {
-//     console.log('Dispatching update for ID:', id);
-//     console.log('Payload:', payload);
-
-//     const res = await fetch(
-//       `https://replete-software.com/projects/rathi/api/updatewarehouse/${id}`,
-//       {
-//         method: "POST",
-//         headers: {
-//           "Content-Type": "application/json",
-//         },
-//         body: JSON.stringify(payload),
-//       }
-//     );
-
-//     const data = await res.json();
-
-//     console.log('Fetch response status:', res.status);
-//     console.log('Update response:', data);
-
-//     if (res.ok) {
-//       dispatch({ type: UPDATE_WAREHOUSE_SUCCESS, payload: { id, updated: payload } });
-//       return { ok: true, message: data?.message || "Warehouse updated successfully!" };
-//     } else {
-//       if (data && typeof data === 'object') {
-//         const errorMessages = Object.values(data)
-//           .map(arr => (Array.isArray(arr) ? arr.join(' ') : arr))
-//           .join(' ');
-//         dispatch({ type: UPDATE_WAREHOUSE_FAIL, payload: errorMessages });
-//         return { ok: false, message: errorMessages };
-//       }
-//       dispatch({ type: UPDATE_WAREHOUSE_FAIL, payload: data?.message || "Failed to update warehouse." });
-//       return { ok: false, message: data?.message || "Failed to update warehouse." };
-//     }
-//   } catch (err) {
-//     dispatch({ type: UPDATE_WAREHOUSE_FAIL, payload: err.message });
-//     return { ok: false, message: err.message || "Network error." };
-//   }
-// };
 
 // import
 export const importWarehouse = (formData) => async (dispatch) => {
